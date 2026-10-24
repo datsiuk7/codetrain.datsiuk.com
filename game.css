@@ -1,4 +1,4 @@
-@import './blocks.css';
+@import './blocks.css?v0.2';
 
 body.in-game,
 .game-top-bar,

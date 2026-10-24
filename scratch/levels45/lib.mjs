@@ -2,7 +2,7 @@
 import { validateLevel, validateProgram, initialState, step, won, executeProgram, conditionValue } from '../../logic.mjs';
 
 let uid = 0;
-const blk = (type, extra = {}) => ({ id: `b${++uid}`, type, ...extra });
+export const blk = (type, extra = {}) => ({ id: `b${++uid}`, type, ...extra });
 
 export const F = () => blk('forward');
 export const L = () => blk('left');
@@ -252,4 +252,5 @@ export function minUnconditionalBlocks(seq, allowLoops = true) {
   };
   return best(0, n);
 }
+
 

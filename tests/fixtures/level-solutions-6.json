@@ -1,0 +1,3332 @@
+{
+ "section6": [
+  "persha-funktsiya",
+  "diahonalna-dorizhka",
+  "skhody-z-lamp",
+  "skhody-vhoru-i-vnyz",
+  "hazon-zmiyka",
+  "pletinnya",
+  "riad-lamp-u-tsykli",
+  "try-kvartaly",
+  "funktsiya-u-funktsiyi",
+  "try-vershyny",
+  "girskyy-khrebet",
+  "try-prolity",
+  "remontnyy-kvartal",
+  "remontna-brygada-funktsiy",
+  "kvadrat-bez-tsyklu",
+  "zmiyka-z-funktsiy",
+  "remontni-posylky",
+  "ozero-z-funktsiyamy",
+  "nichnyy-obkhid-funktsii",
+  "spirala-z-funktsiy"
+ ],
+ "solutions": {
+  "persha-funktsiya": {
+   "night": {
+    "program": [
+     {
+      "id": "b5",
+      "type": "call",
+      "functionId": "f1"
+     },
+     {
+      "id": "b6",
+      "type": "call",
+      "functionId": "f1"
+     },
+     {
+      "id": "b7",
+      "type": "call",
+      "functionId": "f1"
+     },
+     {
+      "id": "b8",
+      "type": "call",
+      "functionId": "f1"
+     }
+    ],
+    "functions": [
+     {
+      "id": "f1",
+      "name": "Кут",
+      "body": [
+       {
+        "id": "b1",
+        "type": "forward"
+       },
+       {
+        "id": "b2",
+        "type": "forward"
+       },
+       {
+        "id": "b3",
+        "type": "light"
+       },
+       {
+        "id": "b4",
+        "type": "right"
+       }
+      ]
+     }
+    ]
+   },
+   "day": {
+    "program": [
+     {
+      "id": "b5",
+      "type": "call",
+      "functionId": "f1"
+     },
+     {
+      "id": "b6",
+      "type": "call",
+      "functionId": "f1"
+     },
+     {
+      "id": "b7",
+      "type": "call",
+      "functionId": "f1"
+     },
+     {
+      "id": "b8",
+      "type": "call",
+      "functionId": "f1"
+     }
+    ],
+    "functions": [
+     {
+      "id": "f1",
+      "name": "Кут",
+      "body": [
+       {
+        "id": "b1",
+        "type": "forward"
+       },
+       {
+        "id": "b2",
+        "type": "forward"
+       },
+       {
+        "id": "b3",
+        "type": "light"
+       },
+       {
+        "id": "b4",
+        "type": "right"
+       }
+      ]
+     }
+    ]
+   }
+  },
+  "diahonalna-dorizhka": {
+   "night": {
+    "program": [
+     {
+      "id": "b14",
+      "type": "call",
+      "functionId": "f2"
+     },
+     {
+      "id": "b15",
+      "type": "call",
+      "functionId": "f2"
+     },
+     {
+      "id": "b16",
+      "type": "call",
+      "functionId": "f2"
+     },
+     {
+      "id": "b17",
+      "type": "call",
+      "functionId": "f2"
+     }
+    ],
+    "functions": [
+     {
+      "id": "f2",
+      "name": "Сходинка",
+      "body": [
+       {
+        "id": "b9",
+        "type": "forward"
+       },
+       {
+        "id": "b10",
+        "type": "right"
+       },
+       {
+        "id": "b11",
+        "type": "forward"
+       },
+       {
+        "id": "b12",
+        "type": "left"
+       },
+       {
+        "id": "b13",
+        "type": "light"
+       }
+      ]
+     }
+    ]
+   },
+   "day": {
+    "program": [
+     {
+      "id": "b14",
+      "type": "call",
+      "functionId": "f2"
+     },
+     {
+      "id": "b15",
+      "type": "call",
+      "functionId": "f2"
+     },
+     {
+      "id": "b16",
+      "type": "call",
+      "functionId": "f2"
+     },
+     {
+      "id": "b17",
+      "type": "call",
+      "functionId": "f2"
+     }
+    ],
+    "functions": [
+     {
+      "id": "f2",
+      "name": "Сходинка",
+      "body": [
+       {
+        "id": "b9",
+        "type": "forward"
+       },
+       {
+        "id": "b10",
+        "type": "right"
+       },
+       {
+        "id": "b11",
+        "type": "forward"
+       },
+       {
+        "id": "b12",
+        "type": "left"
+       },
+       {
+        "id": "b13",
+        "type": "light"
+       }
+      ]
+     }
+    ]
+   }
+  },
+  "skhody-z-lamp": {
+   "night": {
+    "program": [
+     {
+      "id": "b25",
+      "type": "call",
+      "functionId": "f3"
+     },
+     {
+      "id": "b26",
+      "type": "call",
+      "functionId": "f4"
+     },
+     {
+      "id": "b27",
+      "type": "call",
+      "functionId": "f3"
+     },
+     {
+      "id": "b28",
+      "type": "call",
+      "functionId": "f4"
+     },
+     {
+      "id": "b29",
+      "type": "call",
+      "functionId": "f3"
+     },
+     {
+      "id": "b30",
+      "type": "call",
+      "functionId": "f4"
+     }
+    ],
+    "functions": [
+     {
+      "id": "f3",
+      "name": "Два вперед",
+      "body": [
+       {
+        "id": "b18",
+        "type": "forward"
+       },
+       {
+        "id": "b19",
+        "type": "forward"
+       },
+       {
+        "id": "b20",
+        "type": "light"
+       }
+      ]
+     },
+     {
+      "id": "f4",
+      "name": "Убік",
+      "body": [
+       {
+        "id": "b21",
+        "type": "right"
+       },
+       {
+        "id": "b22",
+        "type": "forward"
+       },
+       {
+        "id": "b23",
+        "type": "forward"
+       },
+       {
+        "id": "b24",
+        "type": "left"
+       }
+      ]
+     }
+    ]
+   },
+   "day": {
+    "program": [
+     {
+      "id": "b25",
+      "type": "call",
+      "functionId": "f3"
+     },
+     {
+      "id": "b26",
+      "type": "call",
+      "functionId": "f4"
+     },
+     {
+      "id": "b27",
+      "type": "call",
+      "functionId": "f3"
+     },
+     {
+      "id": "b28",
+      "type": "call",
+      "functionId": "f4"
+     },
+     {
+      "id": "b29",
+      "type": "call",
+      "functionId": "f3"
+     },
+     {
+      "id": "b30",
+      "type": "call",
+      "functionId": "f4"
+     }
+    ],
+    "functions": [
+     {
+      "id": "f3",
+      "name": "Два вперед",
+      "body": [
+       {
+        "id": "b18",
+        "type": "forward"
+       },
+       {
+        "id": "b19",
+        "type": "forward"
+       },
+       {
+        "id": "b20",
+        "type": "light"
+       }
+      ]
+     },
+     {
+      "id": "f4",
+      "name": "Убік",
+      "body": [
+       {
+        "id": "b21",
+        "type": "right"
+       },
+       {
+        "id": "b22",
+        "type": "forward"
+       },
+       {
+        "id": "b23",
+        "type": "forward"
+       },
+       {
+        "id": "b24",
+        "type": "left"
+       }
+      ]
+     }
+    ]
+   }
+  },
+  "skhody-vhoru-i-vnyz": {
+   "night": {
+    "program": [
+     {
+      "id": "b34",
+      "type": "call",
+      "functionId": "f5"
+     },
+     {
+      "id": "b35",
+      "type": "call",
+      "functionId": "f5"
+     },
+     {
+      "id": "b36",
+      "type": "right"
+     },
+     {
+      "id": "b37",
+      "type": "call",
+      "functionId": "f5"
+     },
+     {
+      "id": "b38",
+      "type": "call",
+      "functionId": "f5"
+     }
+    ],
+    "functions": [
+     {
+      "id": "f5",
+      "name": "Два стрибки",
+      "body": [
+       {
+        "id": "b31",
+        "type": "jump"
+       },
+       {
+        "id": "b32",
+        "type": "jump"
+       },
+       {
+        "id": "b33",
+        "type": "light"
+       }
+      ]
+     }
+    ]
+   },
+   "day": {
+    "program": [
+     {
+      "id": "b34",
+      "type": "call",
+      "functionId": "f5"
+     },
+     {
+      "id": "b35",
+      "type": "call",
+      "functionId": "f5"
+     },
+     {
+      "id": "b36",
+      "type": "right"
+     },
+     {
+      "id": "b37",
+      "type": "call",
+      "functionId": "f5"
+     },
+     {
+      "id": "b38",
+      "type": "call",
+      "functionId": "f5"
+     }
+    ],
+    "functions": [
+     {
+      "id": "f5",
+      "name": "Два стрибки",
+      "body": [
+       {
+        "id": "b31",
+        "type": "jump"
+       },
+       {
+        "id": "b32",
+        "type": "jump"
+       },
+       {
+        "id": "b33",
+        "type": "light"
+       }
+      ]
+     }
+    ]
+   }
+  },
+  "hazon-zmiyka": {
+   "night": {
+    "program": [
+     {
+      "id": "b48",
+      "type": "call",
+      "functionId": "f6"
+     },
+     {
+      "id": "b49",
+      "type": "call",
+      "functionId": "f7"
+     },
+     {
+      "id": "b50",
+      "type": "call",
+      "functionId": "f6"
+     },
+     {
+      "id": "b51",
+      "type": "call",
+      "functionId": "f8"
+     },
+     {
+      "id": "b52",
+      "type": "call",
+      "functionId": "f6"
+     },
+     {
+      "id": "b53",
+      "type": "call",
+      "functionId": "f7"
+     },
+     {
+      "id": "b54",
+      "type": "call",
+      "functionId": "f6"
+     }
+    ],
+    "functions": [
+     {
+      "id": "f6",
+      "name": "Ряд",
+      "body": [
+       {
+        "id": "b39",
+        "type": "forward"
+       },
+       {
+        "id": "b40",
+        "type": "forward"
+       },
+       {
+        "id": "b41",
+        "type": "light"
+       }
+      ]
+     },
+     {
+      "id": "f7",
+      "name": "Розворот праворуч",
+      "body": [
+       {
+        "id": "b42",
+        "type": "right"
+       },
+       {
+        "id": "b43",
+        "type": "forward"
+       },
+       {
+        "id": "b44",
+        "type": "right"
+       }
+      ]
+     },
+     {
+      "id": "f8",
+      "name": "Розворот ліворуч",
+      "body": [
+       {
+        "id": "b45",
+        "type": "left"
+       },
+       {
+        "id": "b46",
+        "type": "forward"
+       },
+       {
+        "id": "b47",
+        "type": "left"
+       }
+      ]
+     }
+    ]
+   },
+   "day": {
+    "program": [
+     {
+      "id": "b48",
+      "type": "call",
+      "functionId": "f6"
+     },
+     {
+      "id": "b49",
+      "type": "call",
+      "functionId": "f7"
+     },
+     {
+      "id": "b50",
+      "type": "call",
+      "functionId": "f6"
+     },
+     {
+      "id": "b51",
+      "type": "call",
+      "functionId": "f8"
+     },
+     {
+      "id": "b52",
+      "type": "call",
+      "functionId": "f6"
+     },
+     {
+      "id": "b53",
+      "type": "call",
+      "functionId": "f7"
+     },
+     {
+      "id": "b54",
+      "type": "call",
+      "functionId": "f6"
+     }
+    ],
+    "functions": [
+     {
+      "id": "f6",
+      "name": "Ряд",
+      "body": [
+       {
+        "id": "b39",
+        "type": "forward"
+       },
+       {
+        "id": "b40",
+        "type": "forward"
+       },
+       {
+        "id": "b41",
+        "type": "light"
+       }
+      ]
+     },
+     {
+      "id": "f7",
+      "name": "Розворот праворуч",
+      "body": [
+       {
+        "id": "b42",
+        "type": "right"
+       },
+       {
+        "id": "b43",
+        "type": "forward"
+       },
+       {
+        "id": "b44",
+        "type": "right"
+       }
+      ]
+     },
+     {
+      "id": "f8",
+      "name": "Розворот ліворуч",
+      "body": [
+       {
+        "id": "b45",
+        "type": "left"
+       },
+       {
+        "id": "b46",
+        "type": "forward"
+       },
+       {
+        "id": "b47",
+        "type": "left"
+       }
+      ]
+     }
+    ]
+   }
+  },
+  "pletinnya": {
+   "night": {
+    "program": [
+     {
+      "id": "b64",
+      "type": "call",
+      "functionId": "f9"
+     },
+     {
+      "id": "b65",
+      "type": "call",
+      "functionId": "f10"
+     },
+     {
+      "id": "b66",
+      "type": "call",
+      "functionId": "f9"
+     },
+     {
+      "id": "b67",
+      "type": "call",
+      "functionId": "f10"
+     },
+     {
+      "id": "b68",
+      "type": "call",
+      "functionId": "f9"
+     },
+     {
+      "id": "b69",
+      "type": "call",
+      "functionId": "f11"
+     },
+     {
+      "id": "b70",
+      "type": "call",
+      "functionId": "f9"
+     }
+    ],
+    "functions": [
+     {
+      "id": "f9",
+      "name": "Дві плитки",
+      "body": [
+       {
+        "id": "b55",
+        "type": "forward"
+       },
+       {
+        "id": "b56",
+        "type": "forward"
+       },
+       {
+        "id": "b57",
+        "type": "light"
+       }
+      ]
+     },
+     {
+      "id": "f10",
+      "name": "Крок праворуч",
+      "body": [
+       {
+        "id": "b58",
+        "type": "right"
+       },
+       {
+        "id": "b59",
+        "type": "forward"
+       },
+       {
+        "id": "b60",
+        "type": "left"
+       }
+      ]
+     },
+     {
+      "id": "f11",
+      "name": "Крок ліворуч",
+      "body": [
+       {
+        "id": "b61",
+        "type": "left"
+       },
+       {
+        "id": "b62",
+        "type": "forward"
+       },
+       {
+        "id": "b63",
+        "type": "right"
+       }
+      ]
+     }
+    ]
+   },
+   "day": {
+    "program": [
+     {
+      "id": "b64",
+      "type": "call",
+      "functionId": "f9"
+     },
+     {
+      "id": "b65",
+      "type": "call",
+      "functionId": "f10"
+     },
+     {
+      "id": "b66",
+      "type": "call",
+      "functionId": "f9"
+     },
+     {
+      "id": "b67",
+      "type": "call",
+      "functionId": "f10"
+     },
+     {
+      "id": "b68",
+      "type": "call",
+      "functionId": "f9"
+     },
+     {
+      "id": "b69",
+      "type": "call",
+      "functionId": "f11"
+     },
+     {
+      "id": "b70",
+      "type": "call",
+      "functionId": "f9"
+     }
+    ],
+    "functions": [
+     {
+      "id": "f9",
+      "name": "Дві плитки",
+      "body": [
+       {
+        "id": "b55",
+        "type": "forward"
+       },
+       {
+        "id": "b56",
+        "type": "forward"
+       },
+       {
+        "id": "b57",
+        "type": "light"
+       }
+      ]
+     },
+     {
+      "id": "f10",
+      "name": "Крок праворуч",
+      "body": [
+       {
+        "id": "b58",
+        "type": "right"
+       },
+       {
+        "id": "b59",
+        "type": "forward"
+       },
+       {
+        "id": "b60",
+        "type": "left"
+       }
+      ]
+     },
+     {
+      "id": "f11",
+      "name": "Крок ліворуч",
+      "body": [
+       {
+        "id": "b61",
+        "type": "left"
+       },
+       {
+        "id": "b62",
+        "type": "forward"
+       },
+       {
+        "id": "b63",
+        "type": "right"
+       }
+      ]
+     }
+    ]
+   }
+  },
+  "riad-lamp-u-tsykli": {
+   "night": {
+    "program": [
+     {
+      "id": "b80",
+      "type": "call",
+      "functionId": "f12"
+     },
+     {
+      "id": "b81",
+      "type": "call",
+      "functionId": "f13"
+     },
+     {
+      "id": "b82",
+      "type": "call",
+      "functionId": "f12"
+     },
+     {
+      "id": "b83",
+      "type": "call",
+      "functionId": "f14"
+     },
+     {
+      "id": "b84",
+      "type": "call",
+      "functionId": "f12"
+     },
+     {
+      "id": "b85",
+      "type": "call",
+      "functionId": "f13"
+     },
+     {
+      "id": "b86",
+      "type": "call",
+      "functionId": "f12"
+     }
+    ],
+    "functions": [
+     {
+      "id": "f12",
+      "name": "Ряд ламп",
+      "body": [
+       {
+        "id": "b73",
+        "type": "loop",
+        "times": 3,
+        "body": [
+         {
+          "id": "b71",
+          "type": "forward"
+         },
+         {
+          "id": "b72",
+          "type": "light"
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "id": "f13",
+      "name": "Розворот праворуч",
+      "body": [
+       {
+        "id": "b74",
+        "type": "right"
+       },
+       {
+        "id": "b75",
+        "type": "forward"
+       },
+       {
+        "id": "b76",
+        "type": "right"
+       }
+      ]
+     },
+     {
+      "id": "f14",
+      "name": "Розворот ліворуч",
+      "body": [
+       {
+        "id": "b77",
+        "type": "left"
+       },
+       {
+        "id": "b78",
+        "type": "forward"
+       },
+       {
+        "id": "b79",
+        "type": "left"
+       }
+      ]
+     }
+    ]
+   },
+   "day": {
+    "program": [
+     {
+      "id": "b80",
+      "type": "call",
+      "functionId": "f12"
+     },
+     {
+      "id": "b81",
+      "type": "call",
+      "functionId": "f13"
+     },
+     {
+      "id": "b82",
+      "type": "call",
+      "functionId": "f12"
+     },
+     {
+      "id": "b83",
+      "type": "call",
+      "functionId": "f14"
+     },
+     {
+      "id": "b84",
+      "type": "call",
+      "functionId": "f12"
+     },
+     {
+      "id": "b85",
+      "type": "call",
+      "functionId": "f13"
+     },
+     {
+      "id": "b86",
+      "type": "call",
+      "functionId": "f12"
+     }
+    ],
+    "functions": [
+     {
+      "id": "f12",
+      "name": "Ряд ламп",
+      "body": [
+       {
+        "id": "b73",
+        "type": "loop",
+        "times": 3,
+        "body": [
+         {
+          "id": "b71",
+          "type": "forward"
+         },
+         {
+          "id": "b72",
+          "type": "light"
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "id": "f13",
+      "name": "Розворот праворуч",
+      "body": [
+       {
+        "id": "b74",
+        "type": "right"
+       },
+       {
+        "id": "b75",
+        "type": "forward"
+       },
+       {
+        "id": "b76",
+        "type": "right"
+       }
+      ]
+     },
+     {
+      "id": "f14",
+      "name": "Розворот ліворуч",
+      "body": [
+       {
+        "id": "b77",
+        "type": "left"
+       },
+       {
+        "id": "b78",
+        "type": "forward"
+       },
+       {
+        "id": "b79",
+        "type": "left"
+       }
+      ]
+     }
+    ]
+   }
+  },
+  "try-kvartaly": {
+   "night": {
+    "program": [
+     {
+      "id": "b96",
+      "type": "call",
+      "functionId": "f15"
+     },
+     {
+      "id": "b97",
+      "type": "call",
+      "functionId": "f16"
+     },
+     {
+      "id": "b98",
+      "type": "call",
+      "functionId": "f15"
+     },
+     {
+      "id": "b99",
+      "type": "call",
+      "functionId": "f16"
+     },
+     {
+      "id": "b100",
+      "type": "call",
+      "functionId": "f15"
+     }
+    ],
+    "functions": [
+     {
+      "id": "f15",
+      "name": "Квартал",
+      "body": [
+       {
+        "id": "b91",
+        "type": "loop",
+        "times": 4,
+        "body": [
+         {
+          "id": "b87",
+          "type": "forward"
+         },
+         {
+          "id": "b88",
+          "type": "forward"
+         },
+         {
+          "id": "b89",
+          "type": "light"
+         },
+         {
+          "id": "b90",
+          "type": "right"
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "id": "f16",
+      "name": "До наступного",
+      "body": [
+       {
+        "id": "b92",
+        "type": "right"
+       },
+       {
+        "id": "b94",
+        "type": "loop",
+        "times": 3,
+        "body": [
+         {
+          "id": "b93",
+          "type": "forward"
+         }
+        ]
+       },
+       {
+        "id": "b95",
+        "type": "left"
+       }
+      ]
+     }
+    ]
+   },
+   "day": {
+    "program": [
+     {
+      "id": "b96",
+      "type": "call",
+      "functionId": "f15"
+     },
+     {
+      "id": "b97",
+      "type": "call",
+      "functionId": "f16"
+     },
+     {
+      "id": "b98",
+      "type": "call",
+      "functionId": "f15"
+     },
+     {
+      "id": "b99",
+      "type": "call",
+      "functionId": "f16"
+     },
+     {
+      "id": "b100",
+      "type": "call",
+      "functionId": "f15"
+     }
+    ],
+    "functions": [
+     {
+      "id": "f15",
+      "name": "Квартал",
+      "body": [
+       {
+        "id": "b91",
+        "type": "loop",
+        "times": 4,
+        "body": [
+         {
+          "id": "b87",
+          "type": "forward"
+         },
+         {
+          "id": "b88",
+          "type": "forward"
+         },
+         {
+          "id": "b89",
+          "type": "light"
+         },
+         {
+          "id": "b90",
+          "type": "right"
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "id": "f16",
+      "name": "До наступного",
+      "body": [
+       {
+        "id": "b92",
+        "type": "right"
+       },
+       {
+        "id": "b94",
+        "type": "loop",
+        "times": 3,
+        "body": [
+         {
+          "id": "b93",
+          "type": "forward"
+         }
+        ]
+       },
+       {
+        "id": "b95",
+        "type": "left"
+       }
+      ]
+     }
+    ]
+   }
+  },
+  "funktsiya-u-funktsiyi": {
+   "night": {
+    "program": [
+     {
+      "id": "b114",
+      "type": "call",
+      "functionId": "f18"
+     },
+     {
+      "id": "b115",
+      "type": "call",
+      "functionId": "f19"
+     },
+     {
+      "id": "b116",
+      "type": "call",
+      "functionId": "f18"
+     },
+     {
+      "id": "b117",
+      "type": "call",
+      "functionId": "f19"
+     },
+     {
+      "id": "b118",
+      "type": "call",
+      "functionId": "f18"
+     }
+    ],
+    "functions": [
+     {
+      "id": "f17",
+      "name": "Кут",
+      "body": [
+       {
+        "id": "b101",
+        "type": "forward"
+       },
+       {
+        "id": "b102",
+        "type": "forward"
+       },
+       {
+        "id": "b103",
+        "type": "light"
+       },
+       {
+        "id": "b104",
+        "type": "right"
+       }
+      ]
+     },
+     {
+      "id": "f18",
+      "name": "Квадрат",
+      "body": [
+       {
+        "id": "b105",
+        "type": "call",
+        "functionId": "f17"
+       },
+       {
+        "id": "b106",
+        "type": "call",
+        "functionId": "f17"
+       },
+       {
+        "id": "b107",
+        "type": "call",
+        "functionId": "f17"
+       },
+       {
+        "id": "b108",
+        "type": "call",
+        "functionId": "f17"
+       }
+      ]
+     },
+     {
+      "id": "f19",
+      "name": "Перейти",
+      "body": [
+       {
+        "id": "b109",
+        "type": "right"
+       },
+       {
+        "id": "b110",
+        "type": "forward"
+       },
+       {
+        "id": "b111",
+        "type": "forward"
+       },
+       {
+        "id": "b112",
+        "type": "forward"
+       },
+       {
+        "id": "b113",
+        "type": "left"
+       }
+      ]
+     }
+    ]
+   },
+   "day": {
+    "program": [
+     {
+      "id": "b114",
+      "type": "call",
+      "functionId": "f18"
+     },
+     {
+      "id": "b115",
+      "type": "call",
+      "functionId": "f19"
+     },
+     {
+      "id": "b116",
+      "type": "call",
+      "functionId": "f18"
+     },
+     {
+      "id": "b117",
+      "type": "call",
+      "functionId": "f19"
+     },
+     {
+      "id": "b118",
+      "type": "call",
+      "functionId": "f18"
+     }
+    ],
+    "functions": [
+     {
+      "id": "f17",
+      "name": "Кут",
+      "body": [
+       {
+        "id": "b101",
+        "type": "forward"
+       },
+       {
+        "id": "b102",
+        "type": "forward"
+       },
+       {
+        "id": "b103",
+        "type": "light"
+       },
+       {
+        "id": "b104",
+        "type": "right"
+       }
+      ]
+     },
+     {
+      "id": "f18",
+      "name": "Квадрат",
+      "body": [
+       {
+        "id": "b105",
+        "type": "call",
+        "functionId": "f17"
+       },
+       {
+        "id": "b106",
+        "type": "call",
+        "functionId": "f17"
+       },
+       {
+        "id": "b107",
+        "type": "call",
+        "functionId": "f17"
+       },
+       {
+        "id": "b108",
+        "type": "call",
+        "functionId": "f17"
+       }
+      ]
+     },
+     {
+      "id": "f19",
+      "name": "Перейти",
+      "body": [
+       {
+        "id": "b109",
+        "type": "right"
+       },
+       {
+        "id": "b110",
+        "type": "forward"
+       },
+       {
+        "id": "b111",
+        "type": "forward"
+       },
+       {
+        "id": "b112",
+        "type": "forward"
+       },
+       {
+        "id": "b113",
+        "type": "left"
+       }
+      ]
+     }
+    ]
+   }
+  },
+  "try-vershyny": {
+   "night": {
+    "program": [
+     {
+      "id": "b125",
+      "type": "call",
+      "functionId": "f21"
+     },
+     {
+      "id": "b126",
+      "type": "right"
+     },
+     {
+      "id": "b127",
+      "type": "call",
+      "functionId": "f21"
+     },
+     {
+      "id": "b128",
+      "type": "right"
+     },
+     {
+      "id": "b129",
+      "type": "call",
+      "functionId": "f21"
+     }
+    ],
+    "functions": [
+     {
+      "id": "f20",
+      "name": "Два стрибки",
+      "body": [
+       {
+        "id": "b119",
+        "type": "jump"
+       },
+       {
+        "id": "b120",
+        "type": "jump"
+       }
+      ]
+     },
+     {
+      "id": "f21",
+      "name": "Вершина",
+      "body": [
+       {
+        "id": "b121",
+        "type": "call",
+        "functionId": "f20"
+       },
+       {
+        "id": "b122",
+        "type": "light"
+       },
+       {
+        "id": "b123",
+        "type": "call",
+        "functionId": "f20"
+       },
+       {
+        "id": "b124",
+        "type": "light"
+       }
+      ]
+     }
+    ]
+   },
+   "day": {
+    "program": [
+     {
+      "id": "b125",
+      "type": "call",
+      "functionId": "f21"
+     },
+     {
+      "id": "b126",
+      "type": "right"
+     },
+     {
+      "id": "b127",
+      "type": "call",
+      "functionId": "f21"
+     },
+     {
+      "id": "b128",
+      "type": "right"
+     },
+     {
+      "id": "b129",
+      "type": "call",
+      "functionId": "f21"
+     }
+    ],
+    "functions": [
+     {
+      "id": "f20",
+      "name": "Два стрибки",
+      "body": [
+       {
+        "id": "b119",
+        "type": "jump"
+       },
+       {
+        "id": "b120",
+        "type": "jump"
+       }
+      ]
+     },
+     {
+      "id": "f21",
+      "name": "Вершина",
+      "body": [
+       {
+        "id": "b121",
+        "type": "call",
+        "functionId": "f20"
+       },
+       {
+        "id": "b122",
+        "type": "light"
+       },
+       {
+        "id": "b123",
+        "type": "call",
+        "functionId": "f20"
+       },
+       {
+        "id": "b124",
+        "type": "light"
+       }
+      ]
+     }
+    ]
+   }
+  },
+  "girskyy-khrebet": {
+   "night": {
+    "program": [
+     {
+      "id": "b133",
+      "type": "call",
+      "functionId": "f22"
+     },
+     {
+      "id": "b134",
+      "type": "right"
+     },
+     {
+      "id": "b135",
+      "type": "call",
+      "functionId": "f22"
+     },
+     {
+      "id": "b136",
+      "type": "left"
+     },
+     {
+      "id": "b137",
+      "type": "call",
+      "functionId": "f22"
+     },
+     {
+      "id": "b138",
+      "type": "right"
+     },
+     {
+      "id": "b139",
+      "type": "call",
+      "functionId": "f22"
+     }
+    ],
+    "functions": [
+     {
+      "id": "f22",
+      "name": "Три сходинки",
+      "body": [
+       {
+        "id": "b132",
+        "type": "loop",
+        "times": 3,
+        "body": [
+         {
+          "id": "b130",
+          "type": "jump"
+         },
+         {
+          "id": "b131",
+          "type": "light"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "day": {
+    "program": [
+     {
+      "id": "b133",
+      "type": "call",
+      "functionId": "f22"
+     },
+     {
+      "id": "b134",
+      "type": "right"
+     },
+     {
+      "id": "b135",
+      "type": "call",
+      "functionId": "f22"
+     },
+     {
+      "id": "b136",
+      "type": "left"
+     },
+     {
+      "id": "b137",
+      "type": "call",
+      "functionId": "f22"
+     },
+     {
+      "id": "b138",
+      "type": "right"
+     },
+     {
+      "id": "b139",
+      "type": "call",
+      "functionId": "f22"
+     }
+    ],
+    "functions": [
+     {
+      "id": "f22",
+      "name": "Три сходинки",
+      "body": [
+       {
+        "id": "b132",
+        "type": "loop",
+        "times": 3,
+        "body": [
+         {
+          "id": "b130",
+          "type": "jump"
+         },
+         {
+          "id": "b131",
+          "type": "light"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  },
+  "try-prolity": {
+   "night": {
+    "program": [
+     {
+      "id": "b145",
+      "type": "call",
+      "functionId": "f24"
+     },
+     {
+      "id": "b146",
+      "type": "right"
+     },
+     {
+      "id": "b147",
+      "type": "call",
+      "functionId": "f24"
+     },
+     {
+      "id": "b148",
+      "type": "right"
+     },
+     {
+      "id": "b149",
+      "type": "call",
+      "functionId": "f24"
+     }
+    ],
+    "functions": [
+     {
+      "id": "f23",
+      "name": "Крок із лампою",
+      "body": [
+       {
+        "id": "b140",
+        "type": "jump"
+       },
+       {
+        "id": "b141",
+        "type": "light"
+       }
+      ]
+     },
+     {
+      "id": "f24",
+      "name": "Проліт",
+      "body": [
+       {
+        "id": "b142",
+        "type": "call",
+        "functionId": "f23"
+       },
+       {
+        "id": "b143",
+        "type": "call",
+        "functionId": "f23"
+       },
+       {
+        "id": "b144",
+        "type": "call",
+        "functionId": "f23"
+       }
+      ]
+     }
+    ]
+   },
+   "day": {
+    "program": [
+     {
+      "id": "b145",
+      "type": "call",
+      "functionId": "f24"
+     },
+     {
+      "id": "b146",
+      "type": "right"
+     },
+     {
+      "id": "b147",
+      "type": "call",
+      "functionId": "f24"
+     },
+     {
+      "id": "b148",
+      "type": "right"
+     },
+     {
+      "id": "b149",
+      "type": "call",
+      "functionId": "f24"
+     }
+    ],
+    "functions": [
+     {
+      "id": "f23",
+      "name": "Крок із лампою",
+      "body": [
+       {
+        "id": "b140",
+        "type": "jump"
+       },
+       {
+        "id": "b141",
+        "type": "light"
+       }
+      ]
+     },
+     {
+      "id": "f24",
+      "name": "Проліт",
+      "body": [
+       {
+        "id": "b142",
+        "type": "call",
+        "functionId": "f23"
+       },
+       {
+        "id": "b143",
+        "type": "call",
+        "functionId": "f23"
+       },
+       {
+        "id": "b144",
+        "type": "call",
+        "functionId": "f23"
+       }
+      ]
+     }
+    ]
+   }
+  },
+  "remontnyy-kvartal": {
+   "night": {
+    "program": [
+     {
+      "id": "b157",
+      "type": "call",
+      "functionId": "f26"
+     },
+     {
+      "id": "b158",
+      "type": "call",
+      "functionId": "f26"
+     },
+     {
+      "id": "b159",
+      "type": "call",
+      "functionId": "f26"
+     },
+     {
+      "id": "b160",
+      "type": "call",
+      "functionId": "f26"
+     }
+    ],
+    "functions": [
+     {
+      "id": "f25",
+      "name": "Взяти й полагодити",
+      "body": [
+       {
+        "id": "b150",
+        "type": "forward"
+       },
+       {
+        "id": "b151",
+        "type": "take"
+       },
+       {
+        "id": "b152",
+        "type": "forward"
+       },
+       {
+        "id": "b153",
+        "type": "fix"
+       },
+       {
+        "id": "b154",
+        "type": "light"
+       }
+      ]
+     },
+     {
+      "id": "f26",
+      "name": "Сторона",
+      "body": [
+       {
+        "id": "b155",
+        "type": "call",
+        "functionId": "f25"
+       },
+       {
+        "id": "b156",
+        "type": "right"
+       }
+      ]
+     }
+    ]
+   },
+   "day": {
+    "program": [
+     {
+      "id": "b157",
+      "type": "call",
+      "functionId": "f26"
+     },
+     {
+      "id": "b158",
+      "type": "call",
+      "functionId": "f26"
+     },
+     {
+      "id": "b159",
+      "type": "call",
+      "functionId": "f26"
+     },
+     {
+      "id": "b160",
+      "type": "call",
+      "functionId": "f26"
+     }
+    ],
+    "functions": [
+     {
+      "id": "f25",
+      "name": "Взяти й полагодити",
+      "body": [
+       {
+        "id": "b161",
+        "type": "forward"
+       },
+       {
+        "id": "b162",
+        "type": "take"
+       },
+       {
+        "id": "b163",
+        "type": "forward"
+       },
+       {
+        "id": "b164",
+        "type": "fix"
+       }
+      ]
+     },
+     {
+      "id": "f26",
+      "name": "Сторона",
+      "body": [
+       {
+        "id": "b155",
+        "type": "call",
+        "functionId": "f25"
+       },
+       {
+        "id": "b156",
+        "type": "right"
+       }
+      ]
+     }
+    ]
+   }
+  },
+  "remontna-brygada-funktsiy": {
+   "night": {
+    "program": [
+     {
+      "id": "b170",
+      "type": "call",
+      "functionId": "f27"
+     },
+     {
+      "id": "b171",
+      "type": "call",
+      "functionId": "f27"
+     },
+     {
+      "id": "b172",
+      "type": "call",
+      "functionId": "f28"
+     },
+     {
+      "id": "b173",
+      "type": "call",
+      "functionId": "f28"
+     },
+     {
+      "id": "b174",
+      "type": "right"
+     },
+     {
+      "id": "b175",
+      "type": "call",
+      "functionId": "f27"
+     },
+     {
+      "id": "b176",
+      "type": "call",
+      "functionId": "f28"
+     }
+    ],
+    "functions": [
+     {
+      "id": "f27",
+      "name": "Збір",
+      "body": [
+       {
+        "id": "b165",
+        "type": "forward"
+       },
+       {
+        "id": "b166",
+        "type": "take"
+       }
+      ]
+     },
+     {
+      "id": "f28",
+      "name": "Ремонт",
+      "body": [
+       {
+        "id": "b167",
+        "type": "forward"
+       },
+       {
+        "id": "b168",
+        "type": "fix"
+       },
+       {
+        "id": "b169",
+        "type": "light"
+       }
+      ]
+     }
+    ]
+   },
+   "day": {
+    "program": [
+     {
+      "id": "b170",
+      "type": "call",
+      "functionId": "f27"
+     },
+     {
+      "id": "b171",
+      "type": "call",
+      "functionId": "f27"
+     },
+     {
+      "id": "b172",
+      "type": "call",
+      "functionId": "f28"
+     },
+     {
+      "id": "b173",
+      "type": "call",
+      "functionId": "f28"
+     },
+     {
+      "id": "b174",
+      "type": "right"
+     },
+     {
+      "id": "b175",
+      "type": "call",
+      "functionId": "f27"
+     },
+     {
+      "id": "b176",
+      "type": "call",
+      "functionId": "f28"
+     }
+    ],
+    "functions": [
+     {
+      "id": "f27",
+      "name": "Збір",
+      "body": [
+       {
+        "id": "b165",
+        "type": "forward"
+       },
+       {
+        "id": "b166",
+        "type": "take"
+       }
+      ]
+     },
+     {
+      "id": "f28",
+      "name": "Ремонт",
+      "body": [
+       {
+        "id": "b177",
+        "type": "forward"
+       },
+       {
+        "id": "b178",
+        "type": "fix"
+       }
+      ]
+     }
+    ]
+   }
+  },
+  "kvadrat-bez-tsyklu": {
+   "night": {
+    "program": [
+     {
+      "id": "b183",
+      "type": "call",
+      "functionId": "f29"
+     },
+     {
+      "id": "b184",
+      "type": "right"
+     },
+     {
+      "id": "b185",
+      "type": "call",
+      "functionId": "f29"
+     },
+     {
+      "id": "b186",
+      "type": "right"
+     },
+     {
+      "id": "b187",
+      "type": "call",
+      "functionId": "f29"
+     },
+     {
+      "id": "b188",
+      "type": "right"
+     },
+     {
+      "id": "b189",
+      "type": "call",
+      "functionId": "f29"
+     }
+    ],
+    "functions": [
+     {
+      "id": "f29",
+      "name": "До кінця",
+      "body": [
+       {
+        "id": "b182",
+        "type": "while",
+        "condition": {
+         "kind": "sensor",
+         "sensor": "obstacleAhead",
+         "not": true
+        },
+        "body": [
+         {
+          "id": "b179",
+          "type": "forward"
+         },
+         {
+          "id": "b181",
+          "type": "if",
+          "branches": [
+           {
+            "condition": {
+             "kind": "sensor",
+             "sensor": "onLamp",
+             "not": false
+            },
+            "body": [
+             {
+              "id": "b180",
+              "type": "light"
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "day": {
+    "program": [
+     {
+      "id": "b183",
+      "type": "call",
+      "functionId": "f29"
+     },
+     {
+      "id": "b184",
+      "type": "right"
+     },
+     {
+      "id": "b185",
+      "type": "call",
+      "functionId": "f29"
+     },
+     {
+      "id": "b186",
+      "type": "right"
+     },
+     {
+      "id": "b187",
+      "type": "call",
+      "functionId": "f29"
+     },
+     {
+      "id": "b188",
+      "type": "right"
+     },
+     {
+      "id": "b189",
+      "type": "call",
+      "functionId": "f29"
+     }
+    ],
+    "functions": [
+     {
+      "id": "f29",
+      "name": "До кінця",
+      "body": [
+       {
+        "id": "b182",
+        "type": "while",
+        "condition": {
+         "kind": "sensor",
+         "sensor": "obstacleAhead",
+         "not": true
+        },
+        "body": [
+         {
+          "id": "b179",
+          "type": "forward"
+         },
+         {
+          "id": "b181",
+          "type": "if",
+          "branches": [
+           {
+            "condition": {
+             "kind": "sensor",
+             "sensor": "onLamp",
+             "not": false
+            },
+            "body": [
+             {
+              "id": "b180",
+              "type": "light"
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  },
+  "zmiyka-z-funktsiy": {
+   "night": {
+    "program": [
+     {
+      "id": "b198",
+      "type": "call",
+      "functionId": "f30"
+     },
+     {
+      "id": "b199",
+      "type": "call",
+      "functionId": "f31"
+     },
+     {
+      "id": "b200",
+      "type": "call",
+      "functionId": "f30"
+     },
+     {
+      "id": "b201",
+      "type": "call",
+      "functionId": "f31"
+     },
+     {
+      "id": "b202",
+      "type": "call",
+      "functionId": "f30"
+     },
+     {
+      "id": "b203",
+      "type": "call",
+      "functionId": "f31"
+     },
+     {
+      "id": "b204",
+      "type": "call",
+      "functionId": "f30"
+     },
+     {
+      "id": "b205",
+      "type": "call",
+      "functionId": "f31"
+     },
+     {
+      "id": "b206",
+      "type": "call",
+      "functionId": "f30"
+     }
+    ],
+    "functions": [
+     {
+      "id": "f30",
+      "name": "Пряма ділянка",
+      "body": [
+       {
+        "id": "b193",
+        "type": "while",
+        "condition": {
+         "kind": "sensor",
+         "sensor": "obstacleAhead",
+         "not": true
+        },
+        "body": [
+         {
+          "id": "b190",
+          "type": "forward"
+         },
+         {
+          "id": "b192",
+          "type": "if",
+          "branches": [
+           {
+            "condition": {
+             "kind": "sensor",
+             "sensor": "onLamp",
+             "not": false
+            },
+            "body": [
+             {
+              "id": "b191",
+              "type": "light"
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "id": "f31",
+      "name": "Поворот",
+      "body": [
+       {
+        "id": "b194",
+        "type": "right"
+       },
+       {
+        "id": "b197",
+        "type": "if",
+        "branches": [
+         {
+          "condition": {
+           "kind": "sensor",
+           "sensor": "obstacleAhead",
+           "not": false
+          },
+          "body": [
+           {
+            "id": "b195",
+            "type": "left"
+           },
+           {
+            "id": "b196",
+            "type": "left"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "day": {
+    "program": [
+     {
+      "id": "b198",
+      "type": "call",
+      "functionId": "f30"
+     },
+     {
+      "id": "b199",
+      "type": "call",
+      "functionId": "f31"
+     },
+     {
+      "id": "b200",
+      "type": "call",
+      "functionId": "f30"
+     },
+     {
+      "id": "b201",
+      "type": "call",
+      "functionId": "f31"
+     },
+     {
+      "id": "b202",
+      "type": "call",
+      "functionId": "f30"
+     },
+     {
+      "id": "b203",
+      "type": "call",
+      "functionId": "f31"
+     },
+     {
+      "id": "b204",
+      "type": "call",
+      "functionId": "f30"
+     },
+     {
+      "id": "b205",
+      "type": "call",
+      "functionId": "f31"
+     },
+     {
+      "id": "b206",
+      "type": "call",
+      "functionId": "f30"
+     }
+    ],
+    "functions": [
+     {
+      "id": "f30",
+      "name": "Пряма ділянка",
+      "body": [
+       {
+        "id": "b193",
+        "type": "while",
+        "condition": {
+         "kind": "sensor",
+         "sensor": "obstacleAhead",
+         "not": true
+        },
+        "body": [
+         {
+          "id": "b190",
+          "type": "forward"
+         },
+         {
+          "id": "b192",
+          "type": "if",
+          "branches": [
+           {
+            "condition": {
+             "kind": "sensor",
+             "sensor": "onLamp",
+             "not": false
+            },
+            "body": [
+             {
+              "id": "b191",
+              "type": "light"
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "id": "f31",
+      "name": "Поворот",
+      "body": [
+       {
+        "id": "b194",
+        "type": "right"
+       },
+       {
+        "id": "b197",
+        "type": "if",
+        "branches": [
+         {
+          "condition": {
+           "kind": "sensor",
+           "sensor": "obstacleAhead",
+           "not": false
+          },
+          "body": [
+           {
+            "id": "b195",
+            "type": "left"
+           },
+           {
+            "id": "b196",
+            "type": "left"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  },
+  "remontni-posylky": {
+   "night": {
+    "program": [
+     {
+      "id": "b220",
+      "type": "call",
+      "functionId": "f32"
+     },
+     {
+      "id": "b221",
+      "type": "call",
+      "functionId": "f32"
+     },
+     {
+      "id": "b222",
+      "type": "call",
+      "functionId": "f32"
+     }
+    ],
+    "functions": [
+     {
+      "id": "f32",
+      "name": "Обслуговування",
+      "body": [
+       {
+        "id": "b210",
+        "type": "while",
+        "condition": {
+         "kind": "sensor",
+         "sensor": "onLamp",
+         "not": true
+        },
+        "body": [
+         {
+          "id": "b207",
+          "type": "forward"
+         },
+         {
+          "id": "b209",
+          "type": "if",
+          "branches": [
+           {
+            "condition": {
+             "kind": "sensor",
+             "sensor": "onLamp",
+             "not": true
+            },
+            "body": [
+             {
+              "id": "b208",
+              "type": "take"
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "id": "b211",
+        "type": "fix"
+       },
+       {
+        "id": "b212",
+        "type": "light"
+       },
+       {
+        "id": "b213",
+        "type": "forward"
+       }
+      ]
+     }
+    ]
+   },
+   "day": {
+    "program": [
+     {
+      "id": "b220",
+      "type": "call",
+      "functionId": "f32"
+     },
+     {
+      "id": "b221",
+      "type": "call",
+      "functionId": "f32"
+     },
+     {
+      "id": "b222",
+      "type": "call",
+      "functionId": "f32"
+     }
+    ],
+    "functions": [
+     {
+      "id": "f32",
+      "name": "Обслуговування",
+      "body": [
+       {
+        "id": "b217",
+        "type": "while",
+        "condition": {
+         "kind": "sensor",
+         "sensor": "onLamp",
+         "not": true
+        },
+        "body": [
+         {
+          "id": "b214",
+          "type": "forward"
+         },
+         {
+          "id": "b216",
+          "type": "if",
+          "branches": [
+           {
+            "condition": {
+             "kind": "sensor",
+             "sensor": "onLamp",
+             "not": true
+            },
+            "body": [
+             {
+              "id": "b215",
+              "type": "take"
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "id": "b218",
+        "type": "fix"
+       },
+       {
+        "id": "b219",
+        "type": "forward"
+       }
+      ]
+     }
+    ]
+   }
+  },
+  "ozero-z-funktsiyamy": {
+   "night": {
+    "program": [
+     {
+      "id": "b236",
+      "type": "call",
+      "functionId": "f33"
+     },
+     {
+      "id": "b237",
+      "type": "right"
+     },
+     {
+      "id": "b238",
+      "type": "call",
+      "functionId": "f33"
+     },
+     {
+      "id": "b239",
+      "type": "right"
+     },
+     {
+      "id": "b240",
+      "type": "call",
+      "functionId": "f33"
+     },
+     {
+      "id": "b241",
+      "type": "right"
+     },
+     {
+      "id": "b242",
+      "type": "call",
+      "functionId": "f33"
+     }
+    ],
+    "functions": [
+     {
+      "id": "f33",
+      "name": "Сторона мосту",
+      "body": [
+       {
+        "id": "b229",
+        "type": "while",
+        "condition": {
+         "kind": "sensor",
+         "sensor": "canJump",
+         "not": false
+        },
+        "body": [
+         {
+          "id": "b223",
+          "type": "jump"
+         },
+         {
+          "id": "b228",
+          "type": "if",
+          "branches": [
+           {
+            "condition": {
+             "kind": "sensor",
+             "sensor": "lampShorts",
+             "not": false
+            },
+            "body": [
+             {
+              "id": "b224",
+              "type": "fix"
+             },
+             {
+              "id": "b225",
+              "type": "light"
+             }
+            ]
+           },
+           {
+            "condition": {
+             "kind": "sensor",
+             "sensor": "onLamp",
+             "not": false
+            },
+            "body": [
+             {
+              "id": "b227",
+              "type": "if",
+              "branches": [
+               {
+                "condition": {
+                 "kind": "sensor",
+                 "sensor": "lampLit",
+                 "not": true
+                },
+                "body": [
+                 {
+                  "id": "b226",
+                  "type": "light"
+                 }
+                ]
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "day": {
+    "program": [
+     {
+      "id": "b236",
+      "type": "call",
+      "functionId": "f33"
+     },
+     {
+      "id": "b237",
+      "type": "right"
+     },
+     {
+      "id": "b238",
+      "type": "call",
+      "functionId": "f33"
+     },
+     {
+      "id": "b239",
+      "type": "right"
+     },
+     {
+      "id": "b240",
+      "type": "call",
+      "functionId": "f33"
+     },
+     {
+      "id": "b241",
+      "type": "right"
+     },
+     {
+      "id": "b242",
+      "type": "call",
+      "functionId": "f33"
+     }
+    ],
+    "functions": [
+     {
+      "id": "f33",
+      "name": "Сторона мосту",
+      "body": [
+       {
+        "id": "b235",
+        "type": "while",
+        "condition": {
+         "kind": "sensor",
+         "sensor": "canJump",
+         "not": false
+        },
+        "body": [
+         {
+          "id": "b230",
+          "type": "jump"
+         },
+         {
+          "id": "b234",
+          "type": "if",
+          "branches": [
+           {
+            "condition": {
+             "kind": "sensor",
+             "sensor": "lampShorts",
+             "not": false
+            },
+            "body": [
+             {
+              "id": "b231",
+              "type": "fix"
+             }
+            ]
+           },
+           {
+            "condition": {
+             "kind": "sensor",
+             "sensor": "onLamp",
+             "not": false
+            },
+            "body": [
+             {
+              "id": "b233",
+              "type": "if",
+              "branches": [
+               {
+                "condition": {
+                 "kind": "sensor",
+                 "sensor": "lampLit",
+                 "not": false
+                },
+                "body": [
+                 {
+                  "id": "b232",
+                  "type": "light"
+                 }
+                ]
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  },
+  "nichnyy-obkhid-funktsii": {
+   "night": {
+    "program": [
+     {
+      "id": "b257",
+      "type": "call",
+      "functionId": "f34"
+     },
+     {
+      "id": "b258",
+      "type": "right"
+     },
+     {
+      "id": "b259",
+      "type": "call",
+      "functionId": "f34"
+     },
+     {
+      "id": "b260",
+      "type": "right"
+     },
+     {
+      "id": "b261",
+      "type": "call",
+      "functionId": "f34"
+     },
+     {
+      "id": "b262",
+      "type": "right"
+     },
+     {
+      "id": "b263",
+      "type": "call",
+      "functionId": "f34"
+     }
+    ],
+    "functions": [
+     {
+      "id": "f34",
+      "name": "Сторона кварталу",
+      "body": [
+       {
+        "id": "b249",
+        "type": "while",
+        "condition": {
+         "kind": "sensor",
+         "sensor": "obstacleAhead",
+         "not": true
+        },
+        "body": [
+         {
+          "id": "b243",
+          "type": "forward"
+         },
+         {
+          "id": "b248",
+          "type": "if",
+          "branches": [
+           {
+            "condition": {
+             "kind": "sensor",
+             "sensor": "lampShorts",
+             "not": false
+            },
+            "body": [
+             {
+              "id": "b244",
+              "type": "fix"
+             },
+             {
+              "id": "b245",
+              "type": "light"
+             }
+            ]
+           },
+           {
+            "condition": {
+             "kind": "sensor",
+             "sensor": "onLamp",
+             "not": false
+            },
+            "body": [
+             {
+              "id": "b246",
+              "type": "light"
+             }
+            ]
+           }
+          ],
+          "elseBody": [
+           {
+            "id": "b247",
+            "type": "take"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "day": {
+    "program": [
+     {
+      "id": "b257",
+      "type": "call",
+      "functionId": "f34"
+     },
+     {
+      "id": "b258",
+      "type": "right"
+     },
+     {
+      "id": "b259",
+      "type": "call",
+      "functionId": "f34"
+     },
+     {
+      "id": "b260",
+      "type": "right"
+     },
+     {
+      "id": "b261",
+      "type": "call",
+      "functionId": "f34"
+     },
+     {
+      "id": "b262",
+      "type": "right"
+     },
+     {
+      "id": "b263",
+      "type": "call",
+      "functionId": "f34"
+     }
+    ],
+    "functions": [
+     {
+      "id": "f34",
+      "name": "Сторона кварталу",
+      "body": [
+       {
+        "id": "b256",
+        "type": "while",
+        "condition": {
+         "kind": "sensor",
+         "sensor": "obstacleAhead",
+         "not": true
+        },
+        "body": [
+         {
+          "id": "b250",
+          "type": "forward"
+         },
+         {
+          "id": "b255",
+          "type": "if",
+          "branches": [
+           {
+            "condition": {
+             "kind": "sensor",
+             "sensor": "lampShorts",
+             "not": false
+            },
+            "body": [
+             {
+              "id": "b251",
+              "type": "fix"
+             }
+            ]
+           },
+           {
+            "condition": {
+             "kind": "sensor",
+             "sensor": "onLamp",
+             "not": false
+            },
+            "body": [
+             {
+              "id": "b253",
+              "type": "if",
+              "branches": [
+               {
+                "condition": {
+                 "kind": "sensor",
+                 "sensor": "lampLit",
+                 "not": false
+                },
+                "body": [
+                 {
+                  "id": "b252",
+                  "type": "light"
+                 }
+                ]
+               }
+              ]
+             }
+            ]
+           }
+          ],
+          "elseBody": [
+           {
+            "id": "b254",
+            "type": "take"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  },
+  "spirala-z-funktsiy": {
+   "night": {
+    "program": [
+     {
+      "id": "b282",
+      "type": "call",
+      "functionId": "f36"
+     },
+     {
+      "id": "b283",
+      "type": "call",
+      "functionId": "f36"
+     },
+     {
+      "id": "b284",
+      "type": "call",
+      "functionId": "f36"
+     },
+     {
+      "id": "b285",
+      "type": "call",
+      "functionId": "f36"
+     }
+    ],
+    "functions": [
+     {
+      "id": "f35",
+      "name": "Сторона спіралі",
+      "body": [
+       {
+        "id": "b270",
+        "type": "while",
+        "condition": {
+         "kind": "sensor",
+         "sensor": "obstacleAhead",
+         "not": true
+        },
+        "body": [
+         {
+          "id": "b264",
+          "type": "forward"
+         },
+         {
+          "id": "b269",
+          "type": "if",
+          "branches": [
+           {
+            "condition": {
+             "kind": "sensor",
+             "sensor": "lampShorts",
+             "not": false
+            },
+            "body": [
+             {
+              "id": "b265",
+              "type": "fix"
+             },
+             {
+              "id": "b266",
+              "type": "light"
+             }
+            ]
+           },
+           {
+            "condition": {
+             "kind": "sensor",
+             "sensor": "onLamp",
+             "not": false
+            },
+            "body": [
+             {
+              "id": "b267",
+              "type": "light"
+             }
+            ]
+           }
+          ],
+          "elseBody": [
+           {
+            "id": "b268",
+            "type": "take"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "id": "f36",
+      "name": "Виток",
+      "body": [
+       {
+        "id": "b278",
+        "type": "call",
+        "functionId": "f35"
+       },
+       {
+        "id": "b279",
+        "type": "right"
+       },
+       {
+        "id": "b280",
+        "type": "call",
+        "functionId": "f35"
+       },
+       {
+        "id": "b281",
+        "type": "right"
+       }
+      ]
+     }
+    ]
+   },
+   "day": {
+    "program": [
+     {
+      "id": "b282",
+      "type": "call",
+      "functionId": "f36"
+     },
+     {
+      "id": "b283",
+      "type": "call",
+      "functionId": "f36"
+     },
+     {
+      "id": "b284",
+      "type": "call",
+      "functionId": "f36"
+     },
+     {
+      "id": "b285",
+      "type": "call",
+      "functionId": "f36"
+     }
+    ],
+    "functions": [
+     {
+      "id": "f35",
+      "name": "Сторона спіралі",
+      "body": [
+       {
+        "id": "b277",
+        "type": "while",
+        "condition": {
+         "kind": "sensor",
+         "sensor": "obstacleAhead",
+         "not": true
+        },
+        "body": [
+         {
+          "id": "b271",
+          "type": "forward"
+         },
+         {
+          "id": "b276",
+          "type": "if",
+          "branches": [
+           {
+            "condition": {
+             "kind": "sensor",
+             "sensor": "lampShorts",
+             "not": false
+            },
+            "body": [
+             {
+              "id": "b272",
+              "type": "fix"
+             }
+            ]
+           },
+           {
+            "condition": {
+             "kind": "sensor",
+             "sensor": "onLamp",
+             "not": false
+            },
+            "body": [
+             {
+              "id": "b274",
+              "type": "if",
+              "branches": [
+               {
+                "condition": {
+                 "kind": "sensor",
+                 "sensor": "lampLit",
+                 "not": false
+                },
+                "body": [
+                 {
+                  "id": "b273",
+                  "type": "light"
+                 }
+                ]
+               }
+              ]
+             }
+            ]
+           }
+          ],
+          "elseBody": [
+           {
+            "id": "b275",
+            "type": "take"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "id": "f36",
+      "name": "Виток",
+      "body": [
+       {
+        "id": "b278",
+        "type": "call",
+        "functionId": "f35"
+       },
+       {
+        "id": "b279",
+        "type": "right"
+       },
+       {
+        "id": "b280",
+        "type": "call",
+        "functionId": "f35"
+       },
+       {
+        "id": "b281",
+        "type": "right"
+       }
+      ]
+     }
+    ]
+   }
+  }
+ }
+}
