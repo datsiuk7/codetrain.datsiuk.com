@@ -1,0 +1,393 @@
+{
+  "id": "idu-do-likhtarya",
+  "name": "Іду до ліхтаря",
+  "description": "Ліхтар стоїть десь посеред алеї, а алея йде далі. Умова для «Поки» може бути не лише про перешкоди.",
+  "descriptionNight": "Іди вперед, поки не опинишся біля ліхтаря, і запали його.",
+  "descriptionDay": "Іди вперед, поки не опинишся біля ліхтаря, і вимкни його.",
+  "category": "lists",
+  "difficulty": 1,
+  "width": 3,
+  "depth": 8,
+  "start": {
+    "x": 1,
+    "z": 7,
+    "dir": 0
+  },
+  "allowed": [
+    "forward",
+    "light",
+    "while"
+  ],
+  "allowElif": false,
+  "allowElse": false,
+  "allowedSensors": [
+    "onLamp"
+  ],
+  "hints": [
+    {
+      "text": "Цикл крокує, доки умова «НЕ Тут є ліхтар чи будинок» істинна, і зупиняється просто на ліхтарі.",
+      "textEn": "The loop steps while the condition \"NOT There is a lamp or house here\" is true and stops right on the lamp.",
+      "target": "command:while"
+    }
+  ],
+  "limit": 3,
+  "repairKits": 0,
+  "cells": [
+    [
+      {
+        "height": 0,
+        "tree": false,
+        "lamp": false,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      },
+      {
+        "height": 0,
+        "tree": false,
+        "lamp": false,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      },
+      {
+        "height": 0,
+        "tree": false,
+        "lamp": false,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": true,
+        "rock": false,
+        "box": false
+      }
+    ],
+    [
+      {
+        "height": 0,
+        "tree": false,
+        "lamp": false,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      },
+      {
+        "height": 0,
+        "tree": false,
+        "lamp": false,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      },
+      {
+        "height": 0,
+        "tree": false,
+        "lamp": false,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      }
+    ],
+    [
+      {
+        "height": 0,
+        "tree": false,
+        "lamp": false,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      },
+      {
+        "height": 0,
+        "tree": false,
+        "lamp": true,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      },
+      {
+        "height": 0,
+        "tree": false,
+        "lamp": false,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      }
+    ],
+    [
+      {
+        "height": 0,
+        "tree": false,
+        "lamp": false,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      },
+      {
+        "height": 0,
+        "tree": false,
+        "lamp": false,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      },
+      {
+        "height": 0,
+        "tree": false,
+        "lamp": false,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": true,
+        "box": false
+      }
+    ],
+    [
+      {
+        "height": 0,
+        "tree": false,
+        "lamp": false,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      },
+      {
+        "height": 0,
+        "tree": false,
+        "lamp": false,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      },
+      {
+        "height": 0,
+        "tree": false,
+        "lamp": false,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      }
+    ],
+    [
+      {
+        "height": 0,
+        "tree": true,
+        "lamp": false,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      },
+      {
+        "height": 0,
+        "tree": false,
+        "lamp": false,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      },
+      {
+        "height": 0,
+        "tree": false,
+        "lamp": false,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      }
+    ],
+    [
+      {
+        "height": 0,
+        "tree": false,
+        "lamp": false,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      },
+      {
+        "height": 0,
+        "tree": false,
+        "lamp": false,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      },
+      {
+        "height": 0,
+        "tree": false,
+        "lamp": false,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      }
+    ],
+    [
+      {
+        "height": 0,
+        "tree": true,
+        "lamp": false,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      },
+      {
+        "height": 0,
+        "tree": false,
+        "lamp": false,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      },
+      {
+        "height": 0,
+        "tree": false,
+        "lamp": false,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": true,
+        "rock": false,
+        "box": false
+      }
+    ]
+  ],
+  "nameEn": "Heading to the Lamp",
+  "descriptionNightEn": "Move forward until you reach the lamp, then light it.",
+  "descriptionEn": "The lamp stands somewhere in the middle of the alley, and the alley goes on. The condition for \"While\" can be about more than obstacles.",
+  "descriptionDayEn": "Move forward until you reach the lamp, then turn it off."
+}

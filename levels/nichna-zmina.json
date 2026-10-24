@@ -1,0 +1,224 @@
+{
+  "id": "nichna-zmina",
+  "name": "Нічна зміна",
+  "description": "Кільцева доріжка навколо клумби. Тут і іскристі ліхтарі, і ліхтарі без лампочок, і речі на землі. Один цикл — одна повна зміна.",
+  "descriptionNight": "Обійди доріжку за 9 кроків: повертай праворуч біля краю поля. Іскристий ліхтар полагодь і запали, інший ліхтар запали, а на плитках без ліхтаря візьми те, що лежить.",
+  "descriptionDay": "Обійди доріжку за 9 кроків: повертай праворуч біля краю поля. Іскристий ліхтар лише полагодь, світний вимкни, ліхтарі без лампочок не чіпай, а на вільних плитках візьми те, що лежить.",
+  "category": "functions",
+  "difficulty": 4,
+  "width": 3,
+  "depth": 4,
+  "start": {
+    "x": 0,
+    "z": 3,
+    "dir": 0
+  },
+  "allowed": [
+    "forward",
+    "right",
+    "light",
+    "take",
+    "fix",
+    "loop",
+    "if"
+  ],
+  "allowElif": true,
+  "allowElse": true,
+  "allowedSensors": [
+    "obstacleAhead",
+    "lampShorts",
+    "onLamp",
+    "lampLit"
+  ],
+  "hints": [
+    {
+      "text": "Збирай ремкомплекти та лампочки до того, як вони знадобляться: порядок плиток уже підібрано правильно.",
+      "textEn": "Collect repair kits and bulbs before you need them: the order of the tiles has been arranged correctly.",
+      "target": "scene"
+    }
+  ],
+  "limit": 9,
+  "repairKits": 0,
+  "cells": [
+    [
+      {
+        "height": 0,
+        "tree": false,
+        "lamp": true,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      },
+      {
+        "height": 0,
+        "tree": false,
+        "lamp": false,
+        "house": false,
+        "bulb": true,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      },
+      {
+        "height": 0,
+        "tree": false,
+        "lamp": true,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": true,
+        "bush": false,
+        "rock": false,
+        "box": false
+      }
+    ],
+    [
+      {
+        "height": 0,
+        "tree": false,
+        "lamp": true,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": true,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      },
+      {
+        "height": 0,
+        "tree": true,
+        "lamp": false,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      },
+      {
+        "height": 0,
+        "tree": false,
+        "lamp": false,
+        "house": false,
+        "bulb": false,
+        "kit": true,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      }
+    ],
+    [
+      {
+        "height": 0,
+        "tree": false,
+        "lamp": false,
+        "house": false,
+        "bulb": false,
+        "kit": true,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      },
+      {
+        "height": 0,
+        "tree": false,
+        "lamp": false,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": true,
+        "rock": false,
+        "box": false
+      },
+      {
+        "height": 0,
+        "tree": false,
+        "lamp": true,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": true,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      }
+    ],
+    [
+      {
+        "height": 0,
+        "tree": false,
+        "lamp": false,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      },
+      {
+        "height": 0,
+        "tree": false,
+        "lamp": true,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      },
+      {
+        "height": 0,
+        "tree": false,
+        "lamp": true,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      }
+    ]
+  ],
+  "nameEn": "Night Shift",
+  "descriptionNightEn": "Walk around the path in 9 steps: turn right at the edge of the field. Repair a sparking lamp and light it, light any other lamp, and on tiles without a lamp pick up whatever lies there.",
+  "descriptionEn": "A ring path around a flowerbed. It has sparking lamps, lamps without bulbs and items on the ground. One loop is one full shift.",
+  "descriptionDayEn": "Walk around the path in 9 steps: turn right at the edge of the field. Only repair a sparking lamp, turn off a shining one, leave lamps without bulbs alone, and on free tiles pick up whatever lies there."
+}

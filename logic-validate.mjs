@@ -34,6 +34,18 @@ export function validateLevel(l) {
   if (l.descriptionDay !== undefined && (typeof l.descriptionDay !== 'string' || l.descriptionDay.length > 500)) {
     errors.push('Завдання для дня: до 500 символів.');
   }
+  if (l.nameEn !== undefined && (typeof l.nameEn !== 'string' || l.nameEn.length > 80)) {
+    errors.push('Назва (EN): до 80 символів.');
+  }
+  if (l.descriptionEn !== undefined && (typeof l.descriptionEn !== 'string' || l.descriptionEn.length > 500)) {
+    errors.push('Опис (EN): до 500 символів.');
+  }
+  if (l.descriptionNightEn !== undefined && (typeof l.descriptionNightEn !== 'string' || l.descriptionNightEn.length > 500)) {
+    errors.push('Завдання для ночі (EN): до 500 символів.');
+  }
+  if (l.descriptionDayEn !== undefined && (typeof l.descriptionDayEn !== 'string' || l.descriptionDayEn.length > 500)) {
+    errors.push('Завдання для дня (EN): до 500 символів.');
+  }
   if (l.hints !== undefined) {
     const hintError = validateHints(l.hints, l.allowed);
     if (hintError) errors.push(hintError);
@@ -164,9 +176,9 @@ export function validateProgram(l, program, functions = []) {
       if (!l.allowed.includes(b.type)) throw new Error('У програмі є недоступна команда.');
       if (
         b.type === 'loop' &&
-        (!Number.isInteger(b.times) || b.times < 2 || b.times > 10 || !b.body?.length)
+        (!Number.isInteger(b.times) || b.times < 1 || b.times > 10 || !b.body?.length)
       ) {
-        throw new Error('Цикл: 2–10 повторень і хоча б одна команда всередині.');
+        throw new Error('Цикл: 1–10 повторень і хоча б одна команда всередині.');
       }
       if (b.type === 'call' && !ids.has(b.functionId)) {
         throw new Error('Обери функцію у блоці виклику.');

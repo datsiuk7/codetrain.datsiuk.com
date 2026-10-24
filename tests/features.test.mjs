@@ -367,6 +367,58 @@ test('electric shock plays a distinct sequence of sound pulses', () => {
   }
 });
 
+test('fall sound plays scream glide, air whoosh and impact with audible frequencies', () => {
+  const previousAudioContext = globalThis.AudioContext;
+  const tones = [];
+  globalThis.AudioContext = class {
+    currentTime = 10;
+    state = 'running';
+    destination = {};
+    createOscillator() {
+      const osc = {
+        type: 'sine',
+        frequency: {
+          setValueAtTime(freq, time) {
+            osc.startFreq = freq;
+            osc.startTime = time;
+          },
+          exponentialRampToValueAtTime(freq, time) {
+            osc.endFreq = freq;
+            osc.endTime = time;
+          }
+        },
+        connect() {},
+        start() {
+          tones.push(osc);
+        },
+        stop() {}
+      };
+      return osc;
+    }
+    createGain() {
+      return {
+        gain: { setValueAtTime() {}, exponentialRampToValueAtTime() {} },
+        connect() {}
+      };
+    }
+  };
+  try {
+    setupEffects(null).fall();
+    assert.equal(tones.length, 6, 'Fall sound must play 6 tones');
+    for (const t of tones) {
+      assert.ok(t.startFreq >= 50, `Tone start frequency ${t.startFreq} must be audible (>= 50 Hz, not 0.05 or 0.08)`);
+      assert.ok(t.endFreq >= 20, `Tone end frequency ${t.endFreq} must be >= 20 Hz`);
+      assert.ok(t.startTime >= 10, 'Tone start time must be >= audio currentTime');
+    }
+    // Verify offsets: now, now+.02, now+.05, now+.08, now+.82, now+.82
+    const startTimes = tones.map((t) => Math.round((t.startTime - 10) * 100) / 100);
+    assert.deepEqual(startTimes, [0, 0.02, 0.05, 0.08, 0.82, 0.82]);
+  } finally {
+    if (previousAudioContext === undefined) delete globalThis.AudioContext;
+    else globalThis.AudioContext = previousAudioContext;
+  }
+});
+
 test('bush and rock act as obstacles and block forward and jump', () => {
   const level = {
     id: 'nature-obstacles',

@@ -1,0 +1,5130 @@
+{
+ "section4": [
+  "try-vydy-plytok",
+  "kuda-povernuty",
+  "kutova-vulytsya-z-iskramy",
+  "zbyrach-remkomplektiv",
+  "reviziya-z-iskramy",
+  "rozvylka-v-lisi",
+  "budynok-za-povorotom",
+  "mist-nad-bezodneyu",
+  "shody-zmiykoyu",
+  "pidkova",
+  "lampochky-i-remkomplekty",
+  "kiltsevyy-mistok",
+  "zyh-zah-cherez-skver",
+  "rozvylka-z-ohnyamy",
+  "pidyom-nad-bezodneyu",
+  "nichna-zmina",
+  "mayak-na-vershyni",
+  "lisova-stezhka",
+  "vechirniy-obkhid",
+  "ispyt-likhtarnyka"
+ ],
+ "section5": [
+  "do-samoyi-stinky",
+  "idu-do-likhtarya",
+  "znaydy-vilnyy-shlyakh",
+  "likhtar-za-povorotom",
+  "aleya-likhtariv",
+  "pidyom-na-pahorb",
+  "diydy-do-zghasloho",
+  "budynok-naprykintsi",
+  "kvadratnyy-obkhid",
+  "pahorby-do-krayu",
+  "remkomplekt-po-dorozi",
+  "yashchyk-skhodynka",
+  "dovha-vulytsya-z-iskramy",
+  "ravlyk",
+  "zmiyka-bez-kintsya",
+  "obkhid-ozera",
+  "dva-yashchyky-skhody",
+  "hrebinka",
+  "nichnyy-obkhid-kvartalu",
+  "velykyy-marshrut"
+ ],
+ "solutions": {
+  "try-vydy-plytok": {
+   "night": [
+    {
+     "id": "b6",
+     "type": "loop",
+     "times": 7,
+     "body": [
+      {
+       "id": "b1",
+       "type": "forward"
+      },
+      {
+       "id": "b5",
+       "type": "if",
+       "branches": [
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "lampShorts",
+          "not": false
+         },
+         "body": [
+          {
+           "id": "b2",
+           "type": "fix"
+          },
+          {
+           "id": "b3",
+           "type": "light"
+          }
+         ]
+        },
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "onLamp",
+          "not": false
+         },
+         "body": [
+          {
+           "id": "b4",
+           "type": "light"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "day": [
+    {
+     "id": "b11",
+     "type": "loop",
+     "times": 7,
+     "body": [
+      {
+       "id": "b7",
+       "type": "forward"
+      },
+      {
+       "id": "b10",
+       "type": "if",
+       "branches": [
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "lampShorts",
+          "not": false
+         },
+         "body": [
+          {
+           "id": "b8",
+           "type": "fix"
+          }
+         ]
+        },
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "onLamp",
+          "not": false
+         },
+         "body": [
+          {
+           "id": "b9",
+           "type": "light"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  "kuda-povernuty": {
+   "night": [
+    {
+     "id": "b18",
+     "type": "loop",
+     "times": 6,
+     "body": [
+      {
+       "id": "b16",
+       "type": "if",
+       "branches": [
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "obstacleAhead",
+          "not": false
+         },
+         "body": [
+          {
+           "id": "b12",
+           "type": "right"
+          },
+          {
+           "id": "b15",
+           "type": "if",
+           "branches": [
+            {
+             "condition": {
+              "kind": "sensor",
+              "sensor": "obstacleAhead",
+              "not": false
+             },
+             "body": [
+              {
+               "id": "b13",
+               "type": "left"
+              },
+              {
+               "id": "b14",
+               "type": "left"
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "id": "b17",
+       "type": "forward"
+      }
+     ]
+    },
+    {
+     "id": "b19",
+     "type": "light"
+    }
+   ],
+   "day": [
+    {
+     "id": "b18",
+     "type": "loop",
+     "times": 6,
+     "body": [
+      {
+       "id": "b16",
+       "type": "if",
+       "branches": [
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "obstacleAhead",
+          "not": false
+         },
+         "body": [
+          {
+           "id": "b12",
+           "type": "right"
+          },
+          {
+           "id": "b15",
+           "type": "if",
+           "branches": [
+            {
+             "condition": {
+              "kind": "sensor",
+              "sensor": "obstacleAhead",
+              "not": false
+             },
+             "body": [
+              {
+               "id": "b13",
+               "type": "left"
+              },
+              {
+               "id": "b14",
+               "type": "left"
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "id": "b17",
+       "type": "forward"
+      }
+     ]
+    },
+    {
+     "id": "b19",
+     "type": "light"
+    }
+   ]
+  },
+  "kutova-vulytsya-z-iskramy": {
+   "night": [
+    {
+     "id": "b40",
+     "type": "loop",
+     "times": 8,
+     "body": [
+      {
+       "id": "b34",
+       "type": "if",
+       "branches": [
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "obstacleAhead",
+          "not": false
+         },
+         "body": [
+          {
+           "id": "b33",
+           "type": "right"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "id": "b35",
+       "type": "forward"
+      },
+      {
+       "id": "b39",
+       "type": "if",
+       "branches": [
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "lampShorts",
+          "not": false
+         },
+         "body": [
+          {
+           "id": "b36",
+           "type": "fix"
+          },
+          {
+           "id": "b37",
+           "type": "light"
+          }
+         ]
+        },
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "onLamp",
+          "not": false
+         },
+         "body": [
+          {
+           "id": "b38",
+           "type": "light"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "day": [
+    {
+     "id": "b47",
+     "type": "loop",
+     "times": 8,
+     "body": [
+      {
+       "id": "b42",
+       "type": "if",
+       "branches": [
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "obstacleAhead",
+          "not": false
+         },
+         "body": [
+          {
+           "id": "b41",
+           "type": "right"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "id": "b43",
+       "type": "forward"
+      },
+      {
+       "id": "b46",
+       "type": "if",
+       "branches": [
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "lampShorts",
+          "not": false
+         },
+         "body": [
+          {
+           "id": "b44",
+           "type": "fix"
+          }
+         ]
+        },
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "onLamp",
+          "not": false
+         },
+         "body": [
+          {
+           "id": "b45",
+           "type": "light"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  "zbyrach-remkomplektiv": {
+   "night": [
+    {
+     "id": "b26",
+     "type": "loop",
+     "times": 7,
+     "body": [
+      {
+       "id": "b20",
+       "type": "forward"
+      },
+      {
+       "id": "b25",
+       "type": "if",
+       "branches": [
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "lampShorts",
+          "not": false
+         },
+         "body": [
+          {
+           "id": "b21",
+           "type": "fix"
+          },
+          {
+           "id": "b22",
+           "type": "light"
+          }
+         ]
+        },
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "onLamp",
+          "not": false
+         },
+         "body": [
+          {
+           "id": "b23",
+           "type": "light"
+          }
+         ]
+        }
+       ],
+       "elseBody": [
+        {
+         "id": "b24",
+         "type": "take"
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "day": [
+    {
+     "id": "b32",
+     "type": "loop",
+     "times": 7,
+     "body": [
+      {
+       "id": "b27",
+       "type": "forward"
+      },
+      {
+       "id": "b31",
+       "type": "if",
+       "branches": [
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "lampShorts",
+          "not": false
+         },
+         "body": [
+          {
+           "id": "b28",
+           "type": "fix"
+          }
+         ]
+        },
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "onLamp",
+          "not": false
+         },
+         "body": [
+          {
+           "id": "b29",
+           "type": "light"
+          }
+         ]
+        }
+       ],
+       "elseBody": [
+        {
+         "id": "b30",
+         "type": "take"
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  "reviziya-z-iskramy": {
+   "night": [
+    {
+     "id": "b54",
+     "type": "loop",
+     "times": 7,
+     "body": [
+      {
+       "id": "b48",
+       "type": "forward"
+      },
+      {
+       "id": "b53",
+       "type": "if",
+       "branches": [
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "lampShorts",
+          "not": false
+         },
+         "body": [
+          {
+           "id": "b49",
+           "type": "fix"
+          },
+          {
+           "id": "b50",
+           "type": "light"
+          }
+         ]
+        },
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "onLamp",
+          "not": false
+         },
+         "body": [
+          {
+           "id": "b52",
+           "type": "if",
+           "branches": [
+            {
+             "condition": {
+              "kind": "sensor",
+              "sensor": "lampLit",
+              "not": true
+             },
+             "body": [
+              {
+               "id": "b51",
+               "type": "light"
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "day": [
+    {
+     "id": "b60",
+     "type": "loop",
+     "times": 7,
+     "body": [
+      {
+       "id": "b55",
+       "type": "forward"
+      },
+      {
+       "id": "b59",
+       "type": "if",
+       "branches": [
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "lampShorts",
+          "not": false
+         },
+         "body": [
+          {
+           "id": "b56",
+           "type": "fix"
+          }
+         ]
+        },
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "onLamp",
+          "not": false
+         },
+         "body": [
+          {
+           "id": "b58",
+           "type": "if",
+           "branches": [
+            {
+             "condition": {
+              "kind": "sensor",
+              "sensor": "lampLit",
+              "not": false
+             },
+             "body": [
+              {
+               "id": "b57",
+               "type": "light"
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  "rozvylka-v-lisi": {
+   "night": [
+    {
+     "id": "b69",
+     "type": "loop",
+     "times": 8,
+     "body": [
+      {
+       "id": "b65",
+       "type": "if",
+       "branches": [
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "obstacleAhead",
+          "not": false
+         },
+         "body": [
+          {
+           "id": "b61",
+           "type": "right"
+          },
+          {
+           "id": "b64",
+           "type": "if",
+           "branches": [
+            {
+             "condition": {
+              "kind": "sensor",
+              "sensor": "obstacleAhead",
+              "not": false
+             },
+             "body": [
+              {
+               "id": "b62",
+               "type": "left"
+              },
+              {
+               "id": "b63",
+               "type": "left"
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "id": "b66",
+       "type": "forward"
+      },
+      {
+       "id": "b68",
+       "type": "if",
+       "branches": [
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "onLamp",
+          "not": false
+         },
+         "body": [
+          {
+           "id": "b67",
+           "type": "light"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "day": [
+    {
+     "id": "b69",
+     "type": "loop",
+     "times": 8,
+     "body": [
+      {
+       "id": "b65",
+       "type": "if",
+       "branches": [
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "obstacleAhead",
+          "not": false
+         },
+         "body": [
+          {
+           "id": "b61",
+           "type": "right"
+          },
+          {
+           "id": "b64",
+           "type": "if",
+           "branches": [
+            {
+             "condition": {
+              "kind": "sensor",
+              "sensor": "obstacleAhead",
+              "not": false
+             },
+             "body": [
+              {
+               "id": "b62",
+               "type": "left"
+              },
+              {
+               "id": "b63",
+               "type": "left"
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "id": "b66",
+       "type": "forward"
+      },
+      {
+       "id": "b68",
+       "type": "if",
+       "branches": [
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "onLamp",
+          "not": false
+         },
+         "body": [
+          {
+           "id": "b67",
+           "type": "light"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  "budynok-za-povorotom": {
+   "night": [
+    {
+     "id": "b96",
+     "type": "loop",
+     "times": 8,
+     "body": [
+      {
+       "id": "b92",
+       "type": "if",
+       "branches": [
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "obstacleAhead",
+          "not": false
+         },
+         "body": [
+          {
+           "id": "b88",
+           "type": "right"
+          },
+          {
+           "id": "b91",
+           "type": "if",
+           "branches": [
+            {
+             "condition": {
+              "kind": "sensor",
+              "sensor": "obstacleAhead",
+              "not": false
+             },
+             "body": [
+              {
+               "id": "b89",
+               "type": "left"
+              },
+              {
+               "id": "b90",
+               "type": "left"
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "id": "b93",
+       "type": "forward"
+      },
+      {
+       "id": "b95",
+       "type": "if",
+       "branches": [
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "onLamp",
+          "not": false
+         },
+         "body": [
+          {
+           "id": "b94",
+           "type": "light"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "day": [
+    {
+     "id": "b96",
+     "type": "loop",
+     "times": 8,
+     "body": [
+      {
+       "id": "b92",
+       "type": "if",
+       "branches": [
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "obstacleAhead",
+          "not": false
+         },
+         "body": [
+          {
+           "id": "b88",
+           "type": "right"
+          },
+          {
+           "id": "b91",
+           "type": "if",
+           "branches": [
+            {
+             "condition": {
+              "kind": "sensor",
+              "sensor": "obstacleAhead",
+              "not": false
+             },
+             "body": [
+              {
+               "id": "b89",
+               "type": "left"
+              },
+              {
+               "id": "b90",
+               "type": "left"
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "id": "b93",
+       "type": "forward"
+      },
+      {
+       "id": "b95",
+       "type": "if",
+       "branches": [
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "onLamp",
+          "not": false
+         },
+         "body": [
+          {
+           "id": "b94",
+           "type": "light"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  "mist-nad-bezodneyu": {
+   "night": [
+    {
+     "id": "b87",
+     "type": "loop",
+     "times": 8,
+     "body": [
+      {
+       "id": "b83",
+       "type": "if",
+       "branches": [
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "canJump",
+          "not": true
+         },
+         "body": [
+          {
+           "id": "b79",
+           "type": "right"
+          },
+          {
+           "id": "b82",
+           "type": "if",
+           "branches": [
+            {
+             "condition": {
+              "kind": "sensor",
+              "sensor": "canJump",
+              "not": true
+             },
+             "body": [
+              {
+               "id": "b80",
+               "type": "left"
+              },
+              {
+               "id": "b81",
+               "type": "left"
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "id": "b84",
+       "type": "jump"
+      },
+      {
+       "id": "b86",
+       "type": "if",
+       "branches": [
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "onLamp",
+          "not": false
+         },
+         "body": [
+          {
+           "id": "b85",
+           "type": "light"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "day": [
+    {
+     "id": "b87",
+     "type": "loop",
+     "times": 8,
+     "body": [
+      {
+       "id": "b83",
+       "type": "if",
+       "branches": [
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "canJump",
+          "not": true
+         },
+         "body": [
+          {
+           "id": "b79",
+           "type": "right"
+          },
+          {
+           "id": "b82",
+           "type": "if",
+           "branches": [
+            {
+             "condition": {
+              "kind": "sensor",
+              "sensor": "canJump",
+              "not": true
+             },
+             "body": [
+              {
+               "id": "b80",
+               "type": "left"
+              },
+              {
+               "id": "b81",
+               "type": "left"
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "id": "b84",
+       "type": "jump"
+      },
+      {
+       "id": "b86",
+       "type": "if",
+       "branches": [
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "onLamp",
+          "not": false
+         },
+         "body": [
+          {
+           "id": "b85",
+           "type": "light"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  "shody-zmiykoyu": {
+   "night": [
+    {
+     "id": "b78",
+     "type": "loop",
+     "times": 7,
+     "body": [
+      {
+       "id": "b74",
+       "type": "if",
+       "branches": [
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "canJump",
+          "not": true
+         },
+         "body": [
+          {
+           "id": "b70",
+           "type": "right"
+          },
+          {
+           "id": "b73",
+           "type": "if",
+           "branches": [
+            {
+             "condition": {
+              "kind": "sensor",
+              "sensor": "canJump",
+              "not": true
+             },
+             "body": [
+              {
+               "id": "b71",
+               "type": "left"
+              },
+              {
+               "id": "b72",
+               "type": "left"
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "id": "b75",
+       "type": "jump"
+      },
+      {
+       "id": "b77",
+       "type": "if",
+       "branches": [
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "onLamp",
+          "not": false
+         },
+         "body": [
+          {
+           "id": "b76",
+           "type": "light"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "day": [
+    {
+     "id": "b78",
+     "type": "loop",
+     "times": 7,
+     "body": [
+      {
+       "id": "b74",
+       "type": "if",
+       "branches": [
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "canJump",
+          "not": true
+         },
+         "body": [
+          {
+           "id": "b70",
+           "type": "right"
+          },
+          {
+           "id": "b73",
+           "type": "if",
+           "branches": [
+            {
+             "condition": {
+              "kind": "sensor",
+              "sensor": "canJump",
+              "not": true
+             },
+             "body": [
+              {
+               "id": "b71",
+               "type": "left"
+              },
+              {
+               "id": "b72",
+               "type": "left"
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "id": "b75",
+       "type": "jump"
+      },
+      {
+       "id": "b77",
+       "type": "if",
+       "branches": [
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "onLamp",
+          "not": false
+         },
+         "body": [
+          {
+           "id": "b76",
+           "type": "light"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  "pidkova": {
+   "night": [
+    {
+     "id": "b119",
+     "type": "loop",
+     "times": 9,
+     "body": [
+      {
+       "id": "b112",
+       "type": "if",
+       "branches": [
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "obstacleAhead",
+          "not": false
+         },
+         "body": [
+          {
+           "id": "b111",
+           "type": "right"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "id": "b113",
+       "type": "forward"
+      },
+      {
+       "id": "b118",
+       "type": "if",
+       "branches": [
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "lampShorts",
+          "not": false
+         },
+         "body": [
+          {
+           "id": "b114",
+           "type": "fix"
+          },
+          {
+           "id": "b115",
+           "type": "light"
+          }
+         ]
+        },
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "onLamp",
+          "not": false
+         },
+         "body": [
+          {
+           "id": "b117",
+           "type": "if",
+           "branches": [
+            {
+             "condition": {
+              "kind": "sensor",
+              "sensor": "lampLit",
+              "not": true
+             },
+             "body": [
+              {
+               "id": "b116",
+               "type": "light"
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "day": [
+    {
+     "id": "b127",
+     "type": "loop",
+     "times": 9,
+     "body": [
+      {
+       "id": "b121",
+       "type": "if",
+       "branches": [
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "obstacleAhead",
+          "not": false
+         },
+         "body": [
+          {
+           "id": "b120",
+           "type": "right"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "id": "b122",
+       "type": "forward"
+      },
+      {
+       "id": "b126",
+       "type": "if",
+       "branches": [
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "lampShorts",
+          "not": false
+         },
+         "body": [
+          {
+           "id": "b123",
+           "type": "fix"
+          }
+         ]
+        },
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "onLamp",
+          "not": false
+         },
+         "body": [
+          {
+           "id": "b125",
+           "type": "if",
+           "branches": [
+            {
+             "condition": {
+              "kind": "sensor",
+              "sensor": "lampLit",
+              "not": false
+             },
+             "body": [
+              {
+               "id": "b124",
+               "type": "light"
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  "lampochky-i-remkomplekty": {
+   "night": [
+    {
+     "id": "b103",
+     "type": "loop",
+     "times": 9,
+     "body": [
+      {
+       "id": "b97",
+       "type": "forward"
+      },
+      {
+       "id": "b102",
+       "type": "if",
+       "branches": [
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "lampShorts",
+          "not": false
+         },
+         "body": [
+          {
+           "id": "b98",
+           "type": "fix"
+          },
+          {
+           "id": "b99",
+           "type": "light"
+          }
+         ]
+        },
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "onLamp",
+          "not": false
+         },
+         "body": [
+          {
+           "id": "b100",
+           "type": "light"
+          }
+         ]
+        }
+       ],
+       "elseBody": [
+        {
+         "id": "b101",
+         "type": "take"
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "day": [
+    {
+     "id": "b110",
+     "type": "loop",
+     "times": 9,
+     "body": [
+      {
+       "id": "b104",
+       "type": "forward"
+      },
+      {
+       "id": "b109",
+       "type": "if",
+       "branches": [
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "lampShorts",
+          "not": false
+         },
+         "body": [
+          {
+           "id": "b105",
+           "type": "fix"
+          }
+         ]
+        },
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "onLamp",
+          "not": false
+         },
+         "body": [
+          {
+           "id": "b107",
+           "type": "if",
+           "branches": [
+            {
+             "condition": {
+              "kind": "sensor",
+              "sensor": "lampLit",
+              "not": false
+             },
+             "body": [
+              {
+               "id": "b106",
+               "type": "light"
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        }
+       ],
+       "elseBody": [
+        {
+         "id": "b108",
+         "type": "take"
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  "kiltsevyy-mistok": {
+   "night": [
+    {
+     "id": "b268",
+     "type": "loop",
+     "times": 7,
+     "body": [
+      {
+       "id": "b261",
+       "type": "if",
+       "branches": [
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "canJump",
+          "not": true
+         },
+         "body": [
+          {
+           "id": "b260",
+           "type": "right"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "id": "b262",
+       "type": "jump"
+      },
+      {
+       "id": "b267",
+       "type": "if",
+       "branches": [
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "lampShorts",
+          "not": false
+         },
+         "body": [
+          {
+           "id": "b263",
+           "type": "fix"
+          },
+          {
+           "id": "b264",
+           "type": "light"
+          }
+         ]
+        },
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "onLamp",
+          "not": false
+         },
+         "body": [
+          {
+           "id": "b266",
+           "type": "if",
+           "branches": [
+            {
+             "condition": {
+              "kind": "sensor",
+              "sensor": "lampLit",
+              "not": true
+             },
+             "body": [
+              {
+               "id": "b265",
+               "type": "light"
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "day": [
+    {
+     "id": "b276",
+     "type": "loop",
+     "times": 7,
+     "body": [
+      {
+       "id": "b270",
+       "type": "if",
+       "branches": [
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "canJump",
+          "not": true
+         },
+         "body": [
+          {
+           "id": "b269",
+           "type": "right"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "id": "b271",
+       "type": "jump"
+      },
+      {
+       "id": "b275",
+       "type": "if",
+       "branches": [
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "lampShorts",
+          "not": false
+         },
+         "body": [
+          {
+           "id": "b272",
+           "type": "fix"
+          }
+         ]
+        },
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "onLamp",
+          "not": false
+         },
+         "body": [
+          {
+           "id": "b274",
+           "type": "if",
+           "branches": [
+            {
+             "condition": {
+              "kind": "sensor",
+              "sensor": "lampLit",
+              "not": false
+             },
+             "body": [
+              {
+               "id": "b273",
+               "type": "light"
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  "zyh-zah-cherez-skver": {
+   "night": [
+    {
+     "id": "b138",
+     "type": "loop",
+     "times": 8,
+     "body": [
+      {
+       "id": "b132",
+       "type": "if",
+       "branches": [
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "obstacleAhead",
+          "not": false
+         },
+         "body": [
+          {
+           "id": "b128",
+           "type": "right"
+          },
+          {
+           "id": "b131",
+           "type": "if",
+           "branches": [
+            {
+             "condition": {
+              "kind": "sensor",
+              "sensor": "obstacleAhead",
+              "not": false
+             },
+             "body": [
+              {
+               "id": "b129",
+               "type": "left"
+              },
+              {
+               "id": "b130",
+               "type": "left"
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "id": "b133",
+       "type": "forward"
+      },
+      {
+       "id": "b137",
+       "type": "if",
+       "branches": [
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "lampShorts",
+          "not": false
+         },
+         "body": [
+          {
+           "id": "b134",
+           "type": "fix"
+          },
+          {
+           "id": "b135",
+           "type": "light"
+          }
+         ]
+        },
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "onLamp",
+          "not": false
+         },
+         "body": [
+          {
+           "id": "b136",
+           "type": "light"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "day": [
+    {
+     "id": "b148",
+     "type": "loop",
+     "times": 8,
+     "body": [
+      {
+       "id": "b143",
+       "type": "if",
+       "branches": [
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "obstacleAhead",
+          "not": false
+         },
+         "body": [
+          {
+           "id": "b139",
+           "type": "right"
+          },
+          {
+           "id": "b142",
+           "type": "if",
+           "branches": [
+            {
+             "condition": {
+              "kind": "sensor",
+              "sensor": "obstacleAhead",
+              "not": false
+             },
+             "body": [
+              {
+               "id": "b140",
+               "type": "left"
+              },
+              {
+               "id": "b141",
+               "type": "left"
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "id": "b144",
+       "type": "forward"
+      },
+      {
+       "id": "b147",
+       "type": "if",
+       "branches": [
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "lampShorts",
+          "not": false
+         },
+         "body": [
+          {
+           "id": "b145",
+           "type": "fix"
+          }
+         ]
+        },
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "onLamp",
+          "not": false
+         },
+         "body": [
+          {
+           "id": "b146",
+           "type": "light"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  "rozvylka-z-ohnyamy": {
+   "night": [
+    {
+     "id": "b160",
+     "type": "loop",
+     "times": 8,
+     "body": [
+      {
+       "id": "b153",
+       "type": "if",
+       "branches": [
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "obstacleAhead",
+          "not": false
+         },
+         "body": [
+          {
+           "id": "b149",
+           "type": "right"
+          },
+          {
+           "id": "b152",
+           "type": "if",
+           "branches": [
+            {
+             "condition": {
+              "kind": "sensor",
+              "sensor": "obstacleAhead",
+              "not": false
+             },
+             "body": [
+              {
+               "id": "b150",
+               "type": "left"
+              },
+              {
+               "id": "b151",
+               "type": "left"
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "id": "b154",
+       "type": "forward"
+      },
+      {
+       "id": "b159",
+       "type": "if",
+       "branches": [
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "lampShorts",
+          "not": false
+         },
+         "body": [
+          {
+           "id": "b155",
+           "type": "fix"
+          },
+          {
+           "id": "b156",
+           "type": "light"
+          }
+         ]
+        },
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "onLamp",
+          "not": false
+         },
+         "body": [
+          {
+           "id": "b158",
+           "type": "if",
+           "branches": [
+            {
+             "condition": {
+              "kind": "sensor",
+              "sensor": "lampLit",
+              "not": true
+             },
+             "body": [
+              {
+               "id": "b157",
+               "type": "light"
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "day": [
+    {
+     "id": "b171",
+     "type": "loop",
+     "times": 8,
+     "body": [
+      {
+       "id": "b165",
+       "type": "if",
+       "branches": [
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "obstacleAhead",
+          "not": false
+         },
+         "body": [
+          {
+           "id": "b161",
+           "type": "right"
+          },
+          {
+           "id": "b164",
+           "type": "if",
+           "branches": [
+            {
+             "condition": {
+              "kind": "sensor",
+              "sensor": "obstacleAhead",
+              "not": false
+             },
+             "body": [
+              {
+               "id": "b162",
+               "type": "left"
+              },
+              {
+               "id": "b163",
+               "type": "left"
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "id": "b166",
+       "type": "forward"
+      },
+      {
+       "id": "b170",
+       "type": "if",
+       "branches": [
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "lampShorts",
+          "not": false
+         },
+         "body": [
+          {
+           "id": "b167",
+           "type": "fix"
+          }
+         ]
+        },
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "onLamp",
+          "not": false
+         },
+         "body": [
+          {
+           "id": "b169",
+           "type": "if",
+           "branches": [
+            {
+             "condition": {
+              "kind": "sensor",
+              "sensor": "lampLit",
+              "not": false
+             },
+             "body": [
+              {
+               "id": "b168",
+               "type": "light"
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  "pidyom-nad-bezodneyu": {
+   "night": [
+    {
+     "id": "b182",
+     "type": "loop",
+     "times": 9,
+     "body": [
+      {
+       "id": "b176",
+       "type": "if",
+       "branches": [
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "canJump",
+          "not": true
+         },
+         "body": [
+          {
+           "id": "b172",
+           "type": "right"
+          },
+          {
+           "id": "b175",
+           "type": "if",
+           "branches": [
+            {
+             "condition": {
+              "kind": "sensor",
+              "sensor": "canJump",
+              "not": true
+             },
+             "body": [
+              {
+               "id": "b173",
+               "type": "left"
+              },
+              {
+               "id": "b174",
+               "type": "left"
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "id": "b177",
+       "type": "jump"
+      },
+      {
+       "id": "b181",
+       "type": "if",
+       "branches": [
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "lampShorts",
+          "not": false
+         },
+         "body": [
+          {
+           "id": "b178",
+           "type": "fix"
+          },
+          {
+           "id": "b179",
+           "type": "light"
+          }
+         ]
+        },
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "onLamp",
+          "not": false
+         },
+         "body": [
+          {
+           "id": "b180",
+           "type": "light"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "day": [
+    {
+     "id": "b192",
+     "type": "loop",
+     "times": 9,
+     "body": [
+      {
+       "id": "b187",
+       "type": "if",
+       "branches": [
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "canJump",
+          "not": true
+         },
+         "body": [
+          {
+           "id": "b183",
+           "type": "right"
+          },
+          {
+           "id": "b186",
+           "type": "if",
+           "branches": [
+            {
+             "condition": {
+              "kind": "sensor",
+              "sensor": "canJump",
+              "not": true
+             },
+             "body": [
+              {
+               "id": "b184",
+               "type": "left"
+              },
+              {
+               "id": "b185",
+               "type": "left"
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "id": "b188",
+       "type": "jump"
+      },
+      {
+       "id": "b191",
+       "type": "if",
+       "branches": [
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "lampShorts",
+          "not": false
+         },
+         "body": [
+          {
+           "id": "b189",
+           "type": "fix"
+          }
+         ]
+        },
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "onLamp",
+          "not": false
+         },
+         "body": [
+          {
+           "id": "b190",
+           "type": "light"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  "nichna-zmina": {
+   "night": [
+    {
+     "id": "b201",
+     "type": "loop",
+     "times": 9,
+     "body": [
+      {
+       "id": "b194",
+       "type": "if",
+       "branches": [
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "obstacleAhead",
+          "not": false
+         },
+         "body": [
+          {
+           "id": "b193",
+           "type": "right"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "id": "b195",
+       "type": "forward"
+      },
+      {
+       "id": "b200",
+       "type": "if",
+       "branches": [
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "lampShorts",
+          "not": false
+         },
+         "body": [
+          {
+           "id": "b196",
+           "type": "fix"
+          },
+          {
+           "id": "b197",
+           "type": "light"
+          }
+         ]
+        },
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "onLamp",
+          "not": false
+         },
+         "body": [
+          {
+           "id": "b198",
+           "type": "light"
+          }
+         ]
+        }
+       ],
+       "elseBody": [
+        {
+         "id": "b199",
+         "type": "take"
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "day": [
+    {
+     "id": "b210",
+     "type": "loop",
+     "times": 9,
+     "body": [
+      {
+       "id": "b203",
+       "type": "if",
+       "branches": [
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "obstacleAhead",
+          "not": false
+         },
+         "body": [
+          {
+           "id": "b202",
+           "type": "right"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "id": "b204",
+       "type": "forward"
+      },
+      {
+       "id": "b209",
+       "type": "if",
+       "branches": [
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "lampShorts",
+          "not": false
+         },
+         "body": [
+          {
+           "id": "b205",
+           "type": "fix"
+          }
+         ]
+        },
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "onLamp",
+          "not": false
+         },
+         "body": [
+          {
+           "id": "b207",
+           "type": "if",
+           "branches": [
+            {
+             "condition": {
+              "kind": "sensor",
+              "sensor": "lampLit",
+              "not": false
+             },
+             "body": [
+              {
+               "id": "b206",
+               "type": "light"
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        }
+       ],
+       "elseBody": [
+        {
+         "id": "b208",
+         "type": "take"
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  "mayak-na-vershyni": {
+   "night": [
+    {
+     "id": "b222",
+     "type": "loop",
+     "times": 9,
+     "body": [
+      {
+       "id": "b215",
+       "type": "if",
+       "branches": [
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "canJump",
+          "not": true
+         },
+         "body": [
+          {
+           "id": "b211",
+           "type": "right"
+          },
+          {
+           "id": "b214",
+           "type": "if",
+           "branches": [
+            {
+             "condition": {
+              "kind": "sensor",
+              "sensor": "canJump",
+              "not": true
+             },
+             "body": [
+              {
+               "id": "b212",
+               "type": "left"
+              },
+              {
+               "id": "b213",
+               "type": "left"
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "id": "b216",
+       "type": "jump"
+      },
+      {
+       "id": "b221",
+       "type": "if",
+       "branches": [
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "lampShorts",
+          "not": false
+         },
+         "body": [
+          {
+           "id": "b217",
+           "type": "fix"
+          },
+          {
+           "id": "b218",
+           "type": "light"
+          }
+         ]
+        },
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "onLamp",
+          "not": false
+         },
+         "body": [
+          {
+           "id": "b220",
+           "type": "if",
+           "branches": [
+            {
+             "condition": {
+              "kind": "sensor",
+              "sensor": "lampLit",
+              "not": true
+             },
+             "body": [
+              {
+               "id": "b219",
+               "type": "light"
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "day": [
+    {
+     "id": "b233",
+     "type": "loop",
+     "times": 9,
+     "body": [
+      {
+       "id": "b227",
+       "type": "if",
+       "branches": [
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "canJump",
+          "not": true
+         },
+         "body": [
+          {
+           "id": "b223",
+           "type": "right"
+          },
+          {
+           "id": "b226",
+           "type": "if",
+           "branches": [
+            {
+             "condition": {
+              "kind": "sensor",
+              "sensor": "canJump",
+              "not": true
+             },
+             "body": [
+              {
+               "id": "b224",
+               "type": "left"
+              },
+              {
+               "id": "b225",
+               "type": "left"
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "id": "b228",
+       "type": "jump"
+      },
+      {
+       "id": "b232",
+       "type": "if",
+       "branches": [
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "lampShorts",
+          "not": false
+         },
+         "body": [
+          {
+           "id": "b229",
+           "type": "fix"
+          }
+         ]
+        },
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "onLamp",
+          "not": false
+         },
+         "body": [
+          {
+           "id": "b231",
+           "type": "if",
+           "branches": [
+            {
+             "condition": {
+              "kind": "sensor",
+              "sensor": "lampLit",
+              "not": false
+             },
+             "body": [
+              {
+               "id": "b230",
+               "type": "light"
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  "lisova-stezhka": {
+   "night": [
+    {
+     "id": "b246",
+     "type": "loop",
+     "times": 2,
+     "body": [
+      {
+       "id": "b245",
+       "type": "loop",
+       "times": 6,
+       "body": [
+        {
+         "id": "b238",
+         "type": "if",
+         "branches": [
+          {
+           "condition": {
+            "kind": "sensor",
+            "sensor": "obstacleAhead",
+            "not": false
+           },
+           "body": [
+            {
+             "id": "b234",
+             "type": "right"
+            },
+            {
+             "id": "b237",
+             "type": "if",
+             "branches": [
+              {
+               "condition": {
+                "kind": "sensor",
+                "sensor": "obstacleAhead",
+                "not": false
+               },
+               "body": [
+                {
+                 "id": "b235",
+                 "type": "left"
+                },
+                {
+                 "id": "b236",
+                 "type": "left"
+                }
+               ]
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "id": "b239",
+         "type": "forward"
+        },
+        {
+         "id": "b244",
+         "type": "if",
+         "branches": [
+          {
+           "condition": {
+            "kind": "sensor",
+            "sensor": "lampShorts",
+            "not": false
+           },
+           "body": [
+            {
+             "id": "b240",
+             "type": "fix"
+            },
+            {
+             "id": "b241",
+             "type": "light"
+            }
+           ]
+          },
+          {
+           "condition": {
+            "kind": "sensor",
+            "sensor": "onLamp",
+            "not": false
+           },
+           "body": [
+            {
+             "id": "b242",
+             "type": "light"
+            }
+           ]
+          }
+         ],
+         "elseBody": [
+          {
+           "id": "b243",
+           "type": "take"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "day": [
+    {
+     "id": "b259",
+     "type": "loop",
+     "times": 2,
+     "body": [
+      {
+       "id": "b258",
+       "type": "loop",
+       "times": 6,
+       "body": [
+        {
+         "id": "b251",
+         "type": "if",
+         "branches": [
+          {
+           "condition": {
+            "kind": "sensor",
+            "sensor": "obstacleAhead",
+            "not": false
+           },
+           "body": [
+            {
+             "id": "b247",
+             "type": "right"
+            },
+            {
+             "id": "b250",
+             "type": "if",
+             "branches": [
+              {
+               "condition": {
+                "kind": "sensor",
+                "sensor": "obstacleAhead",
+                "not": false
+               },
+               "body": [
+                {
+                 "id": "b248",
+                 "type": "left"
+                },
+                {
+                 "id": "b249",
+                 "type": "left"
+                }
+               ]
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "id": "b252",
+         "type": "forward"
+        },
+        {
+         "id": "b257",
+         "type": "if",
+         "branches": [
+          {
+           "condition": {
+            "kind": "sensor",
+            "sensor": "lampShorts",
+            "not": false
+           },
+           "body": [
+            {
+             "id": "b253",
+             "type": "fix"
+            }
+           ]
+          },
+          {
+           "condition": {
+            "kind": "sensor",
+            "sensor": "onLamp",
+            "not": false
+           },
+           "body": [
+            {
+             "id": "b255",
+             "type": "if",
+             "branches": [
+              {
+               "condition": {
+                "kind": "sensor",
+                "sensor": "lampLit",
+                "not": false
+               },
+               "body": [
+                {
+                 "id": "b254",
+                 "type": "light"
+                }
+               ]
+              }
+             ]
+            }
+           ]
+          }
+         ],
+         "elseBody": [
+          {
+           "id": "b256",
+           "type": "take"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  "vechirniy-obkhid": {
+   "night": [
+    {
+     "id": "b288",
+     "type": "loop",
+     "times": 10,
+     "body": [
+      {
+       "id": "b281",
+       "type": "if",
+       "branches": [
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "obstacleAhead",
+          "not": false
+         },
+         "body": [
+          {
+           "id": "b277",
+           "type": "right"
+          },
+          {
+           "id": "b280",
+           "type": "if",
+           "branches": [
+            {
+             "condition": {
+              "kind": "sensor",
+              "sensor": "obstacleAhead",
+              "not": false
+             },
+             "body": [
+              {
+               "id": "b278",
+               "type": "left"
+              },
+              {
+               "id": "b279",
+               "type": "left"
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "id": "b282",
+       "type": "forward"
+      },
+      {
+       "id": "b287",
+       "type": "if",
+       "branches": [
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "lampShorts",
+          "not": false
+         },
+         "body": [
+          {
+           "id": "b283",
+           "type": "fix"
+          },
+          {
+           "id": "b284",
+           "type": "light"
+          }
+         ]
+        },
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "onLamp",
+          "not": false
+         },
+         "body": [
+          {
+           "id": "b285",
+           "type": "light"
+          }
+         ]
+        }
+       ],
+       "elseBody": [
+        {
+         "id": "b286",
+         "type": "take"
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "day": [
+    {
+     "id": "b300",
+     "type": "loop",
+     "times": 10,
+     "body": [
+      {
+       "id": "b293",
+       "type": "if",
+       "branches": [
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "obstacleAhead",
+          "not": false
+         },
+         "body": [
+          {
+           "id": "b289",
+           "type": "right"
+          },
+          {
+           "id": "b292",
+           "type": "if",
+           "branches": [
+            {
+             "condition": {
+              "kind": "sensor",
+              "sensor": "obstacleAhead",
+              "not": false
+             },
+             "body": [
+              {
+               "id": "b290",
+               "type": "left"
+              },
+              {
+               "id": "b291",
+               "type": "left"
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "id": "b294",
+       "type": "forward"
+      },
+      {
+       "id": "b299",
+       "type": "if",
+       "branches": [
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "lampShorts",
+          "not": false
+         },
+         "body": [
+          {
+           "id": "b295",
+           "type": "fix"
+          }
+         ]
+        },
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "onLamp",
+          "not": false
+         },
+         "body": [
+          {
+           "id": "b297",
+           "type": "if",
+           "branches": [
+            {
+             "condition": {
+              "kind": "sensor",
+              "sensor": "lampLit",
+              "not": false
+             },
+             "body": [
+              {
+               "id": "b296",
+               "type": "light"
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        }
+       ],
+       "elseBody": [
+        {
+         "id": "b298",
+         "type": "take"
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  "ispyt-likhtarnyka": {
+   "night": [
+    {
+     "id": "b314",
+     "type": "loop",
+     "times": 2,
+     "body": [
+      {
+       "id": "b313",
+       "type": "loop",
+       "times": 6,
+       "body": [
+        {
+         "id": "b305",
+         "type": "if",
+         "branches": [
+          {
+           "condition": {
+            "kind": "sensor",
+            "sensor": "canJump",
+            "not": true
+           },
+           "body": [
+            {
+             "id": "b301",
+             "type": "right"
+            },
+            {
+             "id": "b304",
+             "type": "if",
+             "branches": [
+              {
+               "condition": {
+                "kind": "sensor",
+                "sensor": "canJump",
+                "not": true
+               },
+               "body": [
+                {
+                 "id": "b302",
+                 "type": "left"
+                },
+                {
+                 "id": "b303",
+                 "type": "left"
+                }
+               ]
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "id": "b306",
+         "type": "jump"
+        },
+        {
+         "id": "b312",
+         "type": "if",
+         "branches": [
+          {
+           "condition": {
+            "kind": "sensor",
+            "sensor": "lampShorts",
+            "not": false
+           },
+           "body": [
+            {
+             "id": "b307",
+             "type": "fix"
+            },
+            {
+             "id": "b308",
+             "type": "light"
+            }
+           ]
+          },
+          {
+           "condition": {
+            "kind": "sensor",
+            "sensor": "onLamp",
+            "not": false
+           },
+           "body": [
+            {
+             "id": "b310",
+             "type": "if",
+             "branches": [
+              {
+               "condition": {
+                "kind": "sensor",
+                "sensor": "lampLit",
+                "not": true
+               },
+               "body": [
+                {
+                 "id": "b309",
+                 "type": "light"
+                }
+               ]
+              }
+             ]
+            }
+           ]
+          }
+         ],
+         "elseBody": [
+          {
+           "id": "b311",
+           "type": "take"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "day": [
+    {
+     "id": "b327",
+     "type": "loop",
+     "times": 2,
+     "body": [
+      {
+       "id": "b326",
+       "type": "loop",
+       "times": 6,
+       "body": [
+        {
+         "id": "b319",
+         "type": "if",
+         "branches": [
+          {
+           "condition": {
+            "kind": "sensor",
+            "sensor": "canJump",
+            "not": true
+           },
+           "body": [
+            {
+             "id": "b315",
+             "type": "right"
+            },
+            {
+             "id": "b318",
+             "type": "if",
+             "branches": [
+              {
+               "condition": {
+                "kind": "sensor",
+                "sensor": "canJump",
+                "not": true
+               },
+               "body": [
+                {
+                 "id": "b316",
+                 "type": "left"
+                },
+                {
+                 "id": "b317",
+                 "type": "left"
+                }
+               ]
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "id": "b320",
+         "type": "jump"
+        },
+        {
+         "id": "b325",
+         "type": "if",
+         "branches": [
+          {
+           "condition": {
+            "kind": "sensor",
+            "sensor": "lampShorts",
+            "not": false
+           },
+           "body": [
+            {
+             "id": "b321",
+             "type": "fix"
+            }
+           ]
+          },
+          {
+           "condition": {
+            "kind": "sensor",
+            "sensor": "onLamp",
+            "not": false
+           },
+           "body": [
+            {
+             "id": "b323",
+             "type": "if",
+             "branches": [
+              {
+               "condition": {
+                "kind": "sensor",
+                "sensor": "lampLit",
+                "not": false
+               },
+               "body": [
+                {
+                 "id": "b322",
+                 "type": "light"
+                }
+               ]
+              }
+             ]
+            }
+           ]
+          }
+         ],
+         "elseBody": [
+          {
+           "id": "b324",
+           "type": "take"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  "do-samoyi-stinky": {
+   "night": [
+    {
+     "id": "b329",
+     "type": "while",
+     "condition": {
+      "kind": "sensor",
+      "sensor": "obstacleAhead",
+      "not": true
+     },
+     "body": [
+      {
+       "id": "b328",
+       "type": "forward"
+      }
+     ]
+    },
+    {
+     "id": "b330",
+     "type": "light"
+    }
+   ],
+   "day": [
+    {
+     "id": "b329",
+     "type": "while",
+     "condition": {
+      "kind": "sensor",
+      "sensor": "obstacleAhead",
+      "not": true
+     },
+     "body": [
+      {
+       "id": "b328",
+       "type": "forward"
+      }
+     ]
+    },
+    {
+     "id": "b330",
+     "type": "light"
+    }
+   ]
+  },
+  "idu-do-likhtarya": {
+   "night": [
+    {
+     "id": "b332",
+     "type": "while",
+     "condition": {
+      "kind": "sensor",
+      "sensor": "onLamp",
+      "not": true
+     },
+     "body": [
+      {
+       "id": "b331",
+       "type": "forward"
+      }
+     ]
+    },
+    {
+     "id": "b333",
+     "type": "light"
+    }
+   ],
+   "day": [
+    {
+     "id": "b332",
+     "type": "while",
+     "condition": {
+      "kind": "sensor",
+      "sensor": "onLamp",
+      "not": true
+     },
+     "body": [
+      {
+       "id": "b331",
+       "type": "forward"
+      }
+     ]
+    },
+    {
+     "id": "b333",
+     "type": "light"
+    }
+   ]
+  },
+  "znaydy-vilnyy-shlyakh": {
+   "night": [
+    {
+     "id": "b335",
+     "type": "while",
+     "condition": {
+      "kind": "sensor",
+      "sensor": "obstacleAhead",
+      "not": false
+     },
+     "body": [
+      {
+       "id": "b334",
+       "type": "right"
+      }
+     ]
+    },
+    {
+     "id": "b337",
+     "type": "while",
+     "condition": {
+      "kind": "sensor",
+      "sensor": "obstacleAhead",
+      "not": true
+     },
+     "body": [
+      {
+       "id": "b336",
+       "type": "forward"
+      }
+     ]
+    },
+    {
+     "id": "b338",
+     "type": "light"
+    }
+   ],
+   "day": [
+    {
+     "id": "b335",
+     "type": "while",
+     "condition": {
+      "kind": "sensor",
+      "sensor": "obstacleAhead",
+      "not": false
+     },
+     "body": [
+      {
+       "id": "b334",
+       "type": "right"
+      }
+     ]
+    },
+    {
+     "id": "b337",
+     "type": "while",
+     "condition": {
+      "kind": "sensor",
+      "sensor": "obstacleAhead",
+      "not": true
+     },
+     "body": [
+      {
+       "id": "b336",
+       "type": "forward"
+      }
+     ]
+    },
+    {
+     "id": "b338",
+     "type": "light"
+    }
+   ]
+  },
+  "likhtar-za-povorotom": {
+   "night": [
+    {
+     "id": "b340",
+     "type": "while",
+     "condition": {
+      "kind": "sensor",
+      "sensor": "obstacleAhead",
+      "not": true
+     },
+     "body": [
+      {
+       "id": "b339",
+       "type": "forward"
+      }
+     ]
+    },
+    {
+     "id": "b341",
+     "type": "right"
+    },
+    {
+     "id": "b343",
+     "type": "while",
+     "condition": {
+      "kind": "sensor",
+      "sensor": "obstacleAhead",
+      "not": true
+     },
+     "body": [
+      {
+       "id": "b342",
+       "type": "forward"
+      }
+     ]
+    },
+    {
+     "id": "b344",
+     "type": "light"
+    }
+   ],
+   "day": [
+    {
+     "id": "b340",
+     "type": "while",
+     "condition": {
+      "kind": "sensor",
+      "sensor": "obstacleAhead",
+      "not": true
+     },
+     "body": [
+      {
+       "id": "b339",
+       "type": "forward"
+      }
+     ]
+    },
+    {
+     "id": "b341",
+     "type": "right"
+    },
+    {
+     "id": "b343",
+     "type": "while",
+     "condition": {
+      "kind": "sensor",
+      "sensor": "obstacleAhead",
+      "not": true
+     },
+     "body": [
+      {
+       "id": "b342",
+       "type": "forward"
+      }
+     ]
+    },
+    {
+     "id": "b344",
+     "type": "light"
+    }
+   ]
+  },
+  "aleya-likhtariv": {
+   "night": [
+    {
+     "id": "b348",
+     "type": "while",
+     "condition": {
+      "kind": "sensor",
+      "sensor": "obstacleAhead",
+      "not": true
+     },
+     "body": [
+      {
+       "id": "b345",
+       "type": "forward"
+      },
+      {
+       "id": "b347",
+       "type": "if",
+       "branches": [
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "onLamp",
+          "not": false
+         },
+         "body": [
+          {
+           "id": "b346",
+           "type": "light"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "day": [
+    {
+     "id": "b348",
+     "type": "while",
+     "condition": {
+      "kind": "sensor",
+      "sensor": "obstacleAhead",
+      "not": true
+     },
+     "body": [
+      {
+       "id": "b345",
+       "type": "forward"
+      },
+      {
+       "id": "b347",
+       "type": "if",
+       "branches": [
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "onLamp",
+          "not": false
+         },
+         "body": [
+          {
+           "id": "b346",
+           "type": "light"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  "pidyom-na-pahorb": {
+   "night": [
+    {
+     "id": "b350",
+     "type": "while",
+     "condition": {
+      "kind": "sensor",
+      "sensor": "canJump",
+      "not": false
+     },
+     "body": [
+      {
+       "id": "b349",
+       "type": "jump"
+      }
+     ]
+    },
+    {
+     "id": "b351",
+     "type": "light"
+    }
+   ],
+   "day": [
+    {
+     "id": "b350",
+     "type": "while",
+     "condition": {
+      "kind": "sensor",
+      "sensor": "canJump",
+      "not": false
+     },
+     "body": [
+      {
+       "id": "b349",
+       "type": "jump"
+      }
+     ]
+    },
+    {
+     "id": "b351",
+     "type": "light"
+    }
+   ]
+  },
+  "diydy-do-zghasloho": {
+   "night": [
+    {
+     "id": "b353",
+     "type": "while",
+     "condition": {
+      "kind": "sensor",
+      "sensor": "lampLit",
+      "not": false
+     },
+     "body": [
+      {
+       "id": "b352",
+       "type": "forward"
+      }
+     ]
+    },
+    {
+     "id": "b354",
+     "type": "light"
+    }
+   ],
+   "day": [
+    {
+     "id": "b356",
+     "type": "while",
+     "condition": {
+      "kind": "sensor",
+      "sensor": "lampLit",
+      "not": true
+     },
+     "body": [
+      {
+       "id": "b355",
+       "type": "forward"
+      }
+     ]
+    },
+    {
+     "id": "b357",
+     "type": "light"
+    }
+   ]
+  },
+  "budynok-naprykintsi": {
+   "night": [
+    {
+     "id": "b361",
+     "type": "while",
+     "condition": {
+      "kind": "sensor",
+      "sensor": "obstacleAhead",
+      "not": true
+     },
+     "body": [
+      {
+       "id": "b358",
+       "type": "forward"
+      },
+      {
+       "id": "b360",
+       "type": "if",
+       "branches": [
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "onLamp",
+          "not": false
+         },
+         "body": [
+          {
+           "id": "b359",
+           "type": "light"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "day": [
+    {
+     "id": "b361",
+     "type": "while",
+     "condition": {
+      "kind": "sensor",
+      "sensor": "obstacleAhead",
+      "not": true
+     },
+     "body": [
+      {
+       "id": "b358",
+       "type": "forward"
+      },
+      {
+       "id": "b360",
+       "type": "if",
+       "branches": [
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "onLamp",
+          "not": false
+         },
+         "body": [
+          {
+           "id": "b359",
+           "type": "light"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  "kvadratnyy-obkhid": {
+   "night": [
+    {
+     "id": "b367",
+     "type": "loop",
+     "times": 4,
+     "body": [
+      {
+       "id": "b365",
+       "type": "while",
+       "condition": {
+        "kind": "sensor",
+        "sensor": "obstacleAhead",
+        "not": true
+       },
+       "body": [
+        {
+         "id": "b362",
+         "type": "forward"
+        },
+        {
+         "id": "b364",
+         "type": "if",
+         "branches": [
+          {
+           "condition": {
+            "kind": "sensor",
+            "sensor": "onLamp",
+            "not": false
+           },
+           "body": [
+            {
+             "id": "b363",
+             "type": "light"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "id": "b366",
+       "type": "right"
+      }
+     ]
+    }
+   ],
+   "day": [
+    {
+     "id": "b367",
+     "type": "loop",
+     "times": 4,
+     "body": [
+      {
+       "id": "b365",
+       "type": "while",
+       "condition": {
+        "kind": "sensor",
+        "sensor": "obstacleAhead",
+        "not": true
+       },
+       "body": [
+        {
+         "id": "b362",
+         "type": "forward"
+        },
+        {
+         "id": "b364",
+         "type": "if",
+         "branches": [
+          {
+           "condition": {
+            "kind": "sensor",
+            "sensor": "onLamp",
+            "not": false
+           },
+           "body": [
+            {
+             "id": "b363",
+             "type": "light"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "id": "b366",
+       "type": "right"
+      }
+     ]
+    }
+   ]
+  },
+  "pahorby-do-krayu": {
+   "night": [
+    {
+     "id": "b371",
+     "type": "while",
+     "condition": {
+      "kind": "sensor",
+      "sensor": "canJump",
+      "not": false
+     },
+     "body": [
+      {
+       "id": "b368",
+       "type": "jump"
+      },
+      {
+       "id": "b370",
+       "type": "if",
+       "branches": [
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "onLamp",
+          "not": false
+         },
+         "body": [
+          {
+           "id": "b369",
+           "type": "light"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "day": [
+    {
+     "id": "b371",
+     "type": "while",
+     "condition": {
+      "kind": "sensor",
+      "sensor": "canJump",
+      "not": false
+     },
+     "body": [
+      {
+       "id": "b368",
+       "type": "jump"
+      },
+      {
+       "id": "b370",
+       "type": "if",
+       "branches": [
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "onLamp",
+          "not": false
+         },
+         "body": [
+          {
+           "id": "b369",
+           "type": "light"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  "remkomplekt-po-dorozi": {
+   "night": [
+    {
+     "id": "b375",
+     "type": "while",
+     "condition": {
+      "kind": "sensor",
+      "sensor": "onLamp",
+      "not": true
+     },
+     "body": [
+      {
+       "id": "b372",
+       "type": "forward"
+      },
+      {
+       "id": "b374",
+       "type": "if",
+       "branches": [
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "onLamp",
+          "not": true
+         },
+         "body": [
+          {
+           "id": "b373",
+           "type": "take"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "b376",
+     "type": "fix"
+    },
+    {
+     "id": "b377",
+     "type": "light"
+    }
+   ],
+   "day": [
+    {
+     "id": "b381",
+     "type": "while",
+     "condition": {
+      "kind": "sensor",
+      "sensor": "onLamp",
+      "not": true
+     },
+     "body": [
+      {
+       "id": "b378",
+       "type": "forward"
+      },
+      {
+       "id": "b380",
+       "type": "if",
+       "branches": [
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "onLamp",
+          "not": true
+         },
+         "body": [
+          {
+           "id": "b379",
+           "type": "take"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "b382",
+     "type": "fix"
+    }
+   ]
+  },
+  "yashchyk-skhodynka": {
+   "night": [
+    {
+     "id": "b384",
+     "type": "while",
+     "condition": {
+      "kind": "sensor",
+      "sensor": "obstacleAhead",
+      "not": true
+     },
+     "body": [
+      {
+       "id": "b383",
+       "type": "forward"
+      }
+     ]
+    },
+    {
+     "id": "b385",
+     "type": "jump"
+    },
+    {
+     "id": "b386",
+     "type": "jump"
+    },
+    {
+     "id": "b387",
+     "type": "light"
+    }
+   ],
+   "day": [
+    {
+     "id": "b384",
+     "type": "while",
+     "condition": {
+      "kind": "sensor",
+      "sensor": "obstacleAhead",
+      "not": true
+     },
+     "body": [
+      {
+       "id": "b383",
+       "type": "forward"
+      }
+     ]
+    },
+    {
+     "id": "b385",
+     "type": "jump"
+    },
+    {
+     "id": "b386",
+     "type": "jump"
+    },
+    {
+     "id": "b387",
+     "type": "light"
+    }
+   ]
+  },
+  "dovha-vulytsya-z-iskramy": {
+   "night": [
+    {
+     "id": "b393",
+     "type": "while",
+     "condition": {
+      "kind": "sensor",
+      "sensor": "obstacleAhead",
+      "not": true
+     },
+     "body": [
+      {
+       "id": "b388",
+       "type": "forward"
+      },
+      {
+       "id": "b392",
+       "type": "if",
+       "branches": [
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "lampShorts",
+          "not": false
+         },
+         "body": [
+          {
+           "id": "b389",
+           "type": "fix"
+          },
+          {
+           "id": "b390",
+           "type": "light"
+          }
+         ]
+        },
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "onLamp",
+          "not": false
+         },
+         "body": [
+          {
+           "id": "b391",
+           "type": "light"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "day": [
+    {
+     "id": "b398",
+     "type": "while",
+     "condition": {
+      "kind": "sensor",
+      "sensor": "obstacleAhead",
+      "not": true
+     },
+     "body": [
+      {
+       "id": "b394",
+       "type": "forward"
+      },
+      {
+       "id": "b397",
+       "type": "if",
+       "branches": [
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "lampShorts",
+          "not": false
+         },
+         "body": [
+          {
+           "id": "b395",
+           "type": "fix"
+          }
+         ]
+        },
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "onLamp",
+          "not": false
+         },
+         "body": [
+          {
+           "id": "b396",
+           "type": "light"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  "ravlyk": {
+   "night": [
+    {
+     "id": "b404",
+     "type": "loop",
+     "times": 6,
+     "body": [
+      {
+       "id": "b402",
+       "type": "while",
+       "condition": {
+        "kind": "sensor",
+        "sensor": "obstacleAhead",
+        "not": true
+       },
+       "body": [
+        {
+         "id": "b399",
+         "type": "forward"
+        },
+        {
+         "id": "b401",
+         "type": "if",
+         "branches": [
+          {
+           "condition": {
+            "kind": "sensor",
+            "sensor": "onLamp",
+            "not": false
+           },
+           "body": [
+            {
+             "id": "b400",
+             "type": "light"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "id": "b403",
+       "type": "right"
+      }
+     ]
+    }
+   ],
+   "day": [
+    {
+     "id": "b404",
+     "type": "loop",
+     "times": 6,
+     "body": [
+      {
+       "id": "b402",
+       "type": "while",
+       "condition": {
+        "kind": "sensor",
+        "sensor": "obstacleAhead",
+        "not": true
+       },
+       "body": [
+        {
+         "id": "b399",
+         "type": "forward"
+        },
+        {
+         "id": "b401",
+         "type": "if",
+         "branches": [
+          {
+           "condition": {
+            "kind": "sensor",
+            "sensor": "onLamp",
+            "not": false
+           },
+           "body": [
+            {
+             "id": "b400",
+             "type": "light"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "id": "b403",
+       "type": "right"
+      }
+     ]
+    }
+   ]
+  },
+  "zmiyka-bez-kintsya": {
+   "night": [
+    {
+     "id": "b413",
+     "type": "loop",
+     "times": 6,
+     "body": [
+      {
+       "id": "b408",
+       "type": "while",
+       "condition": {
+        "kind": "sensor",
+        "sensor": "obstacleAhead",
+        "not": true
+       },
+       "body": [
+        {
+         "id": "b405",
+         "type": "forward"
+        },
+        {
+         "id": "b407",
+         "type": "if",
+         "branches": [
+          {
+           "condition": {
+            "kind": "sensor",
+            "sensor": "onLamp",
+            "not": false
+           },
+           "body": [
+            {
+             "id": "b406",
+             "type": "light"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "id": "b409",
+       "type": "right"
+      },
+      {
+       "id": "b412",
+       "type": "if",
+       "branches": [
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "obstacleAhead",
+          "not": false
+         },
+         "body": [
+          {
+           "id": "b410",
+           "type": "left"
+          },
+          {
+           "id": "b411",
+           "type": "left"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "day": [
+    {
+     "id": "b413",
+     "type": "loop",
+     "times": 6,
+     "body": [
+      {
+       "id": "b408",
+       "type": "while",
+       "condition": {
+        "kind": "sensor",
+        "sensor": "obstacleAhead",
+        "not": true
+       },
+       "body": [
+        {
+         "id": "b405",
+         "type": "forward"
+        },
+        {
+         "id": "b407",
+         "type": "if",
+         "branches": [
+          {
+           "condition": {
+            "kind": "sensor",
+            "sensor": "onLamp",
+            "not": false
+           },
+           "body": [
+            {
+             "id": "b406",
+             "type": "light"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "id": "b409",
+       "type": "right"
+      },
+      {
+       "id": "b412",
+       "type": "if",
+       "branches": [
+        {
+         "condition": {
+          "kind": "sensor",
+          "sensor": "obstacleAhead",
+          "not": false
+         },
+         "body": [
+          {
+           "id": "b410",
+           "type": "left"
+          },
+          {
+           "id": "b411",
+           "type": "left"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  "obkhid-ozera": {
+   "night": [
+    {
+     "id": "b422",
+     "type": "loop",
+     "times": 4,
+     "body": [
+      {
+       "id": "b420",
+       "type": "while",
+       "condition": {
+        "kind": "sensor",
+        "sensor": "canJump",
+        "not": false
+       },
+       "body": [
+        {
+         "id": "b414",
+         "type": "jump"
+        },
+        {
+         "id": "b419",
+         "type": "if",
+         "branches": [
+          {
+           "condition": {
+            "kind": "sensor",
+            "sensor": "lampShorts",
+            "not": false
+           },
+           "body": [
+            {
+             "id": "b415",
+             "type": "fix"
+            },
+            {
+             "id": "b416",
+             "type": "light"
+            }
+           ]
+          },
+          {
+           "condition": {
+            "kind": "sensor",
+            "sensor": "onLamp",
+            "not": false
+           },
+           "body": [
+            {
+             "id": "b418",
+             "type": "if",
+             "branches": [
+              {
+               "condition": {
+                "kind": "sensor",
+                "sensor": "lampLit",
+                "not": true
+               },
+               "body": [
+                {
+                 "id": "b417",
+                 "type": "light"
+                }
+               ]
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "id": "b421",
+       "type": "right"
+      }
+     ]
+    }
+   ],
+   "day": [
+    {
+     "id": "b430",
+     "type": "loop",
+     "times": 4,
+     "body": [
+      {
+       "id": "b428",
+       "type": "while",
+       "condition": {
+        "kind": "sensor",
+        "sensor": "canJump",
+        "not": false
+       },
+       "body": [
+        {
+         "id": "b423",
+         "type": "jump"
+        },
+        {
+         "id": "b427",
+         "type": "if",
+         "branches": [
+          {
+           "condition": {
+            "kind": "sensor",
+            "sensor": "lampShorts",
+            "not": false
+           },
+           "body": [
+            {
+             "id": "b424",
+             "type": "fix"
+            }
+           ]
+          },
+          {
+           "condition": {
+            "kind": "sensor",
+            "sensor": "onLamp",
+            "not": false
+           },
+           "body": [
+            {
+             "id": "b426",
+             "type": "if",
+             "branches": [
+              {
+               "condition": {
+                "kind": "sensor",
+                "sensor": "lampLit",
+                "not": false
+               },
+               "body": [
+                {
+                 "id": "b425",
+                 "type": "light"
+                }
+               ]
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "id": "b429",
+       "type": "right"
+      }
+     ]
+    }
+   ]
+  },
+  "dva-yashchyky-skhody": {
+   "night": [
+    {
+     "id": "b432",
+     "type": "while",
+     "condition": {
+      "kind": "sensor",
+      "sensor": "obstacleAhead",
+      "not": true
+     },
+     "body": [
+      {
+       "id": "b431",
+       "type": "forward"
+      }
+     ]
+    },
+    {
+     "id": "b433",
+     "type": "jump"
+    },
+    {
+     "id": "b434",
+     "type": "jump"
+    },
+    {
+     "id": "b436",
+     "type": "while",
+     "condition": {
+      "kind": "sensor",
+      "sensor": "obstacleAhead",
+      "not": true
+     },
+     "body": [
+      {
+       "id": "b435",
+       "type": "forward"
+      }
+     ]
+    },
+    {
+     "id": "b437",
+     "type": "jump"
+    },
+    {
+     "id": "b438",
+     "type": "jump"
+    },
+    {
+     "id": "b439",
+     "type": "light"
+    }
+   ],
+   "day": [
+    {
+     "id": "b432",
+     "type": "while",
+     "condition": {
+      "kind": "sensor",
+      "sensor": "obstacleAhead",
+      "not": true
+     },
+     "body": [
+      {
+       "id": "b431",
+       "type": "forward"
+      }
+     ]
+    },
+    {
+     "id": "b433",
+     "type": "jump"
+    },
+    {
+     "id": "b434",
+     "type": "jump"
+    },
+    {
+     "id": "b436",
+     "type": "while",
+     "condition": {
+      "kind": "sensor",
+      "sensor": "obstacleAhead",
+      "not": true
+     },
+     "body": [
+      {
+       "id": "b435",
+       "type": "forward"
+      }
+     ]
+    },
+    {
+     "id": "b437",
+     "type": "jump"
+    },
+    {
+     "id": "b438",
+     "type": "jump"
+    },
+    {
+     "id": "b439",
+     "type": "light"
+    }
+   ]
+  },
+  "hrebinka": {
+   "night": [
+    {
+     "id": "b451",
+     "type": "loop",
+     "times": 3,
+     "body": [
+      {
+       "id": "b440",
+       "type": "forward"
+      },
+      {
+       "id": "b441",
+       "type": "left"
+      },
+      {
+       "id": "b443",
+       "type": "while",
+       "condition": {
+        "kind": "sensor",
+        "sensor": "obstacleAhead",
+        "not": true
+       },
+       "body": [
+        {
+         "id": "b442",
+         "type": "forward"
+        }
+       ]
+      },
+      {
+       "id": "b444",
+       "type": "light"
+      },
+      {
+       "id": "b445",
+       "type": "left"
+      },
+      {
+       "id": "b446",
+       "type": "left"
+      },
+      {
+       "id": "b448",
+       "type": "while",
+       "condition": {
+        "kind": "sensor",
+        "sensor": "obstacleAhead",
+        "not": true
+       },
+       "body": [
+        {
+         "id": "b447",
+         "type": "forward"
+        }
+       ]
+      },
+      {
+       "id": "b449",
+       "type": "left"
+      },
+      {
+       "id": "b450",
+       "type": "forward"
+      }
+     ]
+    }
+   ],
+   "day": [
+    {
+     "id": "b451",
+     "type": "loop",
+     "times": 3,
+     "body": [
+      {
+       "id": "b440",
+       "type": "forward"
+      },
+      {
+       "id": "b441",
+       "type": "left"
+      },
+      {
+       "id": "b443",
+       "type": "while",
+       "condition": {
+        "kind": "sensor",
+        "sensor": "obstacleAhead",
+        "not": true
+       },
+       "body": [
+        {
+         "id": "b442",
+         "type": "forward"
+        }
+       ]
+      },
+      {
+       "id": "b444",
+       "type": "light"
+      },
+      {
+       "id": "b445",
+       "type": "left"
+      },
+      {
+       "id": "b446",
+       "type": "left"
+      },
+      {
+       "id": "b448",
+       "type": "while",
+       "condition": {
+        "kind": "sensor",
+        "sensor": "obstacleAhead",
+        "not": true
+       },
+       "body": [
+        {
+         "id": "b447",
+         "type": "forward"
+        }
+       ]
+      },
+      {
+       "id": "b449",
+       "type": "left"
+      },
+      {
+       "id": "b450",
+       "type": "forward"
+      }
+     ]
+    }
+   ]
+  },
+  "nichnyy-obkhid-kvartalu": {
+   "night": [
+    {
+     "id": "b460",
+     "type": "loop",
+     "times": 4,
+     "body": [
+      {
+       "id": "b458",
+       "type": "while",
+       "condition": {
+        "kind": "sensor",
+        "sensor": "obstacleAhead",
+        "not": true
+       },
+       "body": [
+        {
+         "id": "b452",
+         "type": "forward"
+        },
+        {
+         "id": "b457",
+         "type": "if",
+         "branches": [
+          {
+           "condition": {
+            "kind": "sensor",
+            "sensor": "lampShorts",
+            "not": false
+           },
+           "body": [
+            {
+             "id": "b453",
+             "type": "fix"
+            },
+            {
+             "id": "b454",
+             "type": "light"
+            }
+           ]
+          },
+          {
+           "condition": {
+            "kind": "sensor",
+            "sensor": "onLamp",
+            "not": false
+           },
+           "body": [
+            {
+             "id": "b455",
+             "type": "light"
+            }
+           ]
+          }
+         ],
+         "elseBody": [
+          {
+           "id": "b456",
+           "type": "take"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "id": "b459",
+       "type": "right"
+      }
+     ]
+    }
+   ],
+   "day": [
+    {
+     "id": "b469",
+     "type": "loop",
+     "times": 4,
+     "body": [
+      {
+       "id": "b467",
+       "type": "while",
+       "condition": {
+        "kind": "sensor",
+        "sensor": "obstacleAhead",
+        "not": true
+       },
+       "body": [
+        {
+         "id": "b461",
+         "type": "forward"
+        },
+        {
+         "id": "b466",
+         "type": "if",
+         "branches": [
+          {
+           "condition": {
+            "kind": "sensor",
+            "sensor": "lampShorts",
+            "not": false
+           },
+           "body": [
+            {
+             "id": "b462",
+             "type": "fix"
+            }
+           ]
+          },
+          {
+           "condition": {
+            "kind": "sensor",
+            "sensor": "onLamp",
+            "not": false
+           },
+           "body": [
+            {
+             "id": "b464",
+             "type": "if",
+             "branches": [
+              {
+               "condition": {
+                "kind": "sensor",
+                "sensor": "lampLit",
+                "not": false
+               },
+               "body": [
+                {
+                 "id": "b463",
+                 "type": "light"
+                }
+               ]
+              }
+             ]
+            }
+           ]
+          }
+         ],
+         "elseBody": [
+          {
+           "id": "b465",
+           "type": "take"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "id": "b468",
+       "type": "right"
+      }
+     ]
+    }
+   ]
+  },
+  "velykyy-marshrut": {
+   "night": [
+    {
+     "id": "b478",
+     "type": "loop",
+     "times": 8,
+     "body": [
+      {
+       "id": "b476",
+       "type": "while",
+       "condition": {
+        "kind": "sensor",
+        "sensor": "obstacleAhead",
+        "not": true
+       },
+       "body": [
+        {
+         "id": "b470",
+         "type": "forward"
+        },
+        {
+         "id": "b475",
+         "type": "if",
+         "branches": [
+          {
+           "condition": {
+            "kind": "sensor",
+            "sensor": "lampShorts",
+            "not": false
+           },
+           "body": [
+            {
+             "id": "b471",
+             "type": "fix"
+            },
+            {
+             "id": "b472",
+             "type": "light"
+            }
+           ]
+          },
+          {
+           "condition": {
+            "kind": "sensor",
+            "sensor": "onLamp",
+            "not": false
+           },
+           "body": [
+            {
+             "id": "b473",
+             "type": "light"
+            }
+           ]
+          }
+         ],
+         "elseBody": [
+          {
+           "id": "b474",
+           "type": "take"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "id": "b477",
+       "type": "right"
+      }
+     ]
+    }
+   ],
+   "day": [
+    {
+     "id": "b487",
+     "type": "loop",
+     "times": 8,
+     "body": [
+      {
+       "id": "b485",
+       "type": "while",
+       "condition": {
+        "kind": "sensor",
+        "sensor": "obstacleAhead",
+        "not": true
+       },
+       "body": [
+        {
+         "id": "b479",
+         "type": "forward"
+        },
+        {
+         "id": "b484",
+         "type": "if",
+         "branches": [
+          {
+           "condition": {
+            "kind": "sensor",
+            "sensor": "lampShorts",
+            "not": false
+           },
+           "body": [
+            {
+             "id": "b480",
+             "type": "fix"
+            }
+           ]
+          },
+          {
+           "condition": {
+            "kind": "sensor",
+            "sensor": "onLamp",
+            "not": false
+           },
+           "body": [
+            {
+             "id": "b482",
+             "type": "if",
+             "branches": [
+              {
+               "condition": {
+                "kind": "sensor",
+                "sensor": "lampLit",
+                "not": false
+               },
+               "body": [
+                {
+                 "id": "b481",
+                 "type": "light"
+                }
+               ]
+              }
+             ]
+            }
+           ]
+          }
+         ],
+         "elseBody": [
+          {
+           "id": "b483",
+           "type": "take"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "id": "b486",
+       "type": "right"
+      }
+     ]
+    }
+   ]
+  }
+ }
+}

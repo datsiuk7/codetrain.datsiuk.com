@@ -1,4 +1,5 @@
-import { sensors, comparisons, defaultCondition } from './logic.mjs';
+import { sensors, getSensors, comparisons, defaultCondition } from './logic.mjs';
+import { getLang, t } from './i18n.mjs';
 
 export function createButton(text, action, locked = false) {
   const btn = document.createElement('button');
@@ -61,30 +62,41 @@ export function createValueEditor({ expr, onChange, allowed = [], onRedraw, lock
   );
 
   if (expr.kind === 'number') {
-    box.append(createNumberInput(expr.value, (v) => { expr.value = v; }, 'Число', locked));
+    box.append(createNumberInput(expr.value, (v) => {
+      expr.value = v;
+      onChange?.(expr);
+      onRedraw?.();
+    }, 'Число', locked));
   }
 
   return box;
 }
 
-export function createConditionEditor({ condition, allowed = [], allowedSensors = null, onRedraw, locked = false }) {
+export function createConditionEditor({ condition, allowed = [], allowedSensors = null, onRedraw, onChange, locked = false }) {
   const wrap = document.createElement('div');
   wrap.className = 'condition-editor';
 
   const term = condition.terms?.[0] || condition;
   term.kind = 'sensor';
 
-  const notBtn = createButton('НЕ', () => {
+  const handleChange = () => {
+    onRedraw?.();
+    onChange?.(condition);
+  };
+
+  const lang = getLang();
+  const notBtn = createButton(t('notBtn', lang), () => {
     term.not = !term.not;
-    onRedraw();
+    handleChange();
   }, locked);
   notBtn.className = 'not-btn' + (term.not ? ' selected' : '');
   notBtn.setAttribute('aria-pressed', String(!!term.not));
   wrap.append(notBtn);
 
+  const activeSensorsDict = getSensors(lang);
   const availableSensors = Array.isArray(allowedSensors) && allowedSensors.length
-    ? Object.fromEntries(Object.entries(sensors).filter(([k]) => allowedSensors.includes(k)))
-    : sensors;
+    ? Object.fromEntries(Object.entries(activeSensorsDict).filter(([k]) => allowedSensors.includes(k)))
+    : activeSensorsDict;
 
   const validKeys = Object.keys(availableSensors);
   if (!validKeys.includes(term.sensor) && validKeys.length) {
@@ -94,8 +106,8 @@ export function createConditionEditor({ condition, allowed = [], allowedSensors 
   wrap.append(
     createSelect(availableSensors, term.sensor || validKeys[0] || 'obstacleAhead', (v) => {
       term.sensor = v;
-      onRedraw();
-    }, 'Датчик', locked)
+      handleChange();
+    }, lang === 'en' ? 'Sensor' : 'Датчик', locked)
   );
 
   return wrap;

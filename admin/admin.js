@@ -1,7 +1,7 @@
 import { commands, sensors, validateLevel, initialState, categories, getCategory, renderDifficultyStars, getDifficultyInfo } from '../logic.mjs';
 import { World } from '../scene.js';
 import { icon, tools, refreshCell } from './map-editor.js';
-import { createFreshLevel, loadDraft, saveDraft, LevelHistory } from './level-state.js';
+import { createFreshLevel, loadDraft, saveDraft, LevelHistory, handleHistoryKeyboard } from './level-state.js';
 import {
   getExistingIds,
   makeUniqueId,
@@ -18,6 +18,14 @@ import { renderHintEditor } from './hint-editor.js';
 import { enableLevelTreeDnd, isLevelTreeDragging } from './level-tree-dnd.js';
 
 const $ = (s) => document.querySelector(s);
+const esc = (s) =>
+  String(s ?? '').replace(/[&<>"']/g, (c) => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;'
+  }[c]));
 
 let level;
 let dirty = false;
@@ -243,10 +251,10 @@ $('#zoom-in').onclick = () => {
   gridSize();
 };
 
-for (const id of ['name', 'limit', 'repairKits']) {
+for (const id of ['name', 'nameEn', 'limit', 'repairKits']) {
   if ($('#' + id)) {
     $('#' + id).oninput = () => {
-      level[id] = id === 'name' ? $('#' + id).value : Math.max(0, parseInt($('#' + id).value, 10) || 0);
+      level[id] = (id === 'name' || id === 'nameEn') ? $('#' + id).value : Math.max(0, parseInt($('#' + id).value, 10) || 0);
       if (id === 'name') {
         const slug = slugify(level.name);
         level.id = slug;
@@ -347,6 +355,19 @@ function renderDifficultyPicker(val, isPreview = false) {
   });
 }
 
+function renderLevelTree() {
+  if (savedId) {
+    const item = document.querySelector(`.cat-level-item[data-id="${savedId}"]`);
+    if (item) {
+      const starsSpan = item.querySelector('.difficulty-stars');
+      if (starsSpan) {
+        starsSpan.outerHTML = renderDifficultyStars(level?.difficulty || 1);
+      }
+    }
+  }
+  return list();
+}
+
 const diffPicker = $('#difficulty-picker');
 if (diffPicker) {
   diffPicker.querySelectorAll('.diff-star-btn').forEach((btn) => {
@@ -384,10 +405,17 @@ const handleDescInput = () => {
   level.descriptionDay = day;
   level.description = night || day;
   if ($('#description')) $('#description').value = level.description;
+  const nightEn = $('#descriptionNightEn')?.value ?? '';
+  const dayEn = $('#descriptionDayEn')?.value ?? '';
+  level.descriptionNightEn = nightEn;
+  level.descriptionDayEn = dayEn;
+  level.descriptionEn = nightEn || dayEn;
   change();
 };
 if ($('#descriptionNight')) $('#descriptionNight').oninput = handleDescInput;
 if ($('#descriptionDay')) $('#descriptionDay').oninput = handleDescInput;
+if ($('#descriptionNightEn')) $('#descriptionNightEn').oninput = handleDescInput;
+if ($('#descriptionDayEn')) $('#descriptionDayEn').oninput = handleDescInput;
 if ($('#description')) {
   $('#description').oninput = () => {
     level.description = $('#description').value;
@@ -505,25 +533,45 @@ $('#btn-depth-inc')?.addEventListener('click', () => {
   applyDimensions(level.width, Math.min(10, level.depth + 1));
 });
 
-$('#undo').onclick = () => {
+function performUndo() {
   const previous = history.undo(level);
   if (previous) {
     level = previous;
     change();
     fill();
     status('Попередню зміну скасовано.');
+    return true;
   }
-};
+  return false;
+}
 
-$('#redo').onclick = () => {
+function performRedo() {
   const next = history.redo(level);
   if (next) {
     level = next;
     change();
     fill();
     status('Зміну повернено.');
+    return true;
   }
-};
+  return false;
+}
+
+const undoBtn = $('#undo');
+if (undoBtn) undoBtn.onclick = performUndo;
+const redoBtn = $('#redo');
+if (redoBtn) redoBtn.onclick = performRedo;
+
+function handleHistoryKeydown(e) {
+  return handleHistoryKeyboard(e, {
+    onUndo: performUndo,
+    onRedo: performRedo
+  });
+}
+
+if (typeof document !== 'undefined') {
+  document.addEventListener('keydown', handleHistoryKeydown);
+}
 
 $('#view-grid').onclick = () => {
   view = 'grid';
@@ -675,7 +723,7 @@ async function list() {
       <span class="cat-summary-left">
         <span class="cat-caret">▸</span>
         <span class="cat-icon">${cat.icon || '📁'}</span>
-        <span class="cat-title">${cat.title}</span>
+        <span class="cat-title">${esc(cat.title)}</span>
       </span>
       <span class="cat-count">${group.length}</span>
     `;
@@ -715,7 +763,7 @@ async function list() {
         const diff = (l.id === savedId && level) ? (level.difficulty || l.difficulty) : l.difficulty;
         btn.innerHTML = `
           <span class="level-bullet">●</span>
-          <span class="level-name">${l.name || l.id}</span>
+          <span class="level-name">${esc(l.name || l.id)}</span>
           ${renderDifficultyStars(diff)}
           ${l.hidden ? '<span class="level-badge-hidden">прихов.</span>' : ''}
         `;
@@ -827,7 +875,13 @@ function fill() {
   level.descriptionDay = dayDesc;
   level.description = nightDesc || dayDesc || '';
 
-  for (const id of ['id', 'name', 'description', 'width', 'depth', 'limit', 'repairKits']) {
+  const nightDescEn = level.descriptionNightEn !== undefined ? level.descriptionNightEn : level.descriptionEn || '';
+  const dayDescEn = level.descriptionDayEn !== undefined ? level.descriptionDayEn : level.descriptionEn || '';
+  level.descriptionNightEn = nightDescEn;
+  level.descriptionDayEn = dayDescEn;
+  level.descriptionEn = nightDescEn || dayDescEn || '';
+
+  for (const id of ['id', 'name', 'nameEn', 'description', 'width', 'depth', 'limit', 'repairKits']) {
     if ($('#' + id)) $('#' + id).value = level[id] ?? (id === 'limit' || id === 'repairKits' ? 0 : '');
   }
   const enabledCb = $('#level-enabled');
@@ -839,6 +893,8 @@ function fill() {
   renderDifficultyPicker(level.difficulty || 1);
   if ($('#descriptionNight')) $('#descriptionNight').value = nightDesc;
   if ($('#descriptionDay')) $('#descriptionDay').value = dayDesc;
+  if ($('#descriptionNightEn')) $('#descriptionNightEn').value = nightDescEn;
+  if ($('#descriptionDayEn')) $('#descriptionDayEn').value = dayDescEn;
   $('#category').replaceChildren();
   if (!level.category) $('#category').add(new Option('Обери категорію…', ''));
   for (const cat of dynamicCategories) $('#category').add(new Option(cat.title, cat.id));
@@ -1019,9 +1075,13 @@ async function save(copy = false) {
     }
     const candidate = structuredClone(level);
     candidate.category = $('#category').value || level.category || getCategory(level);
+    candidate.nameEn = $('#nameEn')?.value ?? level.nameEn ?? '';
     candidate.descriptionNight = $('#descriptionNight')?.value ?? level.descriptionNight ?? '';
     candidate.descriptionDay = $('#descriptionDay')?.value ?? level.descriptionDay ?? '';
     candidate.description = candidate.descriptionNight || candidate.descriptionDay || level.description || '';
+    candidate.descriptionNightEn = $('#descriptionNightEn')?.value ?? level.descriptionNightEn ?? '';
+    candidate.descriptionDayEn = $('#descriptionDayEn')?.value ?? level.descriptionDayEn ?? '';
+    candidate.descriptionEn = candidate.descriptionNightEn || candidate.descriptionDayEn || level.descriptionEn || '';
     const isEnabled = $('#level-enabled') ? $('#level-enabled').checked : !level.hidden;
     if (!isEnabled) {
       candidate.hidden = true;
@@ -1127,3 +1187,5 @@ list()
     }
   })
   .catch((e) => status(e.message, true));
+
+export { performUndo, performRedo, handleHistoryKeydown };

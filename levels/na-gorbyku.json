@@ -160,7 +160,9 @@
   "hints": [
     {
       "text": "Можеш стрибати",
-      "target": "command:jump"
+      "target": "command:jump",
+      "textEn": "You can jump"
     }
-  ]
+  ],
+  "nameEn": "On the Little Hill"
 }

@@ -109,15 +109,19 @@
   "hints": [
     {
       "text": "Ти можеш натиснути на команду \n\nабо перемістити її на поле команд\n\nподивися нижче, мигає зеленим",
-      "target": "command:light"
+      "target": "command:light",
+      "textEn": "You can click a command \n\nor drag it into the program area\n\nlook below, it flashes green"
     },
     {
       "text": "Це поле команд, сюди треба покласти команду",
-      "target": "program"
+      "target": "program",
+      "textEn": "This is the program area — place your command here"
     },
     {
       "text": "Коли покладеш команду ЗАПУСКАЙ!)",
-      "target": "run"
+      "target": "run",
+      "textEn": "Once you place the command, press RUN!)"
     }
-  ]
+  ],
+  "nameEn": "Let's Go!"
 }

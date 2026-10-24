@@ -1,0 +1,235 @@
+{
+  "id": "cherez-pahorby",
+  "name": "Через пагорби",
+  "description": "Піднімайся звивистим хребтом пагорба, повертаючи перед скелями та засвічуючи ліхтарі.",
+  "descriptionNight": "Стежка на пагорбі двічі повертає перед валунами. Використай «Якщо Можна стрибнути -> Стрибок, інакше -> Праворуч» та перевіряй наявність ліхтаря.",
+  "descriptionDay": "Піднімися звивистими терасами пагорба та вимкни всі ліхтарі на шляху.",
+  "category": "conditions",
+  "difficulty": 2,
+  "width": 6,
+  "depth": 6,
+  "start": {
+    "x": 1,
+    "z": 4,
+    "dir": 0
+  },
+  "allowed": [
+    "right",
+    "jump",
+    "light",
+    "loop",
+    "if"
+  ],
+  "allowElif": false,
+  "allowElse": true,
+  "allowedSensors": [
+    "canJump",
+    "onLamp"
+  ],
+  "hints": [
+    {
+      "text": "На кутах стежки лежать валуни, тому просто стрибати вперед не можна. Використай «Якщо Можна стрибнути -> Стрибок, інакше -> Праворуч» та окрему перевірку «Тут є ліхтар чи будинок».",
+      "target": "command:jump",
+      "textEn": "Boulders block the corners of the path, so you cannot just jump straight ahead. Use \"If Can jump -> Jump, else -> Turn right\" and a separate \"At lantern or house\" check."
+    }
+  ],
+  "limit": 8,
+  "repairKits": 0,
+  "cells": [
+    [
+      null,
+      {
+        "height": 2,
+        "tree": false,
+        "lamp": false,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": true,
+        "box": false
+      },
+      null,
+      null,
+      null,
+      null
+    ],
+    [
+      null,
+      {
+        "height": 2,
+        "tree": false,
+        "lamp": false,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      },
+      {
+        "height": 3,
+        "tree": false,
+        "lamp": true,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      },
+      {
+        "height": 3,
+        "tree": false,
+        "lamp": false,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      },
+      {
+        "height": 3,
+        "tree": false,
+        "lamp": false,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": true,
+        "box": false
+      },
+      null
+    ],
+    [
+      null,
+      {
+        "height": 2,
+        "tree": false,
+        "lamp": true,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      },
+      null,
+      {
+        "height": 4,
+        "tree": false,
+        "lamp": true,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      },
+      null,
+      null
+    ],
+    [
+      null,
+      {
+        "height": 1,
+        "tree": false,
+        "lamp": true,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      },
+      {
+        "height": 2,
+        "tree": true,
+        "lamp": false,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      },
+      {
+        "height": 4,
+        "tree": false,
+        "lamp": true,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      },
+      null,
+      null
+    ],
+    [
+      null,
+      {
+        "height": 0,
+        "tree": false,
+        "lamp": false,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      },
+      null,
+      null,
+      null,
+      null
+    ],
+    [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ]
+  ],
+  "nameEn": "Across the Hills",
+  "descriptionNightEn": "The hill path turns twice before boulders. Use \"If Can jump -> Jump, else -> Turn right\" and check for a streetlamp.",
+  "descriptionEn": "The hill path turns twice before boulders. Use \"If Can jump -> Jump, else -> Turn right\" and check for a streetlamp.",
+  "descriptionDayEn": "Climb the winding hill terraces and turn off all the streetlamps along the way."
+}

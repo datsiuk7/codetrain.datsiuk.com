@@ -1,0 +1,249 @@
+{
+  "id": "mist-nad-bezodneyu",
+  "name": "Міст над безоднею",
+  "description": "Вузький місток звивається над прірвою. Перед обривом треба вчасно змінити напрямок — праворуч чи ліворуч.",
+  "descriptionNight": "Пройди місток за 8 стрибків. Якщо далі обрив — спробуй праворуч, а якщо й там обрив — розверни робота ліворуч. Запали всі ліхтарі.",
+  "descriptionDay": "Пройди місток за 8 стрибків. Якщо далі обрив — спробуй праворуч, а якщо й там обрив — розверни робота ліворуч. Вимкни всі ліхтарі.",
+  "category": "functions",
+  "difficulty": 3,
+  "width": 6,
+  "depth": 6,
+  "start": {
+    "x": 0,
+    "z": 5,
+    "dir": 0
+  },
+  "allowed": [
+    "jump",
+    "left",
+    "right",
+    "light",
+    "loop",
+    "if"
+  ],
+  "allowElif": false,
+  "allowElse": false,
+  "allowedSensors": [
+    "canJump",
+    "onLamp"
+  ],
+  "hints": [
+    {
+      "text": "Прірва — це не плитка, тому датчик «Можна стрибнути» там каже «ні». Крок: спробуй повернути, перевір, стрибни.",
+      "textEn": "A chasm is not a tile, so the \"Can jump\" sensor says \"no\" there. Step: try turning, check, jump.",
+      "target": "scene"
+    }
+  ],
+  "limit": 9,
+  "repairKits": 0,
+  "cells": [
+    [
+      null,
+      {
+        "height": 0,
+        "tree": false,
+        "lamp": false,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": true,
+        "box": false
+      },
+      null,
+      null,
+      null,
+      null
+    ],
+    [
+      null,
+      null,
+      {
+        "height": 0,
+        "tree": false,
+        "lamp": true,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      },
+      {
+        "height": 0,
+        "tree": false,
+        "lamp": false,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      },
+      {
+        "height": 0,
+        "tree": false,
+        "lamp": true,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      },
+      null
+    ],
+    [
+      null,
+      null,
+      {
+        "height": 0,
+        "tree": false,
+        "lamp": false,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      },
+      null,
+      null,
+      null
+    ],
+    [
+      {
+        "height": 0,
+        "tree": false,
+        "lamp": true,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      },
+      {
+        "height": 0,
+        "tree": false,
+        "lamp": false,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      },
+      {
+        "height": 0,
+        "tree": false,
+        "lamp": true,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      },
+      null,
+      null,
+      {
+        "height": 0,
+        "tree": false,
+        "lamp": false,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": true,
+        "rock": false,
+        "box": false
+      }
+    ],
+    [
+      {
+        "height": 0,
+        "tree": false,
+        "lamp": false,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      },
+      null,
+      null,
+      null,
+      {
+        "height": 0,
+        "tree": true,
+        "lamp": false,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      },
+      null
+    ],
+    [
+      {
+        "height": 0,
+        "tree": false,
+        "lamp": false,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      },
+      null,
+      null,
+      null,
+      null,
+      null
+    ]
+  ],
+  "nameEn": "Bridge over the Abyss",
+  "descriptionNightEn": "Cross the bridge in 8 jumps. If there is a drop ahead — try right, and if there is a drop there too — turn the robot left. Light all the lamps.",
+  "descriptionEn": "A narrow bridge winds over the abyss. Before a drop you must turn in time — right or left.",
+  "descriptionDayEn": "Cross the bridge in 8 jumps. If there is a drop ahead — try right, and if there is a drop there too — turn the robot left. Turn off all the lamps."
+}

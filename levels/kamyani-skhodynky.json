@@ -1,0 +1,226 @@
+{
+  "id": "kamyani-skhodynky",
+  "name": "Кам'яні сходинки",
+  "description": "Піднімися звивистими камʼяними сходами до ліхтаря на скелі, повертаючи перед валунами.",
+  "descriptionNight": "Сходи повертають перед камінням! Використай «Якщо Можна стрибнути -> Стрибок, інакше -> Праворуч», щоб зійти на вершину й запалити ліхтар.",
+  "descriptionDay": "Дістанься верхньої скелі, обираючи між стрибком і поворотом праворуч за допомогою «Якщо / Інакше», і вимкни ліхтар.",
+  "category": "conditions",
+  "difficulty": 1,
+  "width": 6,
+  "depth": 6,
+  "start": {
+    "x": 1,
+    "z": 4,
+    "dir": 0
+  },
+  "allowed": [
+    "right",
+    "jump",
+    "light",
+    "loop",
+    "if"
+  ],
+  "allowElif": false,
+  "allowElse": true,
+  "allowedSensors": [
+    "canJump"
+  ],
+  "hints": [
+    {
+      "text": "Просто стрибати вперед не вийде — на кутах сходи впираються у валуни! Додай гілку «＋ else» (Інакше) до блоку «Якщо».",
+      "target": "command:if",
+      "textEn": "Simply jumping forward will not work — boulders block the corners! Add an \"＋ else\" branch to the \"If\" block."
+    },
+    {
+      "text": "У циклі на 8 повторень: якщо «Можна стрибнути» — виконай «Стрибок», інакше — «Праворуч». Після циклу запали ліхтар.",
+      "target": "command:jump",
+      "textEn": "In an 8-repeat loop: if \"Can jump\" — execute \"Jump\", otherwise — \"Turn right\". After the loop, light the streetlamp."
+    }
+  ],
+  "limit": 6,
+  "repairKits": 0,
+  "cells": [
+    [
+      null,
+      {
+        "height": 2,
+        "tree": false,
+        "lamp": false,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": true,
+        "box": false
+      },
+      null,
+      null,
+      null,
+      null
+    ],
+    [
+      null,
+      {
+        "height": 2,
+        "tree": false,
+        "lamp": false,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      },
+      {
+        "height": 2,
+        "tree": false,
+        "lamp": false,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      },
+      {
+        "height": 3,
+        "tree": false,
+        "lamp": false,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      },
+      {
+        "height": 3,
+        "tree": false,
+        "lamp": false,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": true,
+        "box": false
+      },
+      null
+    ],
+    [
+      null,
+      {
+        "height": 1,
+        "tree": false,
+        "lamp": false,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      },
+      null,
+      {
+        "height": 4,
+        "tree": false,
+        "lamp": true,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      },
+      null,
+      null
+    ],
+    [
+      null,
+      {
+        "height": 1,
+        "tree": false,
+        "lamp": false,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      },
+      {
+        "height": 1,
+        "tree": true,
+        "lamp": false,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      },
+      null,
+      null,
+      null
+    ],
+    [
+      null,
+      {
+        "height": 0,
+        "tree": false,
+        "lamp": false,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      },
+      null,
+      null,
+      null,
+      null
+    ],
+    [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ]
+  ],
+  "nameEn": "Stone Steps",
+  "descriptionNightEn": "The stairs turn before the rocks! Use \"If Can jump -> Jump, else -> Turn right\" to climb to the top and light the streetlamp.",
+  "descriptionEn": "The stairs turn before the rocks! Use \"If Can jump -> Jump, else -> Turn right\" to climb to the top and light the streetlamp.",
+  "descriptionDayEn": "Reach the upper cliff by choosing between jumping and turning right with \"If / Else\", and turn off the streetlamp."
+}

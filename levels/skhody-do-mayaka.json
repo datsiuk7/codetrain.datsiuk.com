@@ -1,0 +1,208 @@
+{
+  "id": "skhody-do-mayaka",
+  "name": "Сходи до маяка",
+  "description": "Піднімися гвинтовими сходами над водою на вершину маяка, повертаючи на краях уступів.",
+  "descriptionNight": "Прольоти сходів мають різну довжину (3, 2, 2 і 1 крок), а навколо — море! Перевіряй «НЕ Можна стрибнути» для повороту праворуч, стрибай на наступну сходинку та вмикай ліхтарі.",
+  "descriptionDay": "Піднімися гвинтовими сходами маяка над морем та вимкни всі сигнальні ліхтарі.",
+  "category": "conditions",
+  "difficulty": 3,
+  "width": 5,
+  "depth": 6,
+  "start": {
+    "x": 1,
+    "z": 4,
+    "dir": 0
+  },
+  "allowed": [
+    "right",
+    "jump",
+    "light",
+    "loop",
+    "if"
+  ],
+  "allowElif": false,
+  "allowElse": false,
+  "allowedSensors": [
+    "canJump",
+    "onLamp"
+  ],
+  "hints": [
+    {
+      "text": "Оскільки сторони спіралі різної довжини, без умови тут не обійтися: на краю кожного прольоту попереду вода, тому датчик «НЕ Можна стрибнути» підкаже, коли повернути праворуч.",
+      "target": "command:if",
+      "textEn": "Because the sides of the spiral have different lengths, you need a condition: at the end of each flight there is water ahead, so \"NOT Can jump\" tells you when to turn right."
+    },
+    {
+      "text": "У циклі на 8 повторень: якщо «НЕ Можна стрибнути» — поверни праворуч, далі виконай «Стрибок» і якщо «Тут є ліхтар чи будинок» — увімкни світло.",
+      "target": "command:jump",
+      "textEn": "In an 8-repeat loop: if \"NOT Can jump\" — turn right, then execute \"Jump\", and if \"At lantern or house\" — toggle the light."
+    }
+  ],
+  "limit": 8,
+  "repairKits": 0,
+  "cells": [
+    [
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    [
+      null,
+      {
+        "height": 2,
+        "tree": false,
+        "lamp": false,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      },
+      {
+        "height": 2,
+        "tree": false,
+        "lamp": true,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      },
+      {
+        "height": 3,
+        "tree": false,
+        "lamp": false,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      },
+      null
+    ],
+    [
+      null,
+      {
+        "height": 1,
+        "tree": false,
+        "lamp": false,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      },
+      null,
+      {
+        "height": 3,
+        "tree": false,
+        "lamp": true,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      },
+      null
+    ],
+    [
+      null,
+      {
+        "height": 1,
+        "tree": false,
+        "lamp": true,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      },
+      {
+        "height": 5,
+        "tree": false,
+        "lamp": true,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      },
+      {
+        "height": 4,
+        "tree": false,
+        "lamp": false,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      },
+      null
+    ],
+    [
+      null,
+      {
+        "height": 0,
+        "tree": false,
+        "lamp": false,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      },
+      null,
+      null,
+      null
+    ],
+    [
+      null,
+      null,
+      null,
+      null,
+      null
+    ]
+  ],
+  "nameEn": "Stairs to the Lighthouse",
+  "descriptionNightEn": "The stair flights have different lengths (3, 2, 2, and 1 step), surrounded by the sea! Check \"NOT Can jump\" to turn right, jump onto the next step, and light the lamps.",
+  "descriptionEn": "The stair flights have different lengths (3, 2, 2, and 1 step), surrounded by the sea! Check \"NOT Can jump\" to turn right, jump onto the next step, and light the lamps.",
+  "descriptionDayEn": "Climb the spiral lighthouse stairs above the sea and turn off all signal lamps."
+}

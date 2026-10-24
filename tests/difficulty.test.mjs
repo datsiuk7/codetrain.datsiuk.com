@@ -106,6 +106,7 @@ test('admin.js implements renderDifficultyPicker and binds clickable star button
   assert.match(code, /getDifficultyInfo/);
   assert.match(code, /function renderDifficultyPicker/);
   assert.match(code, /diffPicker\.querySelectorAll\('\.diff-star-btn'\)/);
+  assert.match(code, /function renderLevelTree/);
   assert.match(code, /renderLevelTree/);
 });
 

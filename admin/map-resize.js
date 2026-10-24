@@ -1,4 +1,4 @@
-import { applyDimensions as validateDimensions } from './map-editor.js';
+import { applyDimensions as validateDimensions, hasCellObject } from './map-editor.js';
 
 export function resizeLevel(level, w, d, onStatus) {
   if (!validateDimensions(level, w, d, onStatus)) return null;
@@ -18,7 +18,7 @@ export function resizeLevel(level, w, d, onStatus) {
   for (let z = 0; z < oldD; z++) {
     for (let x = 0; x < oldW; x++) {
       const c = level.cells[z]?.[x];
-      if (c && (c.lamp || c.house || c.tree || c.height > 0 || (hasHoles && c !== null))) {
+      if (hasCellObject(c, hasHoles)) {
         anchorObjects.push({ x, z });
       }
     }
@@ -42,7 +42,18 @@ export function resizeLevel(level, w, d, onStatus) {
       if (srcZ >= 0 && srcZ < oldD && srcX >= 0 && srcX < oldW) {
         return level.cells[srcZ][srcX] ? { ...level.cells[srcZ][srcX] } : null;
       }
-      return { height: 0, tree: false, lamp: false, house: false, lit: false };
+      return {
+        height: 0,
+        tree: false,
+        lamp: false,
+        house: false,
+        lit: false,
+        bush: false,
+        rock: false,
+        box: false,
+        bulb: false,
+        kit: false
+      };
     })
   );
 
@@ -51,7 +62,7 @@ export function resizeLevel(level, w, d, onStatus) {
   const isValidStart = (x, z) => {
     if (x < 0 || x >= w || z < 0 || z >= d) return false;
     const c = newCells[z]?.[x];
-    return !!c && !c.tree;
+    return !!c && !c.tree && !c.bush && !c.rock && !c.box && !c.house;
   };
 
   if (!isValidStart(newStartX, newStartZ)) {
@@ -69,8 +80,8 @@ export function resizeLevel(level, w, d, onStatus) {
       for (let z = 0; z < d; z++) {
         for (let x = 0; x < w; x++) {
           if (isValidStart(x, z)) {
-            const hasLamp = !!newCells[z][x].lamp;
-            const dist = Math.hypot(x - clampedX, z - clampedZ) + (hasLamp ? 2 : 0);
+            const hasExtra = !!(newCells[z][x].lamp || newCells[z][x].bulb || newCells[z][x].kit);
+            const dist = Math.hypot(x - clampedX, z - clampedZ) + (hasExtra ? 2 : 0);
             if (dist < bestDist) {
               bestDist = dist;
               bestX = x;
@@ -85,7 +96,18 @@ export function resizeLevel(level, w, d, onStatus) {
       } else {
         newStartX = clampedX;
         newStartZ = clampedZ;
-        newCells[newStartZ][newStartX] = { height: 0, tree: false, lamp: false, house: false, lit: false };
+        newCells[newStartZ][newStartX] = {
+          height: 0,
+          tree: false,
+          lamp: false,
+          house: false,
+          lit: false,
+          bush: false,
+          rock: false,
+          box: false,
+          bulb: false,
+          kit: false
+        };
       }
     }
   }

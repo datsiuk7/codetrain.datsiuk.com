@@ -8,8 +8,8 @@ export function compile(l, program) {
   for (const b of program) {
     if (!l.allowed.includes(b.type)) throw new Error('У програмі є недоступна команда.');
     if (b.type === 'loop') {
-      if (!Number.isInteger(b.times) || b.times < 2 || b.times > 10 || !b.body.length) {
-        throw new Error('Цикл: 2–10 повторень і хоча б одна команда всередині.');
+      if (!Number.isInteger(b.times) || b.times < 1 || b.times > 10 || !b.body.length) {
+        throw new Error('Цикл: 1–10 повторень і хоча б одна команда всередині.');
       }
       for (let i = 0; i < b.times; i++) {
         for (const child of b.body) {

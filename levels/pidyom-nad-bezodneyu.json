@@ -1,0 +1,251 @@
+{
+  "id": "pidyom-nad-bezodneyu",
+  "name": "Підйом над безоднею",
+  "description": "Місток над прірвою ще й піднімається сходинками вгору. Стрибай, повертай перед обривом і лагодь іскристі ліхтарі.",
+  "descriptionNight": "Пройди 9 стрибків. Перед обривом пробуй праворуч, інакше розверни робота ліворуч. Іскристі ліхтарі полагодь і запали, решту — запали.",
+  "descriptionDay": "Пройди 9 стрибків. Перед обривом пробуй праворуч, інакше розверни робота ліворуч. Іскристі ліхтарі лише полагодь, справні — вимкни.",
+  "category": "functions",
+  "difficulty": 4,
+  "width": 6,
+  "depth": 6,
+  "start": {
+    "x": 0,
+    "z": 5,
+    "dir": 0
+  },
+  "allowed": [
+    "jump",
+    "left",
+    "right",
+    "light",
+    "fix",
+    "loop",
+    "if"
+  ],
+  "allowElif": true,
+  "allowElse": false,
+  "allowedSensors": [
+    "canJump",
+    "lampShorts",
+    "onLamp"
+  ],
+  "hints": [
+    {
+      "text": "Стрибок долає і сходинку, і рівну плитку. Датчик «Можна стрибнути» сповіщає лише про прірву або занадто високу стіну.",
+      "textEn": "A jump overcomes both a step and a flat tile. The \"Can jump\" sensor only warns about a chasm or a wall that is too high.",
+      "target": "command:jump"
+    }
+  ],
+  "limit": 11,
+  "repairKits": 2,
+  "cells": [
+    [
+      null,
+      null,
+      {
+        "height": 4,
+        "tree": false,
+        "lamp": false,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      },
+      {
+        "height": 4,
+        "tree": false,
+        "lamp": true,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      },
+      {
+        "height": 5,
+        "tree": false,
+        "lamp": true,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      },
+      null
+    ],
+    [
+      null,
+      null,
+      {
+        "height": 3,
+        "tree": false,
+        "lamp": true,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      },
+      null,
+      null,
+      null
+    ],
+    [
+      {
+        "height": 2,
+        "tree": false,
+        "lamp": true,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      },
+      {
+        "height": 2,
+        "tree": false,
+        "lamp": false,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      },
+      {
+        "height": 3,
+        "tree": false,
+        "lamp": true,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": true,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      },
+      null,
+      null,
+      null
+    ],
+    [
+      {
+        "height": 1,
+        "tree": false,
+        "lamp": true,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": true,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      },
+      null,
+      null,
+      null,
+      {
+        "height": 0,
+        "tree": false,
+        "lamp": false,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": true,
+        "rock": false,
+        "box": false
+      },
+      null
+    ],
+    [
+      {
+        "height": 1,
+        "tree": false,
+        "lamp": false,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      },
+      null,
+      null,
+      null,
+      null,
+      {
+        "height": 0,
+        "tree": true,
+        "lamp": false,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      }
+    ],
+    [
+      {
+        "height": 0,
+        "tree": false,
+        "lamp": false,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      },
+      null,
+      null,
+      null,
+      null,
+      null
+    ]
+  ],
+  "nameEn": "Ascent over the Abyss",
+  "descriptionNightEn": "Make 9 jumps. Before a drop try right, otherwise turn the robot left. Repair sparking lamps and light them, light the rest.",
+  "descriptionEn": "The bridge over the chasm also climbs up in steps. Jump, turn before a drop and repair the sparking lamps.",
+  "descriptionDayEn": "Make 9 jumps. Before a drop try right, otherwise turn the robot left. Only repair sparking lamps and turn off the working ones."
+}

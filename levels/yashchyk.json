@@ -21,7 +21,8 @@
   "hints": [
     {
       "text": "Ящик можна рухати(сунути вперед)",
-      "target": "command:forward"
+      "target": "command:forward",
+      "textEn": "A crate can be pushed forward"
     }
   ],
   "limit": 8,
@@ -311,5 +312,6 @@
         "needsBulb": false
       }
     ]
-  ]
+  ],
+  "nameEn": "The Crate"
 }

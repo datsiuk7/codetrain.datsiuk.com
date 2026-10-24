@@ -1,4 +1,5 @@
 import { getCategory, getLevelDescription, renderDifficultyStars } from './logic.mjs';
+import { getLang, t, getCategoryTitle, getLevelName } from './i18n.mjs';
 
 const esc = (s) =>
   String(s).replace(/[&<>"']/g, (c) => ({
@@ -8,6 +9,18 @@ const esc = (s) =>
     '"': '&quot;',
     "'": '&#39;'
   }[c]));
+
+export function isLocalHost(loc = typeof location !== 'undefined' ? location : null) {
+  if (!loc) return false;
+  const host = String(loc.hostname || '').toLowerCase();
+  return (
+    host === 'localhost' ||
+    host === '127.0.0.1' ||
+    host === '::1' ||
+    host === '[::1]' ||
+    loc.protocol === 'file:'
+  );
+}
 
 export function isCatUnlocked(catIdx, catsWithLevels, done) {
   if (catIdx <= 0) return true;
@@ -62,19 +75,32 @@ export function findNextLevel(levels, categories, done, currentId) {
   return sections[nextSection].levels[0];
 }
 
-export function renderHome(container, { levels, categories, done, currentTheme }) {
+export function renderHome(
+  container,
+  {
+    levels,
+    categories,
+    done,
+    currentTheme,
+    lang = getLang(),
+    isLocal = false,
+    onToggleLevel = null,
+    onToggleLevels = null
+  }
+) {
   const catsWithLevels = getLevelSections(levels, categories);
 
   const sectionsHtml = catsWithLevels
     .map((cat, catIdx) => {
       const isUnlocked = isCatUnlocked(catIdx, catsWithLevels, done);
       if (!isUnlocked) {
-        return `<section class="category-section locked" data-cat="${cat.id}">
+        return `<section class="category-section locked" data-cat="${esc(cat.id)}">
         <div class="category-locked-simple">
           <span class="locked-icon" aria-hidden="true">🔒</span>
-          <span class="locked-text">Розділ під замком</span>
+          <span class="locked-text">${esc(t('sectionLocked', lang))}</span>
           <span class="locked-divider" aria-hidden="true">·</span>
-          <span class="locked-hint">Щоб розблокувати, пройдіть всі попередні рівні</span>
+          <span class="locked-hint">${esc(t('sectionLockedHint', lang))}</span>
+          ${isLocal ? `<button type="button" class="btn-local-unlock-cat" data-unlock-cat="${catIdx}" title="${esc(t('unlockSectionLocalTitle', lang))}">${esc(t('unlockSectionLocal', lang))}</button>` : ''}
         </div>
       </section>`;
       }
@@ -83,47 +109,110 @@ export function renderHome(container, { levels, categories, done, currentTheme }
         .map((l, lvlIdx) => {
           const isDone = done.includes(l.id);
           const lvlNum = `${catIdx + 1}.${lvlIdx + 1}`;
-          return `<a href="#level=${l.id}" class="level-card ${isDone ? 'completed-card' : ''}">
+          const displayName = getLevelName(l, lang);
+          const badgeHtml = isLocal
+            ? `<button type="button" class="completed-badge local-complete-toggle ${isDone ? 'is-done' : 'is-undone'}" data-toggle-level="${esc(l.id)}" title="${esc(isDone ? t('unmarkLevelTitle', lang) : t('markLevelTitle', lang))}" aria-label="${esc(displayName)}" aria-pressed="${isDone ? 'true' : 'false'}"><span class="badge-icon">${isDone ? '✓' : '○'}</span> ${esc(isDone ? t('completedBadge', lang) : t('markBadge', lang))}</button>`
+            : isDone
+            ? `<span class="completed-badge"><span class="badge-icon">✓</span> ${esc(t('completedBadge', lang))}</span>`
+            : '';
+
+          return `<a href="#level=${esc(l.id)}" class="level-card ${isDone ? 'completed-card' : ''}">
         <div class="card-art" style="flex-direction:column;gap:8px">
           <span class="level-number">${lvlNum}</span>
-          <span class="level-name">${esc(l.name)}</span>
-          ${isDone ? '<span class="completed-badge"><span class="badge-icon">✓</span> Пройдено</span>' : ''}
+          <span class="level-name">${esc(displayName)}</span>
+          ${badgeHtml}
         </div>
         <div class="card-body">
-          <p>${esc(getLevelDescription(l, currentTheme))}</p>
+          <p>${esc(getLevelDescription(l, currentTheme, lang))}</p>
           <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;gap:6px">
             <div style="display:flex;align-items:center;gap:6px">
-              <span style="font-size:11px;color:#8da4b3">${l.allowed.length} ком.</span>
-              ${l.limit ? `<span class="card-limit" style="margin-top:0">Ліміт: ${l.limit}</span>` : ''}
+              <span style="font-size:11px;color:#8da4b3">${l.allowed.length} ${esc(t('cmdShort', lang))}</span>
+              ${l.limit ? `<span class="card-limit" style="margin-top:0">${esc(t('limitLabel', lang))}: ${l.limit}</span>` : ''}
             </div>
-            ${renderDifficultyStars(l.difficulty)}
+            ${renderDifficultyStars(l.difficulty, lang)}
           </div>
         </div>
       </a>`;
         })
         .join('');
 
-      return `<section class="category-section" data-cat="${cat.id}">
-      <div class="category-header">
-        <h2 class="category-title">${esc(cat.title || 'Розділ')}</h2>
-      </div>
-      <div class="level-grid home-level-grid">${cardsHtml}</div>
+      const allCatDone = cat.levels.length > 0 && cat.levels.every((l) => done.includes(l.id));
+      const completedBadgeHtml = allCatDone
+        ? `<span class="category-completed-badge"><span class="badge-icon">✓</span> ${esc(t('sectionCompleted', lang))}</span>`
+        : '';
+      const catToggleBtn = isLocal
+        ? `<button type="button" class="btn-local-cat-toggle ${allCatDone ? 'is-all-done' : ''}" data-toggle-cat="${esc(cat.id)}" title="${esc(allCatDone ? t('unmarkAllSectionTitle', lang) : t('markAllSectionTitle', lang))}">${esc(allCatDone ? t('unmarkAllSection', lang) : t('markAllSection', lang))}</button>`
+        : '';
+
+      return `<section class="category-section ${allCatDone ? 'is-completed' : ''}" data-cat="${esc(cat.id)}">
+      <details class="category-details" ${allCatDone ? '' : 'open'}>
+        <summary class="category-header">
+          <div class="category-header-main">
+            <span class="category-caret" aria-hidden="true">▾</span>
+            <h2 class="category-title">${esc(getCategoryTitle(cat, lang))}</h2>
+            ${completedBadgeHtml}
+          </div>
+          ${catToggleBtn}
+        </summary>
+        <div class="level-grid home-level-grid">${cardsHtml}</div>
+      </details>
     </section>`;
     })
     .join('');
 
   const heroEyebrow =
     currentTheme === 'light'
-      ? 'ЕНЕРГООЩАДНІ АЛГОРИТМИ ДНЯ'
-      : 'АЛГОРИТМИ ПІСЛЯ ЗАХОДУ СОНЦЯ';
+      ? t('heroEyebrowDay', lang)
+      : t('heroEyebrowNight', lang);
   const heroH1 =
     currentTheme === 'light'
-      ? 'Ясний день над містом.<br>Твій хід — вимкни зайве.'
-      : 'Місто заснуло.<br>Твій хід — світити.';
+      ? t('heroH1Day', lang)
+      : t('heroH1Night', lang);
   const heroDesc =
     currentTheme === 'light'
-      ? 'Складай команди, знаходь непотрібні ліхтарі, що палають удень, та викручуй їх для збереження енергії.'
-      : 'Складай команди, долай сходинки й запалюй ліхтарі. Проходь навчальні теми від базового руху до циклів і розгалужень.';
+      ? t('heroDescDay', lang)
+      : t('heroDescNight', lang);
 
   container.innerHTML = `<section class="hero"><div class="hero-copy"><span class="eyebrow">${heroEyebrow}</span><h1>${heroH1}</h1><p>${heroDesc}</p></div></section><div class="categories-container">${sectionsHtml}</div>`;
+
+  if (isLocal) {
+    container.querySelectorAll?.('[data-toggle-level]').forEach((btn) => {
+      btn.onclick = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const levelId = btn.getAttribute?.('data-toggle-level') || btn.dataset?.toggleLevel;
+        if (levelId && onToggleLevel) onToggleLevel(levelId);
+      };
+    });
+
+    container.querySelectorAll?.('[data-toggle-cat]').forEach((btn) => {
+      btn.onclick = (e) => {
+        e.preventDefault();
+        e.stopPropagation?.();
+        const catId = btn.getAttribute?.('data-toggle-cat') || btn.dataset?.toggleCat;
+        const cat = catsWithLevels.find((c) => c.id === catId);
+        if (cat && onToggleLevels) {
+          const ids = cat.levels.map((l) => l.id);
+          const allDone = ids.every((id) => done.includes(id));
+          onToggleLevels(ids, !allDone);
+        }
+      };
+    });
+
+    container.querySelectorAll?.('[data-unlock-cat]').forEach((btn) => {
+      btn.onclick = (e) => {
+        e.preventDefault();
+        const targetIdx = parseInt(
+          btn.getAttribute?.('data-unlock-cat') || btn.dataset?.unlockCat,
+          10
+        );
+        if (!Number.isNaN(targetIdx) && onToggleLevels) {
+          const prereqIds = catsWithLevels
+            .slice(0, targetIdx)
+            .flatMap((c) => c.levels.map((l) => l.id));
+          onToggleLevels(prereqIds, true);
+        }
+      };
+    });
+  }
 }

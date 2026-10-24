@@ -119,11 +119,14 @@
   "hints": [
     {
       "text": "Команда Вперед рухає гравця вперед на одну клітинку куди він дивиться",
-      "target": "command:forward"
+      "target": "command:forward",
+      "textEn": "The Forward command moves the character one tile forward in the direction they are facing"
     },
     {
       "text": "Не забудь засвітити фонарик",
-      "target": "palette"
+      "target": "palette",
+      "textEn": "Don't forget to light the streetlamp"
     }
-  ]
+  ],
+  "nameEn": "Forward and Forward"
 }

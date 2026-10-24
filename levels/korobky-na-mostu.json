@@ -1,0 +1,193 @@
+{
+  "id": "korobky-na-mostu",
+  "name": "Коробки на мосту",
+  "description": "Підсовуй ящики до високих уступів і застрибуй по них на тераси з ліхтарями.",
+  "descriptionNight": "Уступи мають висоту +2, тому без ящика на них не застрибнути! Коли ящик можна штовхати (перешкоди немає) — йди «Вперед», а коли він уперся в уступ (перешкода попереду) — виконуй «Стрибок».",
+  "descriptionDay": "Підсунь ящики до високих терас, вистрибни по них нагору та вимкни всі ліхтарі.",
+  "category": "conditions",
+  "difficulty": 3,
+  "width": 3,
+  "depth": 8,
+  "start": {
+    "x": 1,
+    "z": 7,
+    "dir": 0
+  },
+  "allowed": [
+    "forward",
+    "jump",
+    "light",
+    "loop",
+    "if"
+  ],
+  "allowElif": false,
+  "allowElse": true,
+  "allowedSensors": [
+    "obstacleAhead",
+    "onLamp"
+  ],
+  "hints": [
+    {
+      "text": "Якщо одразу стрибнути на ящик, він залишиться далеко від високої стіни (+2 висоти) і ти не зможеш піднятися! Спочатку ящик треба підсунути командою «Вперед».",
+      "target": "scene",
+      "textEn": "If you jump onto a crate right away, it stays too far from the high wall (+2 height) and you cannot climb up! First push the crate with \"Forward\"."
+    },
+    {
+      "text": "У циклі на 6 повторень використай «Якщо Попереду перешкода -> Стрибок, інакше -> Вперед»: поки за ящиком вільно, робот штовхає його вперед, а коли ящик упреться в уступ — застрибує на нього та на уступ!",
+      "target": "command:if",
+      "textEn": "In a 6-repeat loop, use \"If Obstacle ahead -> Jump, else -> Forward\": while space behind the crate is free, the robot pushes it forward; once it hits the ledge, the robot jumps onto it and up onto the terrace!"
+    }
+  ],
+  "limit": 8,
+  "repairKits": 0,
+  "cells": [
+    [
+      null,
+      {
+        "height": 4,
+        "tree": false,
+        "lamp": false,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      },
+      null
+    ],
+    [
+      null,
+      {
+        "height": 4,
+        "tree": false,
+        "lamp": true,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      },
+      null
+    ],
+    [
+      null,
+      {
+        "height": 2,
+        "tree": false,
+        "lamp": false,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      },
+      null
+    ],
+    [
+      null,
+      {
+        "height": 2,
+        "tree": false,
+        "lamp": false,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": true
+      },
+      null
+    ],
+    [
+      null,
+      {
+        "height": 2,
+        "tree": false,
+        "lamp": true,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      },
+      null
+    ],
+    [
+      null,
+      {
+        "height": 0,
+        "tree": false,
+        "lamp": false,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      },
+      null
+    ],
+    [
+      null,
+      {
+        "height": 0,
+        "tree": false,
+        "lamp": false,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": true
+      },
+      null
+    ],
+    [
+      null,
+      {
+        "height": 0,
+        "tree": false,
+        "lamp": false,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      },
+      null
+    ]
+  ],
+  "nameEn": "Crates on the Bridge",
+  "descriptionNightEn": "The ledges are +2 high, so you cannot jump onto them without a crate! When a crate can be pushed (no obstacle) — step \"Forward\", and when it hits the ledge (obstacle ahead) — \"Jump\".",
+  "descriptionEn": "The ledges are +2 high, so you cannot jump onto them without a crate! When a crate can be pushed (no obstacle) — step \"Forward\", and when it hits the ledge (obstacle ahead) — \"Jump\".",
+  "descriptionDayEn": "Push the crates up to the high terraces, hop up onto them, and turn off all the streetlamps."
+}

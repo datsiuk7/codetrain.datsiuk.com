@@ -1,3 +1,5 @@
+import { getLang, commandsEn, sensorsEn, difficultyLabelsEn, t } from './i18n.mjs';
+
 export const commands = {
   forward: ['↑', 'Вперед'],
   left: ['↶', 'Вліво'],
@@ -70,7 +72,7 @@ export function getDifficultyInfo(diff) {
   return DIFFICULTY_LEVELS[d - 1];
 }
 
-export function renderDifficultyStars(diff) {
+export function renderDifficultyStars(diff, lang = getLang()) {
   const info = getDifficultyInfo(diff);
   const stars = [];
   for (let i = 1; i <= 5; i++) {
@@ -79,7 +81,9 @@ export function renderDifficultyStars(diff) {
       `<span class="diff-star ${isFilled ? 'filled' : 'empty'}" ${isFilled ? `style="color:${info.color}"` : ''}>★</span>`
     );
   }
-  return `<span class="difficulty-stars diff-tier-${info.level}" title="Складність: ${info.label} (${info.level}/5)" aria-label="Складність: ${info.label} (${info.level}/5)">${stars.join('')}</span>`;
+  const label = lang === 'en' ? (difficultyLabelsEn[info.level] || info.label) : info.label;
+  const prefix = t('difficultyPrefix', lang);
+  return `<span class="difficulty-stars diff-tier-${info.level}" title="${prefix}: ${label} (${info.level}/5)" aria-label="${prefix}: ${label} (${info.level}/5)">${stars.join('')}</span>`;
 }
 
 export const isLightTarget = (c) => Boolean(c && (c.lamp || c.house));
@@ -135,17 +139,31 @@ export const won = (l, s) => {
     : s.lit.length === lampCount(l);
 };
 
-export function getCommandInfo(type, theme = 'dark') {
+export function getCommandInfo(type, theme = 'dark', lang = getLang()) {
+  if (lang === 'en') {
+    if (type === 'light' && theme === 'light') return ['💡', 'Turn off light'];
+    return commandsEn[type] || commands[type] || ['•', type];
+  }
   if (type === 'light' && theme === 'light') return ['💡', 'Вимкнути світло'];
   return commands[type] || ['•', type];
 }
 
-export function getLevelDescription(l, theme = 'dark') {
+export function getLevelDescription(l, theme = 'dark', lang = getLang()) {
   if (!l) return '';
+  if (lang === 'en') {
+    if (theme === 'light') {
+      return l.descriptionDayEn || l.descriptionEn || l.descriptionDay || l.description || '';
+    }
+    return l.descriptionNightEn || l.descriptionEn || l.descriptionNight || l.description || '';
+  }
   if (theme === 'light') {
     return l.descriptionDay || l.description || '';
   }
   return l.descriptionNight || l.description || '';
+}
+
+export function getSensors(lang = getLang()) {
+  return lang === 'en' ? sensorsEn : sensors;
 }
 
 export class ElectricShockError extends Error {
@@ -384,7 +402,7 @@ export function conditionValue(condition, l, s, memory, valueOfFn) {
     !ahead ||
     isStaticObstacle ||
     (aheadHasBox && !boxCanBePushed && !s.onBox);
-  const isObstacleAhead = blocked || (ahead && aheadH > curH);
+  const isObstacleAhead = blocked || (ahead && !boxCanBePushed && aheadH > curH);
   const canJumpAhead = !houseExitBlocked && !houseEnterBlocked && ahead && !isStaticObstacle && Math.abs(aheadH - curH) <= 1;
 
   const tests = {

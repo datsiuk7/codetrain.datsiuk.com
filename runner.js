@@ -14,6 +14,7 @@ import {
 import { World } from './scene.js';
 import { ProgramEditor } from './program.js';
 import { setupGameHints } from './game-hints.js';
+import { getLang, t, getLevelName } from './i18n.mjs';
 
 const esc = (s) =>
   String(s).replace(/[&<>"']/g, (c) => ({
@@ -53,17 +54,22 @@ export function startGame(container, l, preview, options) {
     loadSavedProgram,
     saveProgram,
     complete,
+    lang = getLang(),
+    isLocal = false,
+    isCompleted = null,
+    toggleComplete = null,
     effects
   } = options;
 
   document.body.classList.add('in-game');
 
   const headingEyebrow =
-    currentTheme === 'light' ? 'ВИКРУТИ КОЖЕН ЛІХТАР' : 'ЗАПАЛИ КОЖЕН ЛІХТАР';
-  const headingDesc = esc(getLevelDescription(l, currentTheme));
+    currentTheme === 'light' ? t('worldEyebrowDay', lang) : t('worldEyebrowNight', lang);
+  const headingDesc = esc(getLevelDescription(l, currentTheme, lang));
   const isAdvanced = l.allowed.some((c) =>
     ['if', 'while', 'call'].includes(c)
   );
+  const displayName = getLevelName(l, lang);
 
   container.innerHTML = `
     <div class="game-top-bar">
@@ -71,70 +77,74 @@ export function startGame(container, l, preview, options) {
         <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="m15 18-6-6 6-6"/>
         </svg>
-        <span>${preview ? 'До редактора' : 'Всі теми'}</span>
+        <span>${esc(preview ? t('backToEditor', lang) : t('allTopics', lang))}</span>
       </a>
       <div class="game-level-name">
-        <span class="level-title-text">${esc(l.name)}</span>
-        ${renderDifficultyStars(l.difficulty)}
+        <span class="level-title-text">${esc(displayName)}</span>
+        ${renderDifficultyStars(l.difficulty, lang)}
       </div>
       <div class="game-top-actions">
-        <button id="help-open" class="game-help-open" type="button" aria-label="Відкрити підказки">? Підказка</button>
+        ${isLocal && !preview ? `<button id="local-complete" class="game-local-complete" type="button" aria-pressed="false"></button>` : ''}
+        <button id="help-open" class="game-help-open" type="button" aria-label="${esc(t('hintBtnAria', lang))}">${esc(t('hintBtn', lang))}</button>
       </div>
     </div>
     <div id="help-card" class="game-help-card" hidden>
-      <div class="game-help-heading"><strong>Підказка</strong><span id="help-count"></span></div>
+      <div class="game-help-heading"><strong>${esc(t('hintHeading', lang))}</strong><span id="help-count"></span></div>
       <p id="help-text" aria-live="polite"></p>
       <div class="game-help-actions">
-        <button id="help-close" type="button">Закрити</button>
-        <button id="help-next" type="button" class="primary">Далі</button>
+        <button id="help-close" type="button">${esc(t('hintClose', lang))}</button>
+        <button id="help-next" type="button" class="primary">${esc(t('hintNext', lang))}</button>
       </div>
     </div>
     <div class="game-layout ${isAdvanced ? 'advanced-level' : ''}">
       <section class="world">
-        <div id="scene" class="scene" role="img" aria-label="3D-поле з ліхтарником, деревами та ліхтарями">
+        <div id="scene" class="scene" role="img" aria-label="${esc(t('sceneAria', lang))}">
           <div class="world-heading">
             <span class="eyebrow">${headingEyebrow}</span>
             <p>${headingDesc}</p>
           </div>
           <div class="scene-tools">
-            <button id="reset-view" aria-label="Початкове положення поля" title="Початкове положення">⌂</button>
-            <button id="zoom-out" aria-label="Зменшити масштаб">−</button>
+            <button id="reset-view" aria-label="${esc(t('resetViewTitle', lang))}" title="${esc(t('resetViewTitle', lang))}">⌂</button>
+            <button id="zoom-out" aria-label="${esc(t('zoomOutScene', lang))}">−</button>
             <span id="zoom-value">100%</span>
-            <button id="zoom-in" aria-label="Збільшити масштаб">+</button>
-            <button id="speed-btn" class="speed-btn" title="Швидкість анімації">1×</button>
+            <button id="zoom-in" aria-label="${esc(t('zoomInScene', lang))}">+</button>
+            <button id="speed-btn" class="speed-btn" title="${esc(t('speedTitle', lang))}">1×</button>
           </div>
           <div class="world-bottom">
             <span id="lamps" class="lamp-count"></span>
-            <span>Погляд персонажа = напрямок руху</span>
+            <span>${esc(t('facingNote', lang))}</span>
           </div>
         </div>
       </section>
       <aside class="program-panel">
         <div id="win" class="win" hidden></div>
         <div class="program-run-bar">
-          <button id="run" class="primary" aria-label="Запустити програму">
-            <span class="run-icon">▶</span> <span>Запустити</span>
+          <button id="run" class="primary" aria-label="${esc(t('runBtnAria', lang))}">
+            <span class="run-icon">▶</span> <span>${esc(t('runBtn', lang))}</span>
           </button>
-          <button id="reset" aria-label="Скинути програму" title="Скинути програму">↺</button>
-          <button id="compact-btn" class="compact-btn" type="button" aria-label="Стиснути блоки" title="Стиснути блоки (компактний режим)">
+          <button id="reset" aria-label="${esc(t('resetProgramTitle', lang))}" title="${esc(t('resetProgramTitle', lang))}">↺</button>
+          <button id="compact-btn" class="compact-btn" type="button" aria-label="${esc(t('compactBlocksTitle', lang))}" title="${esc(t('compactBlocksTitle', lang))}">
             <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <path d="M4 4h16M4 20h16M12 8v3m0 0-2-2m2 2 2-2M12 16v-3m0 0-2 2m2-2 2 2"/>
             </svg>
           </button>
         </div>
-        <div class="section-label"><span id="count" class="count"></span></div>
-        <div id="program" class="program" aria-label="Програма"></div>
-        <div class="program-actions">
-          <button id="trash" class="trash-zone" aria-label="Перемістіть сюди команду для видалення або натисніть для очищення" title="Очистити всі команди або перетягніть сюди блок">🗑</button>
+        <div class="section-label program-label"><span id="count" class="count"></span></div>
+        <div id="program" class="program" aria-label="${esc(t('programAria', lang))}">
+          <button id="trash" class="trash-zone" type="button" aria-label="${esc(t('trashTitle', lang))}" title="${esc(t('trashTitle', lang))}">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14ZM10 11v6M14 11v6"/>
+            </svg>
+          </button>
         </div>
         <div id="trash-confirm" class="trash-confirm" hidden>
-          <span class="trash-confirm-text">Очистити всі команди?</span>
+          <span class="trash-confirm-text">${esc(t('trashConfirmText', lang))}</span>
           <div class="trash-confirm-btns">
-            <button type="button" id="trash-confirm-yes" class="btn-trash-yes">Так, очистити</button>
-            <button type="button" id="trash-confirm-no" class="btn-trash-no">Скасувати</button>
+            <button type="button" id="trash-confirm-yes" class="btn-trash-yes">${esc(t('trashConfirmYes', lang))}</button>
+            <button type="button" id="trash-confirm-no" class="btn-trash-no">${esc(t('trashConfirmNo', lang))}</button>
           </div>
         </div>
-        <div class="section-label available-commands">Доступні команди <span class="count">${l.allowed.length}</span></div>
+        <div class="section-label available-commands">${esc(t('availableCommands', lang))} <span class="count">${l.allowed.length}</span></div>
         <div id="palette" class="palette"></div>
         <p id="status" class="status" role="status" aria-live="polite"></p>
       </aside>
@@ -150,7 +160,7 @@ export function startGame(container, l, preview, options) {
   try {
     world = new World($('#scene'), l, state, currentTheme);
   } catch {
-    $('#scene').textContent = 'Для 3D потрібен WebGL. Увімкни апаратне прискорення браузера.';
+    $('#scene').textContent = t('noWebGL', lang);
     $('#run').disabled = true;
     return () => { document.body.classList.remove('in-game'); };
   }
@@ -184,7 +194,7 @@ export function startGame(container, l, preview, options) {
     isCompact = compact;
     programPanel?.classList.toggle('compact-blocks', isCompact);
     compactBtn?.classList.toggle('active', isCompact);
-    compactBtn?.setAttribute('title', isCompact ? 'Звичайний вигляд блоків' : 'Стиснути блоки (компактний режим)');
+    compactBtn?.setAttribute('title', isCompact ? t('normalBlocksTitle', lang) : t('compactBlocksTitle', lang));
     compactBtn?.setAttribute('aria-pressed', isCompact ? 'true' : 'false');
     try { localStorage.setItem('lamplighter-compact-blocks', isCompact ? '1' : '0'); } catch {}
   }
@@ -192,6 +202,42 @@ export function startGame(container, l, preview, options) {
   if (isCompact) setCompact(true);
   if (compactBtn) {
     compactBtn.onclick = () => setCompact(!isCompact);
+  }
+
+  const localCompleteBtn = isLocal && !preview ? $('#local-complete') : null;
+  function updateLocalCompleteBtn() {
+    if (!localCompleteBtn) return;
+    const done = Boolean(isCompleted?.(l.id));
+    if (done) localCompleteBtn.classList?.add?.('is-done');
+    else localCompleteBtn.classList?.remove?.('is-done');
+    localCompleteBtn.setAttribute?.('aria-pressed', done ? 'true' : 'false');
+    localCompleteBtn.setAttribute?.(
+      'title',
+      done
+        ? t('localDoneInGameTitle', lang)
+        : t('localMarkInGameTitle', lang)
+    );
+    localCompleteBtn.textContent = done ? t('localDoneInGame', lang) : t('localMarkInGame', lang);
+  }
+  updateLocalCompleteBtn();
+
+  if (localCompleteBtn && toggleComplete) {
+    localCompleteBtn.onclick = () => {
+      const nowDone = toggleComplete(l.id);
+      updateLocalCompleteBtn();
+      if (nowDone) {
+        const nextLevel = getNextLevel?.(l.id);
+        const winLink = nextLevel
+          ? `<a class="next-street" href="#level=${nextLevel.id}">${esc(t('nextStreet', lang))}</a>`
+          : `<a class="next-street" href="#">${esc(t('toAllTopics', lang))}</a>`;
+        $('#win').innerHTML = winLink;
+        $('#win').hidden = false;
+        status(t('localMarkedStatus', lang), 'success');
+      } else {
+        $('#win').hidden = true;
+        status(t('localUnmarkedStatus', lang));
+      }
+    };
   }
 
   const trashBtn = $('#trash');
@@ -275,15 +321,15 @@ export function startGame(container, l, preview, options) {
   const meter = () => {
     let text = '';
     if (currentTheme === 'light') {
-      text = `💡 ${lampCount(l) - state.lit.length} / ${lampCount(l)} вимкнено`;
+      text = `💡 ${lampCount(l) - state.lit.length} / ${lampCount(l)} ${lang === 'en' ? 'off' : 'вимкнено'}`;
     } else {
-      text = `☀ ${state.lit.length} / ${lampCount(l)} увімкнено`;
+      text = `☀ ${state.lit.length} / ${lampCount(l)} ${lang === 'en' ? 'lit' : 'увімкнено'}`;
     }
     if ((state.repairKits || 0) > 0 || (l.repairKits || 0) > 0 || (state.kits && state.kits.length > 0)) {
-      text += ` · 🔧 ${state.repairKits || 0} ремкомплектів`;
+      text += ` · 🔧 ${state.repairKits || 0} ${lang === 'en' ? 'repair kits' : 'ремкомплектів'}`;
     }
     if ((state.carriedBulbs || 0) > 0 || (state.bulbs && state.bulbs.length > 0)) {
-      text += ` · 💡 ${state.carriedBulbs || 0} лампочок`;
+      text += ` · 💡 ${state.carriedBulbs || 0} ${lang === 'en' ? 'bulbs' : 'лампочок'}`;
     }
     $('#lamps').textContent = text;
   };
@@ -335,7 +381,7 @@ export function startGame(container, l, preview, options) {
     $('#run').disabled = false;
     $('#win').hidden = true;
     meter();
-    status('На старті. Програму збережено — спробуй ще.');
+    status(t('statusReset', lang));
   }
   $('#reset').onclick = reset;
 
@@ -410,23 +456,26 @@ export function startGame(container, l, preview, options) {
 
           if (won(l, state)) {
             solved = true;
-            if (!preview) complete(l.id);
+            if (!preview) {
+              complete(l.id);
+              updateLocalCompleteBtn();
+            }
             effects.win();
             if (!(await world.celebrate(() => token !== runToken))) return;
             spawnConfetti($('#scene'));
 
             const successMsg =
               currentTheme === 'light'
-                ? 'Усі лампочки викручено! Місто зберегло енергію.'
-                : 'Усі ліхтарі світяться. Гарна робота!';
+                ? t('statusWonDay', lang)
+                : t('statusWonNight', lang);
             status(successMsg, 'success');
 
             const nextLevel = getNextLevel(l.id);
             const winLink = preview
-              ? '<a class="next-street" href="./admin/">← Повернутися до редактора</a>'
+              ? `<a class="next-street" href="./admin/">${esc(t('backToEditorArrow', lang))}</a>`
               : nextLevel
-              ? '<a class="next-street" href="#level=' + nextLevel.id + '">Наступна вулиця →</a>'
-              : '<a class="next-street" href="#">До всіх тем →</a>';
+              ? `<a class="next-street" href="#level=${nextLevel.id}">${esc(t('nextStreet', lang))}</a>`
+              : `<a class="next-street" href="#">${esc(t('toAllTopics', lang))}</a>`;
             $('#win').innerHTML = winLink;
             $('#win').hidden = false;
             $('#win').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -445,9 +494,9 @@ export function startGame(container, l, preview, options) {
             editor.highlight(null);
             await wait(80);
             world.robot.visible = true;
-            status('Персонаж вийшов за межі та впав.', 'error');
+            status(t('statusFell', lang), 'error');
             await wait(1800);
-            if (token === runToken) status('На старті. Спробуй ще раз.', 'error');
+            if (token === runToken) status(t('statusRetry', lang), 'error');
           } else if (e instanceof ElectricShockError) {
             effects.shock?.();
             status(e.message, 'error');
@@ -458,7 +507,7 @@ export function startGame(container, l, preview, options) {
               world.setState(state);
               meter();
               editor.highlight(null);
-              status('Персонаж повернувся на старт. Спершу полагодь іскристий ліхтар.', 'error');
+              status(t('statusShockReset', lang), 'error');
             }
           } else {
             effects.angry?.();
@@ -470,7 +519,7 @@ export function startGame(container, l, preview, options) {
               world.setState(state);
               meter();
               editor.highlight(null);
-              status('Персонаж повернувся на старт.', 'error');
+              status(t('statusBackAtStart', lang), 'error');
             }
           }
           break;
@@ -484,15 +533,15 @@ export function startGame(container, l, preview, options) {
     if (token === runToken && !failed && !solved) {
       const incompleteMsg =
         currentTheme === 'light'
-          ? 'Програма завершилася, але ще не всі лампочки викручено. Доповни її.'
-          : 'Програма завершилася, але ще не всі ліхтарі світяться. Доповни її.';
+          ? t('statusIncompleteDay', lang)
+          : t('statusIncompleteNight', lang);
       status(incompleteMsg);
       await wait(2000);
       if (token === runToken) {
         state = initialState(l, currentTheme);
         world.setState(state);
         meter();
-        status('На старті. Спробуй іншу програму.');
+        status(t('statusTryAnother', lang));
       }
     }
 

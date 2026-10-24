@@ -13,6 +13,9 @@ export function validateHints(hints, allowedCommands = null) {
     if (!hint || typeof hint.text !== 'string' || !hint.text.trim() || hint.text.length > 1000) {
       return 'Текст кожної підказки має містити від 1 до 1000 символів.';
     }
+    if (hint.textEn !== undefined && (typeof hint.textEn !== 'string' || hint.textEn.length > 1000)) {
+      return 'Англійський текст підказки має містити до 1000 символів.';
+    }
     if (Object.hasOwn(hintTargets, hint.target)) continue;
     if (allowedCommands && typeof hint.target === 'string' && hint.target.startsWith('command:') &&
       allowedCommands.includes(hint.target.slice(8))) continue;

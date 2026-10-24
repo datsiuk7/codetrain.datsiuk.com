@@ -95,7 +95,12 @@
   "hints": [
     {
       "text": "Тепер в нас є цикл, який повторює ті самі дії кілька разів",
-      "target": "command:loop"
+      "target": "command:loop",
+      "textEn": "Now we have a loop that repeats the same actions multiple times"
     }
-  ]
+  ],
+  "nameEn": "High Watch",
+  "descriptionNightEn": "Five steps up. Light the beacon above the city.",
+  "descriptionEn": "Five steps up. Light the beacon above the city.",
+  "descriptionDayEn": "Five steps up. Turn off the beacon above the city."
 }

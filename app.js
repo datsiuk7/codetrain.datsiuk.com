@@ -5,6 +5,7 @@ import {
 import { setupMusic, setupEffects } from './music.js';
 import { renderHome, isCatUnlocked, getLevelSections, findNextLevel } from './home.js';
 import { startGame } from './runner.js';
+import { getLang, setLang, t, getCategoryTitle, getLevelName } from './i18n.mjs';
 
 const app = document.querySelector('#app');
 setupMusic(document.querySelector('#music'));
@@ -26,9 +27,10 @@ function setupFullscreen(button) {
 
   function update() {
     const fs = isFullscreen();
+    const lang = getLang();
     button.setAttribute('aria-pressed', fs ? 'true' : 'false');
-    button.textContent = fs ? '🗗 Згорнути' : '⛶ Повний екран';
-    button.title = fs ? 'Вийти з повного екрана' : 'Увімкнути повний екран';
+    button.textContent = fs ? t('fullscreenExit', lang) : t('fullscreenEnter', lang);
+    button.title = fs ? t('fullscreenExitTitle', lang) : t('fullscreenEnterTitle', lang);
   }
 
   button.onclick = async () => {
@@ -122,10 +124,25 @@ const esc = (s) =>
     "'": '&#39;'
   }[c]));
 
+export function isLocalHost(loc = typeof location !== 'undefined' ? location : null) {
+  if (!loc) return false;
+  const host = String(loc.hostname || '').toLowerCase();
+  return (
+    !host ||
+    host === 'localhost' ||
+    host === '127.0.0.1' ||
+    host === '::1' ||
+    host === '[::1]' ||
+    loc.protocol === 'file:'
+  );
+}
+
 let cleanup = () => {};
 let levels = [];
 let currentTheme = localStorage.getItem('lamplighter-theme') || 'dark';
+let currentLang = getLang();
 let currentCategories = [...categories];
+let isLocal = isLocalHost();
 
 const programMemoryCache = new Map();
 
@@ -172,13 +189,18 @@ let gameSettings = {
   developerText: ''
 };
 
-function updateFooter(t = currentTheme) {
+function updateFooter(th = currentTheme) {
   const footer = document.querySelector('footer');
   if (!footer) return;
-  const quote =
-    t === 'light'
-      ? gameSettings.footerDayText || 'Місто чекає на твою програму.'
-      : gameSettings.footerNightText || 'Ніч чекає на твою програму.';
+  let quote;
+  if (currentLang === 'en') {
+    quote = th === 'light' ? t('footerDefaultDay', 'en') : t('footerDefaultNight', 'en');
+  } else {
+    quote =
+      th === 'light'
+        ? gameSettings.footerDayText || t('footerDefaultDay', 'uk')
+        : gameSettings.footerNightText || t('footerDefaultNight', 'uk');
+  }
   const dev = gameSettings.developerText
     ? `<div class="footer-developer">${esc(gameSettings.developerText)}</div>`
     : '';
@@ -186,27 +208,170 @@ function updateFooter(t = currentTheme) {
 }
 
 const themeBtn = document.querySelector('#theme');
+const langSwitcher = document.querySelector('#lang-switcher');
 
-function applyTheme(t) {
-  currentTheme = t;
-  document.documentElement.setAttribute('data-theme', t);
+function updateHeaderTexts() {
+  if (typeof document === 'undefined') return;
+  document.documentElement?.setAttribute?.('lang', currentLang);
+  if ('title' in document) document.title = t('pageTitle', currentLang);
+
+  const brand = document.querySelector('header .brand');
+  if (brand) {
+    brand.innerHTML = `<span class="brand-icon">✧</span> ${esc(t('brandName', currentLang))}`;
+  }
+  const headerNote = document.querySelector('header .header-note');
+  if (headerNote) {
+    headerNote.textContent = t('headerNote', currentLang);
+  }
+  const resetBtn = document.querySelector('#reset-progress');
+  if (resetBtn) {
+    resetBtn.textContent = t('resetProgress', currentLang);
+    resetBtn.title = t('resetProgressTitle', currentLang);
+  }
+  if (themeBtn) {
+    themeBtn.textContent = currentTheme === 'light' ? t('themeDay', currentLang) : t('themeNight', currentLang);
+    themeBtn.setAttribute?.('aria-label', t('themeLabel', currentLang));
+  }
+  const soundBtn = document.querySelector('#sound');
+  if (soundBtn && soundBtn.getAttribute) {
+    const isOn = soundBtn.getAttribute('aria-pressed') !== 'false';
+    soundBtn.textContent = isOn ? t('soundOn', currentLang) : t('soundOff', currentLang);
+  }
+  const musicBtn = document.querySelector('#music');
+  if (musicBtn && musicBtn.getAttribute) {
+    const isOn = musicBtn.getAttribute('aria-pressed') === 'true';
+    musicBtn.textContent = isOn ? t('musicOn', currentLang) : t('musicOff', currentLang);
+  }
+  const fsBtn = document.querySelector('#fullscreen');
+  if (fsBtn && fsBtn.getAttribute) {
+    const isFs = fsBtn.getAttribute('aria-pressed') === 'true';
+    fsBtn.textContent = isFs ? t('fullscreenExit', currentLang) : t('fullscreenEnter', currentLang);
+    fsBtn.title = isFs ? t('fullscreenExitTitle', currentLang) : t('fullscreenEnterTitle', currentLang);
+  }
+  if (langSwitcher) {
+    langSwitcher.querySelectorAll?.('.lang-btn').forEach((btn) => {
+      const btnLang = btn.getAttribute?.('data-lang') || btn.dataset?.lang;
+      const active = btnLang === currentLang;
+      btn.classList?.toggle?.('active', active);
+      btn.setAttribute?.('aria-pressed', active ? 'true' : 'false');
+    });
+  }
+  updateFooter(currentTheme);
+}
+
+function applyLang(lang) {
+  currentLang = setLang(lang);
+  updateHeaderTexts();
+}
+
+let themeShimmerTimer = null;
+let themeMidpointTimer = null;
+let pendingTheme = null;
+
+function triggerThemeShimmer(targetTheme, onMidpoint) {
+  if (typeof document === 'undefined') return;
+  const root = document.documentElement;
+  const body = document.body;
+  if (!body) return;
+
+  const current = (root && typeof root.getAttribute === 'function' ? root.getAttribute('data-theme') : null) || pendingTheme || currentTheme || 'dark';
+  const nextTheme = targetTheme || (current === 'light' ? 'dark' : 'light');
+  pendingTheme = nextTheme;
+
+  const lightClass = 'theme-shimmer-to-light';
+  const darkClass = 'theme-shimmer-to-dark';
+  const fadeOutClass = 'theme-fade-out';
+  const fadeInClass = 'theme-fade-in';
+
+  body.classList.remove('theme-shimmer', lightClass, darkClass, fadeOutClass, fadeInClass);
+  root?.classList?.remove?.('theme-shimmer', lightClass, darkClass, fadeOutClass, fadeInClass);
+  if (body.offsetWidth !== undefined) void body.offsetWidth;
+
+  body.classList.add('theme-shimmer', fadeOutClass);
+  root?.classList?.add?.('theme-shimmer', fadeOutClass);
+
+  if (nextTheme === 'light') {
+    body.classList.add(lightClass);
+    root?.classList?.add?.(lightClass);
+  } else {
+    body.classList.add(darkClass);
+    root?.classList?.add?.(darkClass);
+  }
+
+  if (themeMidpointTimer) {
+    clearTimeout(themeMidpointTimer);
+    themeMidpointTimer = null;
+  }
+  if (onMidpoint) {
+    themeMidpointTimer = setTimeout(() => {
+      if (typeof document !== 'undefined') {
+        body.classList.remove(fadeOutClass);
+        root?.classList?.remove?.(fadeOutClass);
+        body.classList.add(fadeInClass);
+        root?.classList?.add?.(fadeInClass);
+        onMidpoint();
+      }
+      themeMidpointTimer = null;
+    }, 950);
+  }
+
+  if (themeShimmerTimer) {
+    clearTimeout(themeShimmerTimer);
+    themeShimmerTimer = null;
+  }
+  themeShimmerTimer = setTimeout(() => {
+    pendingTheme = null;
+    if (typeof document !== 'undefined') {
+      document.body?.classList?.remove?.('theme-shimmer', lightClass, darkClass, fadeOutClass, fadeInClass);
+      document.documentElement?.classList?.remove?.('theme-shimmer', lightClass, darkClass, fadeOutClass, fadeInClass);
+    }
+    themeShimmerTimer = null;
+  }, 2000);
+}
+
+function applyTheme(th, animate = false) {
+  if (animate && th !== currentTheme) {
+    triggerThemeShimmer(th, () => {
+      applyTheme(th, false);
+      route();
+    });
+    return;
+  }
+  currentTheme = th;
+  document.documentElement.setAttribute('data-theme', th);
   try {
-    localStorage.setItem('lamplighter-theme', t);
+    localStorage.setItem('lamplighter-theme', th);
   } catch {}
   const metaTheme = document.querySelector('meta[name="theme-color"]');
-  if (metaTheme) metaTheme.setAttribute('content', t === 'light' ? '#f8f9fa' : '#101820');
-  updateFooter(t);
+  if (metaTheme) metaTheme.setAttribute('content', th === 'light' ? '#f8f9fa' : '#101820');
+  updateFooter(th);
   if (themeBtn) {
-    themeBtn.textContent = t === 'light' ? '☀️ Тема: День' : '🌙 Тема: Ніч';
-    themeBtn.setAttribute('aria-pressed', String(t === 'light'));
+    themeBtn.textContent = th === 'light' ? t('themeDay', currentLang) : t('themeNight', currentLang);
+    themeBtn.setAttribute('aria-pressed', String(th === 'light'));
   }
 }
 applyTheme(currentTheme);
+applyLang(currentLang);
+
+if (langSwitcher) {
+  langSwitcher.querySelectorAll?.('.lang-btn').forEach((btn) => {
+    btn.onclick = () => {
+      const nextLang = btn.getAttribute?.('data-lang') || btn.dataset?.lang;
+      if (nextLang && nextLang !== currentLang) {
+        applyLang(nextLang);
+        route();
+      }
+    };
+  });
+}
 
 if (themeBtn) {
   themeBtn.onclick = () => {
-    applyTheme(currentTheme === 'light' ? 'dark' : 'light');
-    route();
+    const next = (pendingTheme || currentTheme) === 'light' ? 'dark' : 'light';
+    triggerThemeShimmer(next, () => {
+      applyTheme(next);
+      route();
+    });
   };
 }
 
@@ -218,13 +383,39 @@ function completed() {
   }
 }
 
-function complete(id) {
+function setCompleted(ids) {
   try {
-    localStorage.setItem(
-      'lamplighter-completed',
-      JSON.stringify([...new Set([...completed(), id])])
-    );
+    const unique = [...new Set(ids.filter(Boolean))];
+    if (unique.length) {
+      localStorage.setItem('lamplighter-completed', JSON.stringify(unique));
+    } else {
+      localStorage.removeItem?.('lamplighter-completed') ??
+        localStorage.setItem('lamplighter-completed', '[]');
+    }
   } catch {}
+}
+
+function complete(id) {
+  setCompleted([...completed(), id]);
+}
+
+function toggleComplete(id) {
+  const current = completed();
+  if (current.includes(id)) {
+    setCompleted(current.filter((item) => item !== id));
+    return false;
+  }
+  setCompleted([...current, id]);
+  return true;
+}
+
+function setLevelsCompleted(levelIds, shouldBeDone) {
+  const current = new Set(completed());
+  for (const id of levelIds) {
+    if (shouldBeDone) current.add(id);
+    else current.delete(id);
+  }
+  setCompleted([...current]);
 }
 
 const resetProgressBtn = document.querySelector('#reset-progress');
@@ -254,6 +445,8 @@ if (resetProgressBtn) {
 
 async function load() {
   try {
+    isLocal = isLocalHost();
+
     try {
       const setRes = await fetch('./levels/settings.json', { cache: 'no-store' });
       if (setRes.ok) {
@@ -304,10 +497,14 @@ function route() {
       if (errors.length) throw new Error(errors.join(' '));
       cleanup = startGame(app, level, true, {
         currentTheme,
+        lang: currentLang,
         gameSettings,
         loadSavedProgram,
         saveProgram,
         complete,
+        isLocal,
+        isCompleted: (levelId) => completed().includes(levelId),
+        toggleComplete,
         getNextLevel: (levelId) => findNextLevel(levels, currentCategories, completed(), levelId),
         effects
       });
@@ -321,12 +518,13 @@ function route() {
   if (l) {
     if (resetBtn) resetBtn.style.display = 'none';
     if (l.hidden) {
+      const displayName = getLevelName(l, currentLang);
       app.innerHTML = `
         <div class="panel" style="max-width:540px;margin:50px auto;text-align:center;padding:36px 28px">
           <div style="font-size:44px;margin-bottom:12px">👁</div>
-          <h2>Цей рівень приховано</h2>
-          <p>Вулиця «${esc(l.name)}» наразі прихована в редакторі або знаходиться на оновленні.</p>
-          <div style="margin-top:24px"><a href="#" class="primary" style="display:inline-block;padding:11px 24px;border-radius:9px">Повернутися на головну ↗</a></div>
+          <h2>${esc(t('levelHiddenTitle', currentLang))}</h2>
+          <p>${currentLang === 'en' ? `Street "${esc(displayName)}" is currently hidden or being updated.` : `Вулиця «${esc(displayName)}» наразі прихована в редакторі або знаходиться на оновленні.`}</p>
+          <div style="margin-top:24px"><a href="#" class="primary" style="display:inline-block;padding:11px 24px;border-radius:9px">${esc(t('returnHome', currentLang))}</a></div>
         </div>`;
       return;
     }
@@ -337,22 +535,43 @@ function route() {
     const catIdx = catsWithLevels.findIndex((c) => c.levels.some((lvl) => lvl.id === l.id));
     if (catIdx > 0 && !isCatUnlocked(catIdx, catsWithLevels, done)) {
       const prevCat = catsWithLevels[catIdx - 1];
+      const displayName = getLevelName(l, currentLang);
+      const prevCatTitle = getCategoryTitle(prevCat, currentLang);
       app.innerHTML = `
         <div class="panel" style="max-width:540px;margin:50px auto;text-align:center;padding:36px 28px">
           <div style="font-size:44px;margin-bottom:12px">🔒</div>
-          <h2>Цей рівень під замком</h2>
-          <p>Щоб відкрити вулицю «${esc(l.name)}», спочатку пройди всі завдання теми <strong>«${esc(prevCat.title)}»</strong>.</p>
-          <div style="margin-top:24px"><a href="#" class="primary" style="display:inline-block;padding:11px 24px;border-radius:9px">Повернутися на головну ↗</a></div>
+          <h2>${esc(t('levelLockedTitle', currentLang))}</h2>
+          <p>${currentLang === 'en' ? `To unlock "${esc(displayName)}", first complete all levels in <strong>"${esc(prevCatTitle)}"</strong>.` : `Щоб відкрити вулицю «${esc(displayName)}», спочатку пройди всі завдання теми <strong>«${esc(prevCatTitle)}»</strong>.`}</p>
+          <div style="margin-top:24px;display:flex;justify-content:center;gap:10px;flex-wrap:wrap">
+            ${isLocal ? `<button type="button" id="unlock-local-level" class="btn-local-unlock-cat" style="padding:11px 20px;border-radius:9px">${esc(t('unlockLocalLevelBtn', currentLang))}</button>` : ''}
+            <a href="#" class="primary" style="display:inline-block;padding:11px 24px;border-radius:9px">${esc(t('returnHome', currentLang))}</a>
+          </div>
         </div>`;
+      if (isLocal) {
+        const unlockBtn = app.querySelector?.('#unlock-local-level');
+        if (unlockBtn) {
+          unlockBtn.onclick = () => {
+            const prereqIds = catsWithLevels
+              .slice(0, catIdx)
+              .flatMap((c) => c.levels.map((lvl) => lvl.id));
+            setLevelsCompleted(prereqIds, true);
+            route();
+          };
+        }
+      }
       return;
     }
 
     cleanup = startGame(app, l, false, {
       currentTheme,
+      lang: currentLang,
       gameSettings,
       loadSavedProgram,
       saveProgram,
       complete,
+      isLocal,
+      isCompleted: (levelId) => completed().includes(levelId),
+      toggleComplete,
       getNextLevel: (levelId) => findNextLevel(levels, currentCategories, completed(), levelId),
       effects
     });
@@ -362,7 +581,17 @@ function route() {
       levels,
       categories: currentCategories,
       done: completed(),
-      currentTheme
+      currentTheme,
+      lang: currentLang,
+      isLocal,
+      onToggleLevel: (levelId) => {
+        toggleComplete(levelId);
+        route();
+      },
+      onToggleLevels: (levelIds, shouldBeDone) => {
+        setLevelsCompleted(levelIds, shouldBeDone);
+        route();
+      }
     });
   }
 }

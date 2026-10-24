@@ -5,9 +5,13 @@ export function createFreshLevel(defaultAllowed = null) {
   return {
     id: '',
     name: '',
+    nameEn: '',
     description: '',
+    descriptionEn: '',
     descriptionNight: '',
+    descriptionNightEn: '',
     descriptionDay: '',
+    descriptionDayEn: '',
     category: '',
     difficulty: 1,
     width: 4,
@@ -117,4 +121,63 @@ export class LevelHistory {
   get canRedo() {
     return this.future.length > 0;
   }
+}
+
+export function isEditableTarget(target) {
+  if (!target) return false;
+  const tag = (target.tagName || '').toUpperCase();
+  if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') {
+    return true;
+  }
+  if (target.isContentEditable) {
+    return true;
+  }
+  if (typeof target.getAttribute === 'function' && target.getAttribute('role') === 'textbox') {
+    return true;
+  }
+  if (typeof target.closest === 'function') {
+    try {
+      if (target.closest('input, textarea, select, [contenteditable="true"], [role="textbox"]')) {
+        return true;
+      }
+    } catch {}
+  }
+  return false;
+}
+
+export function matchHistoryShortcut(event) {
+  if (!event) return null;
+  const hasModifier = Boolean(event.ctrlKey || event.metaKey);
+  if (!hasModifier || event.altKey) return null;
+  if (isEditableTarget(event.target)) return null;
+
+  const keyLower = typeof event.key === 'string' ? event.key.toLowerCase() : '';
+  const code = event.code || '';
+
+  const isZKey = keyLower === 'z' || keyLower === 'я';
+  const isYKey = keyLower === 'y' || keyLower === 'н';
+
+  const isZ = isZKey || (!isYKey && code === 'KeyZ');
+  const isY = isYKey || (!isZKey && code === 'KeyY');
+
+  if (isZ && !event.shiftKey) {
+    return 'undo';
+  }
+  if (isY || (isZ && event.shiftKey)) {
+    return 'redo';
+  }
+  return null;
+}
+
+export function handleHistoryKeyboard(event, { onUndo, onRedo } = {}) {
+  const action = matchHistoryShortcut(event);
+  if (action === 'undo') {
+    event.preventDefault?.();
+    return onUndo ? onUndo() : true;
+  }
+  if (action === 'redo') {
+    event.preventDefault?.();
+    return onRedo ? onRedo() : true;
+  }
+  return false;
 }

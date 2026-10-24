@@ -19,7 +19,8 @@
   "hints": [
     {
       "text": "На коробку можна стрибати",
-      "target": "command:jump"
+      "target": "command:jump",
+      "textEn": "You can jump onto a crate"
     }
   ],
   "limit": 5,
@@ -342,5 +343,6 @@
         "lit": false
       }
     ]
-  ]
+  ],
+  "nameEn": "The Jump"
 }

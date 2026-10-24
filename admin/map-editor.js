@@ -132,6 +132,22 @@ export function cellAt(gridEl, clientX, clientY) {
   return b && gridEl.contains(b) ? b : null;
 }
 
+export function hasCellObject(c, hasHoles = false) {
+  if (!c) return false;
+  return Boolean(
+    c.lamp ||
+    c.house ||
+    c.tree ||
+    c.bush ||
+    c.rock ||
+    c.box ||
+    c.bulb ||
+    c.kit ||
+    c.height > 0 ||
+    (hasHoles && c !== null)
+  );
+}
+
 export function applyDimensions(level, w, d, onStatus) {
   if (!Number.isInteger(w) || !Number.isInteger(d) || w < 2 || w > 10 || d < 2 || d > 10) {
     onStatus('Розміри мають бути цілими числами від 2 до 10.', true);
@@ -147,7 +163,7 @@ export function applyDimensions(level, w, d, onStatus) {
   for (let z = 0; z < oldD; z++) {
     for (let x = 0; x < oldW; x++) {
       const c = level.cells[z]?.[x];
-      if (c && (c.lamp || c.house || c.tree || c.height > 0 || (hasHoles && c !== null))) {
+      if (hasCellObject(c, hasHoles)) {
         objects.push({ x, z });
       }
     }

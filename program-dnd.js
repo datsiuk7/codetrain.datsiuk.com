@@ -50,7 +50,7 @@ export class ProgramDnd {
         this.editor.host.classList.add('receiving');
         const type = data.type || this.editor.find(data.id)?.block?.type;
         this.floating = document.createElement('div');
-        this.floating.className = 'drag-floating';
+        this.floating.className = `drag-floating command-${type}`;
         this.floating.setAttribute('aria-label', commands[type] ? commands[type][1] : type);
         this.floating.innerHTML = `<span>${iconMarkup(type, this.editor.theme)}</span>`;
         document.body.append(this.floating);
@@ -61,11 +61,15 @@ export class ProgramDnd {
       const trash = hit?.closest('.trash-zone');
       const zone = hit?.closest('.code-body, .loop-body, .program');
 
-      if (trash && this.drag && !this.drag.type) {
+      if (trash && this.drag) {
         this.clearPreview();
-        trash.classList.add('drop-target');
-        this.insertion = { trash };
-        this.floating.classList.remove('invalid');
+        if (!this.drag.type) {
+          trash.classList.add('drop-target');
+          this.insertion = { trash };
+          this.floating.classList.remove('invalid');
+        } else {
+          this.floating.classList.add('invalid');
+        }
         return;
       }
 
@@ -77,6 +81,19 @@ export class ProgramDnd {
       }
 
       this.floating.classList.toggle('invalid', !list || !this.canDrop(list));
+
+      const scrollZone = hit?.closest?.('.program, .code-library') || this.editor.host;
+      if (scrollZone && typeof scrollZone.getBoundingClientRect === 'function') {
+        const rect = scrollZone.getBoundingClientRect();
+        const edgeThreshold = 42;
+        if (e.clientY >= rect.top && e.clientY <= rect.bottom && e.clientX >= rect.left && e.clientX <= rect.right) {
+          if (e.clientY > rect.bottom - edgeThreshold) {
+            scrollZone.scrollTop = (scrollZone.scrollTop || 0) + 14;
+          } else if (e.clientY < rect.top + edgeThreshold) {
+            scrollZone.scrollTop = Math.max(0, (scrollZone.scrollTop || 0) - 14);
+          }
+        }
+      }
 
       if (e.clientY > innerHeight - 45) window.scrollBy(0, 14);
       else if (e.clientY < 45) window.scrollBy(0, -14);
@@ -180,6 +197,7 @@ export class ProgramDnd {
     found.list.splice(found.list.indexOf(found.block), 1);
     if (this.editor.selected === found.block.id) this.editor.selected = null;
     this.editor.draw();
+    this.editor.notifyChange();
   }
 
   canDrop(list) {
@@ -223,10 +241,11 @@ export class ProgramDnd {
     this.clearPreview();
 
     const type = this.drag.type || this.editor.find(this.drag.id)?.block?.type;
+    this.marker.className = `insertion-preview command-${type}` + (type === 'loop' ? ' loop-preview' : '');
     this.marker.innerHTML = `<span class="preview-icon">${iconMarkup(type, this.editor.theme)}</span>`;
     this.marker.setAttribute('aria-label', commands[type] ? commands[type][1] : type);
-    this.marker.classList.toggle('loop-preview', type === 'loop');
-    el.insertBefore(this.marker, nodes[index] || null);
+    const dropRow = [...el.children].find((n) => n.classList?.contains?.('program-drop-row')) || null;
+    el.insertBefore(this.marker, nodes[index] || dropRow);
     el.classList.add('drop-target');
     this.insertion = { el, list, index };
 
@@ -264,5 +283,6 @@ export class ProgramDnd {
     if (list === found.list && old < index) index--;
     list.splice(index, 0, found.block);
     this.editor.draw();
+    this.editor.notifyChange();
   }
 }

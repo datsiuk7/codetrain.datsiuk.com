@@ -1,4 +1,6 @@
 // Original, procedurally composed nocturne. No audio downloads or autoplay.
+import { t } from './i18n.mjs';
+
 export function setupMusic(button){
   let context,master,timer,isPlaying=false,index=0,nextTime=0,pending=false;
   const melody=[69,72,76,72,67,71,74,71,65,69,72,76,64,67,71,67,69,76,79,76,67,74,77,74,65,72,76,72,64,71,76,71];
@@ -40,7 +42,7 @@ export function setupMusic(button){
 
   function updateButton(){
     if(!button)return;
-    button.textContent=(isPlaying||pending)?'♫ Музика: увімк.':'♫ Музика: вимк.';
+    button.textContent=(isPlaying||pending)?t('musicOn'):t('musicOff');
     button.setAttribute('aria-pressed',String(isPlaying||pending));
   }
 
@@ -139,7 +141,7 @@ export function setupEffects(button){
   on = restore();
   function updateButton(){
     if(!button)return;
-    button.textContent=on?'🔊 Звуки: увімк.':'🔊 Звуки: вимк.';
+    button.textContent=on?t('soundOn'):t('soundOff');
     button.setAttribute('aria-pressed',String(on));
   }
   updateButton();
@@ -171,7 +173,7 @@ export function setupEffects(button){
     turn(){if(!on)return;const audio=getContext();if(!audio)return;const now=audio.currentTime;tone(now,420,.035,.06,'sine',310)},
     jump(){if(!on)return;const audio=getContext();if(!audio)return;const now=audio.currentTime;tone(now,260,.14,.09,'sine',520);tone(now+.18,140,.06,.08,'triangle',70)},
     pickup(){if(!on)return;const audio=getContext();if(!audio)return;const now=audio.currentTime;tone(now,587,.09,.08,'sine',880);tone(now+.07,880,.12,.07,'sine',1175)},
-    repair(){if(!on)return;const audio=getContext();if(!audio)return;const now=audio.currentTime;tone(now,320,.08,.1,'sawtooth',480);tone(now+.09,880,.18,.07,'sine',1320)},
+    repair(){if(!on)return;const audio=getContext();if(!audio)return;const now=audio.currentTime;tone(now,360,.07,.1,'sawtooth',520);tone(now+.18,420,.07,.1,'sawtooth',580);tone(now+.36,480,.08,.11,'sawtooth',660);tone(now+.22,1100,.04,.04,'triangle',750);tone(now+.40,1300,.04,.04,'triangle',900);tone(now+.55,660,.14,.08,'sine',880);tone(now+.68,880,.2,.07,'sine',1320)},
     call(){if(!on)return;const audio=getContext();if(!audio)return;const now=audio.currentTime;tone(now,660,.06,.06,'sine',990)},
     spark(){if(!on)return;const audio=getContext();if(!audio)return;const now=audio.currentTime;tone(now,820,.04,.08,'sawtooth',140);tone(now+.03,1200,.03,.07,'sawtooth',220)},
     shock(){if(!on)return;const audio=getContext();if(!audio)return;const now=audio.currentTime;
@@ -186,10 +188,10 @@ export function setupEffects(button){
     fall(){if(!on)return;const audio=getContext();if(!audio)return;const now=audio.currentTime;
       // Scream: high-pitched glide falling fast (cartoon "AAAAH!")
       tone(now,1100,.9,.13,'sine',180);
-      tone(now,.05,.85,.11,'sine',160);
       tone(now+.02,1050,.88,.09,'triangle',170);
+      tone(now+.05,1000,.85,.11,'sine',160);
       // Air whoosh
-      tone(now,.08,.7,.06,'sawtooth',55);
+      tone(now+.08,400,.7,.06,'sawtooth',55);
       // Thud on impact
       tone(now+.82,120,.22,.18,'sawtooth',28);
       tone(now+.82,60,.25,.14,'triangle',20);

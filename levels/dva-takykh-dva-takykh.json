@@ -1,16 +1,16 @@
 {
   "id": "dva-takykh-dva-takykh",
   "name": "Два таких, два таких",
-  "description": "",
-  "descriptionNight": "",
-  "descriptionDay": "",
+  "description": "На чотирьох кутах скверу стоять різні ліхтарі: два іскрять, а один уже світиться.",
+  "descriptionNight": "Обійди всі чотири кути скверу. Лагодь ті ліхтарі, що коротять, і запалюй ті, що ще не світяться.",
+  "descriptionDay": "Обійди чотири кути скверу, полагодь іскристі ліхтарі та вимкни світло.",
   "category": "conditions",
-  "difficulty": 3,
+  "difficulty": 2,
   "width": 5,
   "depth": 5,
   "start": {
     "x": 1,
-    "z": 4,
+    "z": 3,
     "dir": 0
   },
   "allowed": [
@@ -30,11 +30,12 @@
   ],
   "hints": [
     {
-      "text": "У вас уже є 2 ремкомплекта",
-      "target": "scene"
+      "text": "У тебе вже є 2 ремкомплекти. На кожній стороні скверу роби по 2 кроки вперед, перевіряй стан ліхтаря та повертай праворуч.",
+      "target": "scene",
+      "textEn": "You already have 2 repair kits. On each side of the square, take 2 steps forward, check the lamp state, and turn right."
     }
   ],
-  "limit": 15,
+  "limit": 10,
   "repairKits": 2,
   "cells": [
     [
@@ -46,7 +47,11 @@
         "bulb": false,
         "kit": false,
         "spark": false,
-        "lit": false
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
       },
       {
         "height": 0,
@@ -56,7 +61,11 @@
         "bulb": false,
         "kit": false,
         "spark": false,
-        "lit": false
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
       },
       {
         "height": 0,
@@ -66,7 +75,11 @@
         "bulb": false,
         "kit": false,
         "spark": false,
-        "lit": false
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
       },
       {
         "height": 0,
@@ -76,14 +89,25 @@
         "bulb": false,
         "kit": false,
         "spark": false,
-        "lit": false
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
       },
       {
         "height": 0,
         "tree": false,
         "lamp": false,
         "house": false,
-        "lit": false
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
       }
     ],
     [
@@ -95,7 +119,11 @@
         "bulb": false,
         "kit": false,
         "spark": false,
-        "lit": false
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
       },
       {
         "height": 0,
@@ -106,7 +134,10 @@
         "kit": false,
         "spark": false,
         "lit": true,
-        "needsBulb": false
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
       },
       {
         "height": 0,
@@ -116,7 +147,11 @@
         "bulb": false,
         "kit": false,
         "spark": false,
-        "lit": false
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
       },
       {
         "height": 0,
@@ -127,14 +162,24 @@
         "kit": false,
         "spark": true,
         "lit": false,
-        "needsBulb": false
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
       },
       {
         "height": 0,
         "tree": false,
         "lamp": false,
         "house": false,
-        "lit": false
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
       }
     ],
     [
@@ -146,7 +191,11 @@
         "bulb": false,
         "kit": false,
         "spark": false,
-        "lit": false
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
       },
       {
         "height": 0,
@@ -156,7 +205,25 @@
         "bulb": false,
         "kit": false,
         "spark": false,
-        "lit": false
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      },
+      {
+        "height": 0,
+        "tree": true,
+        "lamp": false,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
       },
       {
         "height": 0,
@@ -166,7 +233,11 @@
         "bulb": false,
         "kit": false,
         "spark": false,
-        "lit": false
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
       },
       {
         "height": 0,
@@ -176,14 +247,11 @@
         "bulb": false,
         "kit": false,
         "spark": false,
-        "lit": false
-      },
-      {
-        "height": 0,
-        "tree": false,
-        "lamp": false,
-        "house": false,
-        "lit": false
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
       }
     ],
     [
@@ -195,7 +263,11 @@
         "bulb": false,
         "kit": false,
         "spark": false,
-        "lit": false
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
       },
       {
         "height": 0,
@@ -206,7 +278,10 @@
         "kit": false,
         "spark": true,
         "lit": false,
-        "needsBulb": false
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
       },
       {
         "height": 0,
@@ -216,7 +291,11 @@
         "bulb": false,
         "kit": false,
         "spark": false,
-        "lit": false
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
       },
       {
         "height": 0,
@@ -227,14 +306,24 @@
         "kit": false,
         "spark": false,
         "lit": false,
-        "needsBulb": false
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
       },
       {
         "height": 0,
         "tree": false,
         "lamp": false,
         "house": false,
-        "lit": false
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
       }
     ],
     [
@@ -243,50 +332,75 @@
         "tree": false,
         "lamp": false,
         "house": false,
-        "lit": false
-      },
-      {
-        "height": 0,
-        "tree": false,
-        "lamp": false,
-        "house": false,
-        "lit": false
-      },
-      {
-        "height": 0,
-        "tree": false,
-        "lamp": false,
-        "house": false,
-        "lit": false,
-        "kit": false,
         "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
         "bush": false,
         "rock": false,
-        "box": false,
-        "spark": false,
-        "needsBulb": false
+        "box": false
       },
       {
         "height": 0,
         "tree": false,
         "lamp": false,
         "house": false,
-        "lit": false,
-        "kit": false,
         "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
         "bush": false,
         "rock": false,
-        "box": false,
-        "spark": false,
-        "needsBulb": false
+        "box": false
       },
       {
         "height": 0,
         "tree": false,
         "lamp": false,
         "house": false,
-        "lit": false
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      },
+      {
+        "height": 0,
+        "tree": false,
+        "lamp": false,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      },
+      {
+        "height": 0,
+        "tree": false,
+        "lamp": false,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
       }
     ]
-  ]
+  ],
+  "nameEn": "Two of Each",
+  "descriptionNightEn": "Walk around all four corners of the square. Repair the sparking streetlamps and light the ones that are off.",
+  "descriptionEn": "Walk around all four corners of the square. Repair the sparking streetlamps and light the ones that are off.",
+  "descriptionDayEn": "Walk around the four corners of the square, repair sparking streetlamps, and turn off the lights."
 }

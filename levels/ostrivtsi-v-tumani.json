@@ -1,0 +1,217 @@
+{
+  "id": "ostrivtsi-v-tumani",
+  "name": "Острівці в тумані",
+  "description": "Пройди камʼяним мостом над водою, вчасно повертаючи перед прірвою, ремонтуючи іскристі ліхтарі та засвічуючи шлях.",
+  "descriptionNight": "Міст над водою двічі повертає праворуч. Коли попереду вода («НЕ Можна стрибнути») — поверни праворуч, далі стрибни на наступний уступ, полагодь ліхтар якщо він коротить, і увімкни світло.",
+  "descriptionDay": "Пройди уступами над водою, полагодь несправні ліхтарі та вимкни світло на камʼяному мосту.",
+  "category": "conditions",
+  "difficulty": 4,
+  "width": 6,
+  "depth": 6,
+  "start": {
+    "x": 1,
+    "z": 4,
+    "dir": 0
+  },
+  "allowed": [
+    "right",
+    "jump",
+    "light",
+    "fix",
+    "loop",
+    "if"
+  ],
+  "allowElif": false,
+  "allowElse": false,
+  "allowedSensors": [
+    "canJump",
+    "lampShorts",
+    "onLamp"
+  ],
+  "hints": [
+    {
+      "text": "На краю мосту попереду вода, тому датчик «НЕ Можна стрибнути» підкаже, коли потрібно повернути праворуч.",
+      "target": "command:if",
+      "textEn": "At the edge of the bridge there is water ahead, so \"NOT Can jump\" tells you when to turn right."
+    },
+    {
+      "text": "У циклі на 8 повторень: якщо «НЕ Можна стрибнути» — поверни праворуч, виконай «Стрибок», якщо «Ліхтар коротить» — полагодь його, і якщо «Тут є ліхтар чи будинок» — запали світло.",
+      "target": "command:fix",
+      "textEn": "In an 8-repeat loop: if \"NOT Can jump\" — turn right, execute \"Jump\", if \"Lantern sparks\" — repair it, and if \"At lantern or house\" — toggle the light."
+    }
+  ],
+  "limit": 10,
+  "repairKits": 2,
+  "cells": [
+    [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    [
+      null,
+      {
+        "height": 2,
+        "tree": false,
+        "lamp": true,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      },
+      {
+        "height": 2,
+        "tree": false,
+        "lamp": false,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      },
+      {
+        "height": 3,
+        "tree": false,
+        "lamp": true,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": true,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      },
+      {
+        "height": 3,
+        "tree": false,
+        "lamp": false,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      },
+      null
+    ],
+    [
+      null,
+      {
+        "height": 1,
+        "tree": false,
+        "lamp": false,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      },
+      null,
+      null,
+      {
+        "height": 4,
+        "tree": false,
+        "lamp": true,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      },
+      null
+    ],
+    [
+      null,
+      {
+        "height": 1,
+        "tree": false,
+        "lamp": true,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": true,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      },
+      null,
+      null,
+      {
+        "height": 4,
+        "tree": false,
+        "lamp": false,
+        "house": true,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false,
+        "dir": 0
+      },
+      null
+    ],
+    [
+      null,
+      {
+        "height": 0,
+        "tree": false,
+        "lamp": false,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      },
+      null,
+      null,
+      null,
+      null
+    ],
+    [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ]
+  ],
+  "nameEn": "Islets in the Fog",
+  "descriptionNightEn": "The bridge over water turns right twice. When water is ahead (\"NOT Can jump\") — turn right, then jump onto the next ledge, repair the lamp if sparking, and turn on the light.",
+  "descriptionEn": "The bridge over water turns right twice. When water is ahead (\"NOT Can jump\") — turn right, then jump onto the next ledge, repair the lamp if sparking, and turn on the light.",
+  "descriptionDayEn": "Cross the ledges over the water, repair faulty streetlamps, and turn off the lights on the stone bridge."
+}

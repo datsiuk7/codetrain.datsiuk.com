@@ -183,7 +183,9 @@
   "hints": [
     {
       "text": "Зайди в хатинку та засвіти світло",
-      "target": "scene"
+      "target": "scene",
+      "textEn": "Enter the cottage and turn on the light"
     }
-  ]
+  ],
+  "nameEn": "Little Cottage"
 }

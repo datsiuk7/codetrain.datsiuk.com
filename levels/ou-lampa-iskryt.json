@@ -23,15 +23,18 @@
   "hints": [
     {
       "text": "Іскрить лампа, візьми і полагоди спочатку",
-      "target": "command:fix"
+      "target": "command:fix",
+      "textEn": "The streetlamp is sparking — repair it first"
     },
     {
       "text": "Не пробуй її включати, поки не полагодиш!!!",
-      "target": "command:light"
+      "target": "command:light",
+      "textEn": "Do not try to light it before repairing it!!!"
     },
     {
       "text": "В низу пише скільки у тебе Ремкомплектів",
-      "target": "scene"
+      "target": "scene",
+      "textEn": "The bottom bar shows how many Repair Kits you have"
     }
   ],
   "limit": 10,
@@ -270,5 +273,6 @@
         "lit": false
       }
     ]
-  ]
+  ],
+  "nameEn": "Oh, the Lamp Is Sparking"
 }

@@ -1,7 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { LevelHistory, createFreshLevel } from '../admin/level-state.js';
+import { LevelHistory, createFreshLevel, matchHistoryShortcut, handleHistoryKeyboard, isEditableTarget } from '../admin/level-state.js';
 import { resizeLevel, setupSizeMatrix } from '../admin/map-resize.js';
+import { applyDimensions } from '../admin/map-editor.js';
+import { validateLevel } from '../logic.mjs';
 import { paintCell, formatCellInfo } from '../admin/map-paint.js';
 import { enableLevelTreeDnd, isLevelTreeDragging } from '../admin/level-tree-dnd.js';
 import { reorderLevelsOnServer } from '../admin/level-storage.js';
@@ -78,6 +80,65 @@ test('resizeLevel expands, shrinks, and relocates start safely', () => {
   assert.equal(level.width, 4);
   assert.equal(level.depth, 4);
   assert.equal(level.cells[3][3].lamp, true); // shifted from (5,5) to (3,3)
+});
+
+test('applyDimensions and resizeLevel recognize bush, rock, box, bulb, kit on height 0 and prevent cropping', () => {
+  let statusMsg = '';
+  const onStatus = (msg) => { statusMsg = msg; };
+
+  for (const prop of ['bush', 'rock', 'box', 'bulb', 'kit']) {
+    const level = createFreshLevel();
+    resizeLevel(level, 6, 6, onStatus);
+
+    // Place object at (0, 0) and at (5, 5) with height 0
+    level.cells[0][0][prop] = true;
+    level.cells[5][5][prop] = true;
+
+    // Shrinking to 4x4 would span 6x6 -> must be rejected by applyDimensions!
+    const canResize = applyDimensions(level, 4, 4, onStatus);
+    assert.equal(canResize, false, `applyDimensions should reject 4x4 when ${prop} objects span 6x6`);
+    assert.match(statusMsg, /Розміщені об’єкти займають 6×6/);
+
+    // If only at (5, 5), span is 1x1, so shrinking to 4x4 should shift the object to (3, 3)
+    level.cells[0][0][prop] = false;
+    const res = resizeLevel(level, 4, 4, onStatus);
+    assert.equal(res.success, true);
+    assert.equal(level.cells[3][3][prop], true, `${prop} shifted safely to (3, 3) without being cut off`);
+  }
+});
+
+test('resizeLevel start relocation never places robot on bush, rock, box, or house and satisfies validateLevel', () => {
+  let statusMsg = '';
+  const onStatus = (msg) => { statusMsg = msg; };
+
+  // Level 5x5 with start at (4, 4)
+  const level = createFreshLevel();
+  level.id = 'relocate-test';
+  level.name = 'Relocate Test';
+  level.category = 'basics';
+  resizeLevel(level, 5, 5, onStatus);
+  level.start = { x: 4, z: 4, dir: 0 };
+
+  // When shrinking to 3x3, clamped start is (2, 2).
+  // Fill (2, 2) with a rock, (2, 1) with a bush, (1, 2) with a box, (2, 0) with a house
+  level.cells[2][2].rock = true;
+  level.cells[1][2].bush = true;
+  level.cells[2][1].box = true;
+  level.cells[0][2].house = true;
+
+  const res = resizeLevel(level, 3, 3, onStatus);
+  assert.equal(res.success, true);
+  assert.equal(res.startRelocated, true);
+
+  const startCell = level.cells[level.start.z][level.start.x];
+  assert.equal(Boolean(startCell.tree), false, 'Start cannot be on a tree');
+  assert.equal(Boolean(startCell.bush), false, 'Start cannot be on a bush');
+  assert.equal(Boolean(startCell.rock), false, 'Start cannot be on a rock');
+  assert.equal(Boolean(startCell.box), false, 'Start cannot be on a box');
+  assert.equal(Boolean(startCell.house), false, 'Start cannot be on a house');
+
+  const errors = validateLevel(level);
+  assert.equal(errors.length, 0, `Level must remain valid after start relocation: ${errors.join(', ')}`);
 });
 
 test('size matrix highlights the same number of tiles as the level dimensions', () => {
@@ -464,4 +525,110 @@ test('admin editor index.html has level-enabled checkbox and admin.js/state mana
   assert.match(adminCode, /candidate\.hidden\s*=\s*true/);
   assert.match(adminCode, /delete\s+candidate\.hidden/);
 });
+
+test('admin.js defines esc helper to safely render categorized and uncategorized levels', async () => {
+  const fs = await import('node:fs');
+  const path = await import('node:path');
+  const adminCode = fs.readFileSync(path.resolve('admin/admin.js'), 'utf8');
+
+  assert.match(adminCode, /const\s+esc\s*=\s*/, 'esc function must be defined in admin.js');
+  assert.match(adminCode, /esc\(l\.name\s*\|\|\s*l\.id\)/, 'esc must be used when rendering level names');
+});
+
+test('matchHistoryShortcut recognizes Ctrl+Z, Ctrl+Y, Ctrl+Shift+Z, Cmd variants, and Ukrainian layouts', () => {
+  // Ctrl+Z / Cmd+Z -> undo
+  assert.equal(matchHistoryShortcut({ ctrlKey: true, key: 'z' }), 'undo');
+  assert.equal(matchHistoryShortcut({ ctrlKey: true, code: 'KeyZ' }), 'undo');
+  assert.equal(matchHistoryShortcut({ metaKey: true, key: 'z' }), 'undo');
+  // Ukrainian keyboard layout: 'я' / 'Я'
+  assert.equal(matchHistoryShortcut({ ctrlKey: true, key: 'я' }), 'undo');
+  assert.equal(matchHistoryShortcut({ metaKey: true, key: 'Я' }), 'undo');
+
+  // Ctrl+Y / Cmd+Y -> redo
+  assert.equal(matchHistoryShortcut({ ctrlKey: true, key: 'y' }), 'redo');
+  assert.equal(matchHistoryShortcut({ ctrlKey: true, code: 'KeyY' }), 'redo');
+  assert.equal(matchHistoryShortcut({ metaKey: true, key: 'y' }), 'redo');
+  // Ukrainian keyboard layout: 'н' / 'Н'
+  assert.equal(matchHistoryShortcut({ ctrlKey: true, key: 'н' }), 'redo');
+  assert.equal(matchHistoryShortcut({ metaKey: true, key: 'Н' }), 'redo');
+
+  // Ctrl+Shift+Z / Cmd+Shift+Z -> redo
+  assert.equal(matchHistoryShortcut({ ctrlKey: true, shiftKey: true, key: 'Z' }), 'redo');
+  assert.equal(matchHistoryShortcut({ metaKey: true, shiftKey: true, code: 'KeyZ' }), 'redo');
+  assert.equal(matchHistoryShortcut({ ctrlKey: true, shiftKey: true, key: 'Я' }), 'redo');
+
+  // Non-history shortcuts should return null
+  assert.equal(matchHistoryShortcut({ ctrlKey: true, key: 's' }), null);
+  assert.equal(matchHistoryShortcut({ ctrlKey: true, key: 'a' }), null);
+  assert.equal(matchHistoryShortcut({ key: 'z' }), null); // no modifier
+  assert.equal(matchHistoryShortcut({ ctrlKey: true, altKey: true, key: 'z' }), null); // AltGr / Alt combo
+});
+
+test('matchHistoryShortcut ignores events originating in editable inputs and textareas', () => {
+  assert.equal(isEditableTarget({ tagName: 'INPUT' }), true);
+  assert.equal(isEditableTarget({ tagName: 'TEXTAREA' }), true);
+  assert.equal(isEditableTarget({ tagName: 'SELECT' }), true);
+  assert.equal(isEditableTarget({ isContentEditable: true }), true);
+  assert.equal(isEditableTarget({ tagName: 'DIV' }), false);
+  assert.equal(isEditableTarget(null), false);
+
+  const inputEvent = {
+    ctrlKey: true,
+    key: 'z',
+    target: { tagName: 'INPUT' },
+    defaultPrevented: false
+  };
+  assert.equal(matchHistoryShortcut(inputEvent), null);
+  assert.equal(handleHistoryKeyboard(inputEvent), false);
+  assert.equal(inputEvent.defaultPrevented, false);
+});
+
+test('handleHistoryKeyboard triggers onUndo/onRedo callbacks and prevents default', () => {
+  let undoCalled = 0;
+  let redoCalled = 0;
+  const callbacks = {
+    onUndo: () => { undoCalled++; return true; },
+    onRedo: () => { redoCalled++; return true; }
+  };
+
+  let preventedZ = false;
+  const eventZ = {
+    ctrlKey: true,
+    key: 'z',
+    preventDefault: () => { preventedZ = true; }
+  };
+  const resZ = handleHistoryKeyboard(eventZ, callbacks);
+  assert.equal(resZ, true);
+  assert.equal(undoCalled, 1);
+  assert.equal(preventedZ, true);
+
+  let preventedY = false;
+  const eventY = {
+    ctrlKey: true,
+    key: 'y',
+    preventDefault: () => { preventedY = true; }
+  };
+  const resY = handleHistoryKeyboard(eventY, callbacks);
+  assert.equal(resY, true);
+  assert.equal(redoCalled, 1);
+  assert.equal(preventedY, true);
+});
+
+test('admin.js and admin/index.html have undo/redo keyboard listener, perform functions, and button tooltips', async () => {
+  const fs = await import('node:fs');
+  const path = await import('node:path');
+  const adminCode = fs.readFileSync(path.resolve('admin/admin.js'), 'utf8');
+  const indexHtml = fs.readFileSync(path.resolve('admin/index.html'), 'utf8');
+
+  // admin.js binds document keydown and dispatches to undo/redo
+  assert.match(adminCode, /document\.addEventListener\(['"]keydown['"],\s*handleHistoryKeydown\)/);
+  assert.match(adminCode, /function\s+performUndo\b/);
+  assert.match(adminCode, /function\s+performRedo\b/);
+  assert.match(adminCode, /export\s*\{\s*performUndo,\s*performRedo,\s*handleHistoryKeydown\s*\}/);
+
+  // admin/index.html has shortcut hints in titles
+  assert.match(indexHtml, /id="undo"[^>]*title="[^"]*Ctrl\+Z/i);
+  assert.match(indexHtml, /id="redo"[^>]*title="[^"]*Ctrl\+Y/i);
+});
+
 

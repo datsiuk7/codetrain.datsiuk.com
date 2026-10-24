@@ -213,5 +213,6 @@
       }
     ]
   ],
-  "hidden": true
+  "hidden": true,
+  "nameEn": "Test Level"
 }

@@ -28,6 +28,14 @@ export function renderHintEditor(container, hints, { allowedCommands = [], onCha
     text.value = hint.text || '';
     text.onchange = () => commit(steps.map((step, i) => i === index ? { ...step, text: text.value.trim() } : step), false);
 
+    const textEn = document.createElement('textarea');
+    textEn.rows = 2;
+    textEn.maxLength = 1000;
+    textEn.placeholder = '🇬🇧 EN: Переклад підказки англійською (необовʼязково, до 1000 символів)';
+    textEn.ariaLabel = `Текст підказки англійською ${index + 1}`;
+    textEn.value = hint.textEn || '';
+    textEn.onchange = () => commit(steps.map((step, i) => i === index ? { ...step, textEn: textEn.value.trim() } : step), false);
+
     const target = document.createElement('select');
     target.ariaLabel = `Що підсвітити для підказки ${index + 1}`;
     const choices = [
@@ -71,7 +79,7 @@ export function renderHintEditor(container, hints, { allowedCommands = [], onCha
     remove.onclick = () => commit(steps.filter((_, i) => i !== index));
     actions.append(remove);
 
-    row.append(label, text, target, actions);
+    row.append(label, text, textEn, target, actions);
     container.append(row);
   });
 

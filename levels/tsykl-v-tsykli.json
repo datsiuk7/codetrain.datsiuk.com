@@ -33,7 +33,8 @@
   "hints": [
     {
       "text": "Ви можете покласти цикл в циклі",
-      "target": "command:loop"
+      "target": "command:loop",
+      "textEn": "You can place a loop inside another loop"
     }
   ],
   "limit": 10,
@@ -497,5 +498,6 @@
         "lit": false
       }
     ]
-  ]
+  ],
+  "nameEn": "Loop in a Loop"
 }

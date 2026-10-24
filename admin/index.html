@@ -53,6 +53,8 @@
               </label>
             </div>
             <input id="name" maxlength="80" placeholder="Назва рівня">
+            <label for="nameEn" class="field-label-text" style="margin-top:4px;font-size:11px;opacity:0.85">🇬🇧 Назва англійською (EN)</label>
+            <input id="nameEn" maxlength="80" placeholder="Level name in English (optional)">
           </div>
           <input type="hidden" id="id">
           <div class="task-fields-container">
@@ -63,6 +65,7 @@
                 <span class="task-badge night-badge">Темна</span>
               </label>
               <textarea id="descriptionNight" maxlength="500" placeholder="Завдання для темної теми (напр. «Запали всі ліхтарі»)" rows="2"></textarea>
+              <textarea id="descriptionNightEn" maxlength="500" placeholder="🇬🇧 EN: Night task in English (e.g. «Light all the streetlamps»)" rows="2" style="margin-top:4px"></textarea>
             </div>
             <div class="field task-field task-day">
               <label for="descriptionDay" class="task-field-label">
@@ -71,6 +74,7 @@
                 <span class="task-badge day-badge">Світла</span>
               </label>
               <textarea id="descriptionDay" maxlength="500" placeholder="Завдання для світлої теми (напр. «Вимкни всі ліхтарі»)" rows="2"></textarea>
+              <textarea id="descriptionDayEn" maxlength="500" placeholder="🇬🇧 EN: Day task in English (e.g. «Turn off all the streetlamps»)" rows="2" style="margin-top:4px"></textarea>
             </div>
             <input type="hidden" id="description">
           </div>
@@ -130,8 +134,8 @@
         <div class="toolbar">
           <button id="view-grid" class="selected">Клітинки</button>
           <button id="view-3d">3D-перегляд</button>
-          <button id="undo" disabled>↶ Скасувати зміну</button>
-          <button id="redo" disabled>↷ Повернути зміну</button>
+          <button id="undo" disabled title="Скасувати зміну (Ctrl+Z)">↶ Скасувати зміну</button>
+          <button id="redo" disabled title="Повернути зміну (Ctrl+Y, Ctrl+Shift+Z)">↷ Повернути зміну</button>
         </div>
         <div id="map-workspace" class="map-workspace">
           <div class="map-topbar">

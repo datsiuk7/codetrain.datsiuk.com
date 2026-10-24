@@ -77,6 +77,8 @@ test('theme changes, leaving a level and repeated runs survive editor refactorin
     assert.equal(worlds.at(-1).theme, 'dark');
     assert.equal(worlds.at(-1).disposed, undefined);
     node('#theme').onclick();
+    // Wait for the midpoint theme switch (when elements are fully transparent)
+    await new Promise((resolve) => setTimeout(resolve, 1000));
     assert.equal(worlds.length, 3);
     assert.equal(worlds[0].disposed, true);
     assert.equal(editors[0].dragEnded, true);

@@ -63,3 +63,55 @@ test('dark vs light command labels and sensors', () => {
   assert.equal(conditionValue({kind: 'sensor', sensor: 'lampLit', not: false}, l, s, {}), false);
   assert.equal(conditionValue({kind: 'sensor', sensor: 'onLamp', not: false}, l, s, {}), true);
 });
+
+test('daylight mode styling and 3D scene elements adapt properly in light theme', async () => {
+  const { readFile } = await import('node:fs/promises');
+  const gameCss = await readFile(new URL('../game.css', import.meta.url), 'utf8');
+  const blocksCss = await readFile(new URL('../blocks.css', import.meta.url), 'utf8');
+  const styleCss = await readFile(new URL('../style.css', import.meta.url), 'utf8');
+  const sceneJs = await readFile(new URL('../scene.js', import.meta.url), 'utf8');
+
+  // 1. Advanced blocks, condition editor, else branch in light theme
+  assert.ok(gameCss.includes('[data-theme="light"] .program-panel .advanced-block'));
+  assert.ok(blocksCss.includes('[data-theme="light"] .program-panel .advanced-block'));
+  assert.ok(gameCss.includes('[data-theme="light"] .program-panel .command-if>.block-head .condition-editor select'));
+  assert.ok(gameCss.includes('[data-theme="light"] .else-section'));
+  assert.ok(gameCss.includes('[data-theme="light"] .add-else-btn'));
+  assert.ok(gameCss.includes('[data-theme="light"] .remove-else-btn'));
+
+  // 2. Loop times contrast in light theme
+  assert.ok(gameCss.includes('#5b21b6') && gameCss.includes('[data-theme="light"] .program-panel .loop-times>span'));
+  assert.ok(blocksCss.includes('#5b21b6') && blocksCss.includes('[data-theme="light"] .program-panel .loop-times>span'));
+
+  // 3. Drag & drop receiving and floating in style.css, compact blocks
+  assert.ok(styleCss.includes('[data-theme="light"] .program.receiving'));
+  assert.ok(styleCss.includes('[data-theme="light"] .drag-floating'));
+  assert.ok(gameCss.includes('[data-theme="light"] .program-panel.compact-blocks .block'));
+  assert.ok(gameCss.includes('[data-theme="light"] .program-panel .program:not(:empty)::after'));
+
+  // 4. Speed button and function cards
+  assert.ok(gameCss.includes('[data-theme="light"] .speed-btn'));
+  assert.ok(gameCss.includes('[data-theme="light"] .function-card'));
+  assert.ok(styleCss.includes('[data-theme="light"] .function-card'));
+
+  // 5. Command pastel accents in palette
+  assert.ok(gameCss.includes('color-mix(in srgb, var(--command-color, #73c6bb) 14%, #ffffff)'));
+
+  // 6. 3D Scene daylight tiles, trees, and chimney smoke
+  assert.ok(sceneJs.includes('tileColor=isLight'));
+  assert.ok(sceneJs.includes('tileTopColor=isLight'));
+  assert.ok(sceneJs.includes("isLight?'#7a5f4a':'#685549'"));
+  assert.ok(sceneJs.includes("isLight?'#94a3b8':'#eef2f5'"));
+
+  // 7. 3D Scene shadow frustum projection update, contact shadow, and above-ground camera tilt clamp
+  assert.ok(sceneJs.includes('mainLight.shadow.camera.updateProjectionMatrix()'));
+  assert.ok(sceneJs.includes('mainLight.shadow.bias'));
+  assert.ok(sceneJs.includes('this.contactShadow'));
+  assert.ok(sceneJs.includes('Math.max(0.22,Math.min(1.42,this.tilt'));
+
+  // 8. Non-conflicting sunrise/nightfall shimmer selectors
+  assert.ok(styleCss.includes('body.theme-shimmer:not(.theme-shimmer-to-dark)::before'));
+  assert.ok(styleCss.includes('body.theme-shimmer:not(.theme-shimmer-to-light)::before'));
+});
+
+

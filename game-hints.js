@@ -1,4 +1,5 @@
 import { chooseHints } from './hint-data.mjs';
+import { getLang, t, getHintText } from './i18n.mjs';
 
 export function setupGameHints(container, level, preview = false) {
   const hints = chooseHints(level);
@@ -37,9 +38,10 @@ export function setupGameHints(container, level, preview = false) {
   function show(step = 0) {
     index = step;
     card.hidden = false;
-    text.textContent = hints[index].text;
+    const lang = getLang();
+    text.textContent = getHintText(hints[index], lang);
     counter.textContent = `${index + 1} / ${hints.length}`;
-    nextButton.textContent = index === hints.length - 1 ? 'Готово' : 'Далі';
+    nextButton.textContent = index === hints.length - 1 ? t('hintDone', lang) : t('hintNext', lang);
     refresh();
     focused?.scrollIntoView?.({ behavior: 'smooth', block: 'nearest' });
     try { sessionStorage.setItem(key, '1'); } catch {}

@@ -88,5 +88,9 @@
   ],
   "descriptionNight": "Повтори «вперед → запалити» тричі за допомогою циклу.",
   "descriptionDay": "Повтори «вперед → запалити» тричі за допомогою циклу.",
-  "hints": []
+  "hints": [],
+  "nameEn": "Street of Lamps",
+  "descriptionNightEn": "Repeat \"forward → light\" three times using a loop.",
+  "descriptionEn": "Repeat \"forward → light\" three times using a loop.",
+  "descriptionDayEn": "Repeat \"forward → unscrew\" three times using a loop."
 }

@@ -52,7 +52,15 @@ async function loadData() {
       categories = catRes.ok ? await catRes.json() : [];
       const idxRes = await fetch('../levels/index.json');
       const ids = idxRes.ok ? await idxRes.json() : [];
-      levels = ids.map(id => ({ id, name: id }));
+      levels = await Promise.all(
+        ids.map(async (id) => {
+          try {
+            const r = await fetch(`../levels/${id}.json`);
+            if (r.ok) return await r.json();
+          } catch {}
+          return { id, name: id };
+        })
+      );
     }
   } catch (err) {
     showToast('Помилка завантаження даних: ' + err.message, true);
@@ -64,9 +72,39 @@ async function loadData() {
   renderTree();
 }
 
-function renderTree() {
+export function setupSearch() {
+  const searchInput = $('#levels-search') || $('input[type="search"]');
+  if (!searchInput) return;
+  searchQuery = searchInput.value || '';
+  searchInput.oninput = (e) => {
+    searchQuery = e?.target ? e.target.value : searchInput.value;
+    renderTree();
+  };
+}
+
+export function setLevelsData(newCats, newLvls) {
+  categories = newCats || [];
+  levels = newLvls || [];
+}
+
+export function setSearchQuery(q) {
+  searchQuery = q || '';
+  const searchInput = $('#levels-search') || $('input[type="search"]');
+  if (searchInput) searchInput.value = searchQuery;
+}
+
+export function getSearchQuery() {
+  return searchQuery;
+}
+
+export function renderTree() {
   const container = $('#levels-tree');
   if (!container) return;
+
+  const searchInput = $('#levels-search') || $('input[type="search"]');
+  if (searchInput && typeof searchInput.value === 'string') {
+    searchQuery = searchInput.value;
+  }
 
   const countEl = $('#total-levels-count');
   if (countEl) countEl.textContent = levels.length;
@@ -142,7 +180,7 @@ function renderTree() {
   attachTreeEvents(container);
 }
 
-function renderLevelRow(lvl, cat, listInCat, lvlIdx, catIdx) {
+export function renderLevelRow(lvl, cat, listInCat, lvlIdx, catIdx) {
   const numBadge = catIdx >= 0 ? `${catIdx + 1}.${lvlIdx + 1}` : `•`;
   const isHidden = !!lvl.hidden;
 
@@ -150,6 +188,16 @@ function renderLevelRow(lvl, cat, listInCat, lvlIdx, catIdx) {
     const selected = c.id === lvl.category ? 'selected' : '';
     return `<option value="${esc(c.id)}" ${selected}>${esc(c.title)}</option>`;
   }).join('');
+
+  const boardSize = (lvl.width != null && lvl.depth != null)
+    ? `${lvl.width}×${lvl.depth}`
+    : (lvl.boardSize || '?');
+
+  const allowedCmds = Array.isArray(lvl.allowed) && lvl.allowed.length
+    ? lvl.allowed.join(', ')
+    : (Array.isArray(lvl.commands) && lvl.commands.length
+        ? lvl.commands.join(', ')
+        : 'за замовчуванням');
 
   return `
     <article class="level-row ${isHidden ? 'is-hidden' : ''}" data-level-id="${esc(lvl.id)}" draggable="true">
@@ -163,14 +211,14 @@ function renderLevelRow(lvl, cat, listInCat, lvlIdx, catIdx) {
           <span class="vis-badge ${isHidden ? 'hidden' : 'visible'}">${isHidden ? '👁 Приховано' : '✓ Видимий'}</span>
         </div>
         <div class="level-meta-line">
-          <span>Розмір: ${lvl.boardSize || '?'}</span>
+          <span>Розмір: ${boardSize}</span>
           <span>•</span>
-          <span>Команди: ${(lvl.commands || []).join(', ') || 'за замовчуванням'}</span>
+          <span>Команди: ${allowedCmds}</span>
         </div>
       </div>
       <div class="level-actions">
         <button type="button" class="btn-icon-tiny btn-lvl-up" ${lvlIdx === 0 ? 'disabled' : ''} title="Підняти вище у розділі">↑</button>
-        <button type="button" class="btn-icon-tiny btn-lvl-down" ${lvlIdx === listInCat.length - 1 ? 'disabled' : ''} title="Опустити нижче у розділі">↓</button>
+        <button type="button" class="btn-icon-tiny btn-lvl-down" ${lvlIdx === (listInCat ? listInCat.length - 1 : 0) ? 'disabled' : ''} title="Опустити нижче у розділі">↓</button>
         <select class="select-move-cat" title="Змінити тему/розділ">
           ${catOptions}
         </select>
@@ -497,5 +545,8 @@ async function saveReorder(silent = false) {
   }
 }
 
-await checkServer();
-await loadData();
+if (typeof document !== 'undefined') {
+  setupSearch();
+  await checkServer();
+  await loadData();
+}

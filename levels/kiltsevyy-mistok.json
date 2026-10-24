@@ -1,0 +1,212 @@
+{
+  "id": "kiltsevyy-mistok",
+  "name": "Кільцевий місток",
+  "description": "Місток утворює кільце навколо озера. Праворуч — завжди тільки вода, тож повертай, щойно попереду закінчується міст.",
+  "descriptionNight": "Обійди кільце за 7 стрибків. Коли далі обрив — поверни праворуч. Іскристі ліхтарі полагодь і запали, згаслі запали, а ті, що вже світяться, не чіпай.",
+  "descriptionDay": "Обійди кільце за 7 стрибків. Коли далі обрив — поверни праворуч. Іскристі ліхтарі лише полагодь, а ті, що світяться, вимкни.",
+  "category": "functions",
+  "difficulty": 4,
+  "width": 5,
+  "depth": 5,
+  "start": {
+    "x": 1,
+    "z": 3,
+    "dir": 0
+  },
+  "allowed": [
+    "jump",
+    "right",
+    "light",
+    "fix",
+    "loop",
+    "if"
+  ],
+  "allowElif": true,
+  "allowElse": false,
+  "allowedSensors": [
+    "canJump",
+    "lampShorts",
+    "onLamp",
+    "lampLit"
+  ],
+  "hints": [
+    {
+      "text": "На кільці вистачає одного повороту — праворуч. Вкладена умова потрібна лише для ліхтарів, що вже світяться.",
+      "textEn": "On a ring a single turn — right — is enough. The nested condition is only needed for lamps that already shine.",
+      "target": "command:if"
+    }
+  ],
+  "limit": 9,
+  "repairKits": 2,
+  "cells": [
+    [
+      {
+        "height": 0,
+        "tree": true,
+        "lamp": false,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      },
+      null,
+      null,
+      null,
+      null
+    ],
+    [
+      null,
+      {
+        "height": 0,
+        "tree": false,
+        "lamp": true,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": true,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      },
+      {
+        "height": 0,
+        "tree": false,
+        "lamp": true,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": true,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      },
+      {
+        "height": 0,
+        "tree": false,
+        "lamp": true,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      },
+      null
+    ],
+    [
+      null,
+      {
+        "height": 0,
+        "tree": false,
+        "lamp": true,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      },
+      null,
+      {
+        "height": 0,
+        "tree": false,
+        "lamp": true,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": true,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      },
+      null
+    ],
+    [
+      null,
+      {
+        "height": 0,
+        "tree": false,
+        "lamp": false,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      },
+      {
+        "height": 0,
+        "tree": false,
+        "lamp": true,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      },
+      {
+        "height": 0,
+        "tree": false,
+        "lamp": true,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": true,
+        "needsBulb": false,
+        "bush": false,
+        "rock": false,
+        "box": false
+      },
+      null
+    ],
+    [
+      null,
+      null,
+      null,
+      null,
+      {
+        "height": 0,
+        "tree": false,
+        "lamp": false,
+        "house": false,
+        "bulb": false,
+        "kit": false,
+        "spark": false,
+        "lit": false,
+        "needsBulb": false,
+        "bush": true,
+        "rock": false,
+        "box": false
+      }
+    ]
+  ],
+  "nameEn": "Ring Bridge",
+  "descriptionNightEn": "Go around the ring in 7 jumps. When there is a drop ahead — turn right. Repair sparking lamps and light them, light the dark ones, and leave the ones that already shine.",
+  "descriptionEn": "The bridge forms a ring around a lake. To the right there is always only water, so turn as soon as the bridge ends ahead.",
+  "descriptionDayEn": "Go around the ring in 7 jumps. When there is a drop ahead — turn right. Only repair sparking lamps and turn off the ones that shine."
+}

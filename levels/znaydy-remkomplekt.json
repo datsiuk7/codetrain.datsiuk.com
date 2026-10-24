@@ -24,11 +24,13 @@
   "hints": [
     {
       "text": "На карті є ремкомплект, треба його взяти",
-      "target": "scene"
+      "target": "scene",
+      "textEn": "There is a repair kit on the map — you need to pick it up"
     },
     {
       "text": "Підійди і візьми",
-      "target": "command:take"
+      "target": "command:take",
+      "textEn": "Walk up to it and use Take"
     }
   ],
   "limit": 0,
@@ -350,5 +352,6 @@
         "lit": false
       }
     ]
-  ]
+  ],
+  "nameEn": "Find the Repair Kit"
 }
