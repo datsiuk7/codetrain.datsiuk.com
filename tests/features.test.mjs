@@ -665,7 +665,7 @@ test('palette command buttons have centered icons without rightward offset', asy
   assert.match(gameCss, /\.program-panel\s+\.command\s+\.icon\s*\{[^}]*justify-content:\s*center/);
 });
 
-test('scripts and stylesheets in index.html and admin pages have version query parameter (?v0.2)', async () => {
+test('scripts and stylesheets in index.html and admin pages share one version query parameter (?vX.Y)', async () => {
   const fs = await import('node:fs');
   const path = await import('node:path');
 
@@ -677,22 +677,26 @@ test('scripts and stylesheets in index.html and admin pages have version query p
     'admin/settings.html'
   ];
 
+  // Bump the version on every release so CDN/browser caches fetch fresh files.
+  const versions = new Set();
+  const checkVersion = (rel, kind, url) => {
+    const version = url.match(/\?(v\d+\.\d+)$/)?.[1];
+    assert.ok(version, `${rel} ${kind} "${url}" must include a version query like ?v0.3`);
+    versions.add(version);
+  };
+
   for (const rel of files) {
     const html = fs.readFileSync(path.resolve(rel), 'utf8');
 
     // Extract all href and src from stylesheet link tags and script tags
     const linkMatches = [...html.matchAll(/<link\s+[^>]*rel=["']stylesheet["'][^>]*href=["']([^"']+)["']/gi)];
-    for (const match of linkMatches) {
-      const href = match[1];
-      assert.ok(href.includes('?v0.2'), `${rel} stylesheet "${href}" must include version query ?v0.2`);
-    }
+    for (const match of linkMatches) checkVersion(rel, 'stylesheet', match[1]);
 
     const scriptMatches = [...html.matchAll(/<script\s+[^>]*src=["']([^"']+)["']/gi)];
-    for (const match of scriptMatches) {
-      const src = match[1];
-      assert.ok(src.includes('?v0.2'), `${rel} script "${src}" must include version query ?v0.2`);
-    }
+    for (const match of scriptMatches) checkVersion(rel, 'script', match[1]);
   }
+
+  assert.equal(versions.size, 1, `all pages must use the same version, found: ${[...versions].join(', ')}`);
 });
 
 
