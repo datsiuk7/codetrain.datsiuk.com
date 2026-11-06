@@ -1,4 +1,4 @@
-import { getCategory, getLevelDescription, renderDifficultyStars } from './logic.mjs';
+import { getCategory, getLevelDescription, renderDifficultyStars, getDifficultyInfo } from './logic.mjs';
 import { getLang, t, getCategoryTitle, getLevelName } from './i18n.mjs';
 
 const esc = (s) =>
@@ -22,11 +22,14 @@ export function isLocalHost(loc = typeof location !== 'undefined' ? location : n
   );
 }
 
+// 4–5 star levels are a bonus: they never block the next section.
+export const isOptionalLevel = (l) => getDifficultyInfo(l.difficulty).level >= 4;
+
 export function isCatUnlocked(catIdx, catsWithLevels, done) {
   if (catIdx <= 0) return true;
   for (let i = 0; i < catIdx; i++) {
     const prevCat = catsWithLevels[i];
-    const prevLevels = prevCat.levels.filter((l) => !l.hidden);
+    const prevLevels = prevCat.levels.filter((l) => !l.hidden && !isOptionalLevel(l));
     const prevDone = prevLevels.filter((l) => done.includes(l.id)).length;
     if (prevLevels.length > 0 && prevDone < prevLevels.length) return false;
   }
@@ -57,6 +60,24 @@ export function getLevelSections(levels, categories) {
   }
 
   return catsWithLevels;
+}
+
+export function getLevelNumber(sections, levelId) {
+  for (let catIdx = 0; catIdx < sections.length; catIdx++) {
+    const lvlIdx = sections[catIdx].levels.findIndex((l) => l.id === levelId);
+    if (lvlIdx !== -1) return `${catIdx + 1}.${lvlIdx + 1}`;
+  }
+  return '';
+}
+
+// The first section that completing a level has just unlocked, or null.
+export function findNewlyUnlockedSection(sections, doneBefore, doneAfter) {
+  for (let catIdx = 1; catIdx < sections.length; catIdx++) {
+    if (!isCatUnlocked(catIdx, sections, doneBefore) && isCatUnlocked(catIdx, sections, doneAfter)) {
+      return sections[catIdx];
+    }
+  }
+  return null;
 }
 
 export function findNextLevel(levels, categories, done, currentId) {
@@ -124,12 +145,15 @@ export function renderHome(
         </div>
         <div class="card-body">
           <p>${esc(getLevelDescription(l, currentTheme, lang))}</p>
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;gap:6px">
+          <div class="card-footer">
             <div style="display:flex;align-items:center;gap:6px">
               <span style="font-size:11px;color:#8da4b3">${l.allowed.length} ${esc(t('cmdShort', lang))}</span>
               ${l.limit ? `<span class="card-limit" style="margin-top:0">${esc(t('limitLabel', lang))}: ${l.limit}</span>` : ''}
             </div>
-            ${renderDifficultyStars(l.difficulty, lang)}
+            <div style="display:flex;align-items:center;gap:6px">
+              ${isOptionalLevel(l) ? `<span class="optional-badge" title="${esc(t('optionalLevelTitle', lang))}">${esc(t('optionalLevel', lang))}</span>` : ''}
+              ${renderDifficultyStars(l.difficulty, lang)}
+            </div>
           </div>
         </div>
       </a>`;

@@ -26,6 +26,38 @@
   text-align: center;
 }
 
+/* Cards in a row stretch to the same height; keep the stats row pinned to the bottom. */
+.home-level-grid .level-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.home-level-grid .card-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: auto;
+  padding-top: 8px;
+}
+
+/* In narrow cards the stars drop to their own line instead of squeezing the limit. */
+.card-footer > * {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.card-footer > :last-child {
+  margin-left: auto;
+}
+
 .level-number {
   color: var(--gold);
   font-size: 48px;
@@ -859,4 +891,21 @@ summary.category-header:focus-visible {
     font-size: 9px;
     padding: 2px 5px;
   }
+}
+
+.optional-badge {
+  font-size: 10px;
+  font-weight: 600;
+  color: #c9b1f0;
+  background: #241d33;
+  border: 1px solid #4a3b66;
+  padding: 2px 7px;
+  border-radius: 5px;
+  cursor: help;
+}
+
+[data-theme="light"] .optional-badge {
+  color: #6b3fb0;
+  background: #f4effc;
+  border-color: #d9c9f2;
 }

@@ -333,6 +333,36 @@ export function step(l, s, cmd) {
   }
 }
 
+// Shortest route back to the start for the "walk home sad" animation.
+// Uses the real movement rules (houses, obstacles, heights) but never pushes boxes.
+// Returns the states after each move (the last one stands on the start), or null if unreachable.
+export function pathBack(l, s, target) {
+  const walker = { ...l, allowed: ['forward', 'jump'] };
+  const id = (p) => `${p.x},${p.z},${p.onBox ? 1 : 0}`;
+  const isTarget = (p) => p.x === target.x && p.z === target.z && !p.onBox;
+  if (isTarget(s)) return [];
+  const seen = new Set([id(s)]);
+  const queue = [{ state: s, path: [] }];
+  while (queue.length) {
+    const { state, path } = queue.shift();
+    for (let dir = 0; dir < 4; dir++) {
+      let next = null;
+      for (const cmd of ['forward', 'jump']) {
+        try {
+          const moved = step(walker, { ...state, dir }, cmd);
+          if (!moved.pushedBox) { next = moved; break; }
+        } catch {}
+      }
+      if (!next || seen.has(id(next))) continue;
+      const nextPath = [...path, next];
+      if (isTarget(next)) return nextPath;
+      seen.add(id(next));
+      queue.push({ state: next, path: nextPath });
+    }
+  }
+  return null;
+}
+
 export const sensors = {
   lampShorts: 'Ліхтар коротить',
   onLamp: 'Тут є ліхтар чи будинок',

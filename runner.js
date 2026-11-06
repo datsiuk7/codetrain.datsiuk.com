@@ -3,6 +3,7 @@ import {
   lampCount,
   won,
   step,
+  pathBack,
   validateProgram,
   createMemory,
   executeProgram,
@@ -14,7 +15,7 @@ import {
 import { World } from './scene.js';
 import { ProgramEditor } from './program.js';
 import { setupGameHints } from './game-hints.js';
-import { getLang, t, getLevelName } from './i18n.mjs';
+import { getLang, t, getLevelName, getCategoryTitle } from './i18n.mjs';
 
 const esc = (s) =>
   String(s).replace(/[&<>"']/g, (c) => ({
@@ -58,6 +59,7 @@ export function startGame(container, l, preview, options) {
     isLocal = false,
     isCompleted = null,
     toggleComplete = null,
+    levelNumber = '',
     effects
   } = options;
 
@@ -80,6 +82,7 @@ export function startGame(container, l, preview, options) {
         <span>${esc(preview ? t('backToEditor', lang) : t('allTopics', lang))}</span>
       </a>
       <div class="game-level-name">
+        ${levelNumber ? `<span class="level-title-number">${esc(levelNumber)}</span>` : ''}
         <span class="level-title-text">${esc(displayName)}</span>
         ${renderDifficultyStars(l.difficulty, lang)}
       </div>
@@ -155,6 +158,7 @@ export function startGame(container, l, preview, options) {
   let state = initialState(l, currentTheme);
   let token = 0;
   let running = false;
+  let settling = false;
   let world;
 
   try {
@@ -179,6 +183,8 @@ export function startGame(container, l, preview, options) {
   const help = setupGameHints(container, l, preview);
   editor.onChange = (data) => {
     saveProgram(l.id, preview, data);
+    // Editing while the character walks back, cries or falls snaps it straight to the start.
+    if (settling) reset();
     help.refresh();
     if (!editor.blocks.length) {
       hideTrashConfirm();
@@ -370,10 +376,36 @@ export function startGame(container, l, preview, options) {
     applySpeed();
   };
 
+  function showSectionUnlocked(section) {
+    const overlay = document.createElement('div');
+    overlay.className = 'section-unlocked';
+    overlay.setAttribute('role', 'dialog');
+    overlay.setAttribute('aria-modal', 'true');
+    overlay.setAttribute('aria-labelledby', 'section-unlocked-title');
+    overlay.innerHTML = `
+      <div class="section-unlocked-card">
+        <div class="section-unlocked-icon" aria-hidden="true">🔓</div>
+        <p class="section-unlocked-eyebrow">${esc(t('sectionUnlockedEyebrow', lang))}</p>
+        <h2 id="section-unlocked-title">${esc(getCategoryTitle(section, lang))}</h2>
+        <p class="section-unlocked-text">${esc(t('sectionUnlockedText', lang))}</p>
+        <div class="section-unlocked-actions">
+          <a href="#" class="primary section-unlocked-go">${esc(t('sectionUnlockedGo', lang))}</a>
+          <button type="button" class="section-unlocked-stay">${esc(t('sectionUnlockedStay', lang))}</button>
+        </div>
+      </div>`;
+    const close = () => overlay.remove();
+    overlay.querySelector('.section-unlocked-stay').onclick = close;
+    overlay.onclick = (e) => { if (e.target === overlay) close(); };
+    overlay.onkeydown = (e) => { if (e.key === 'Escape') close(); };
+    container.appendChild(overlay);
+    overlay.querySelector('.section-unlocked-go').focus({ preventScroll: true });
+  }
+
   function reset() {
     hideTrashConfirm();
     token++;
     running = false;
+    settling = false;
     state = initialState(l, currentTheme);
     world.setState(state);
     editor.active = null;
@@ -417,6 +449,14 @@ export function startGame(container, l, preview, options) {
     editor.lock(true);
     $('#run').disabled = true;
 
+    // The program has stopped: unlock the editor while the aftermath animation plays.
+    const settle = () => {
+      running = false;
+      settling = true;
+      editor.lock(false);
+      $('#run').disabled = false;
+    };
+
     const execution = executeProgram(l, editor.blocks, editor.functions, () => state, memory);
 
     try {
@@ -456,8 +496,9 @@ export function startGame(container, l, preview, options) {
 
           if (won(l, state)) {
             solved = true;
+            let unlockedSection = null;
             if (!preview) {
-              complete(l.id);
+              unlockedSection = complete(l.id);
               updateLocalCompleteBtn();
             }
             effects.win();
@@ -479,10 +520,12 @@ export function startGame(container, l, preview, options) {
             $('#win').innerHTML = winLink;
             $('#win').hidden = false;
             $('#win').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            if (unlockedSection) showSectionUnlocked(unlockedSection);
             break;
           }
         } catch (e) {
           failed = true;
+          settle();
           if (e.message.startsWith('Попереду немає плитки.')) {
             effects.fall?.();
             await world.fall(state, () => token !== runToken);
@@ -527,6 +570,7 @@ export function startGame(container, l, preview, options) {
       }
     } catch (e) {
       failed = true;
+      settle();
       status(e.message, 'error');
     }
 
@@ -535,19 +579,29 @@ export function startGame(container, l, preview, options) {
         currentTheme === 'light'
           ? t('statusIncompleteDay', lang)
           : t('statusIncompleteNight', lang);
+      settle();
       status(incompleteMsg);
-      await wait(2000);
-      if (token === runToken) {
-        state = initialState(l, currentTheme);
-        world.setState(state);
-        meter();
-        status(t('statusTryAnother', lang));
-      }
+      editor.highlight(null);
+      await wait(700);
+      if (token !== runToken) return;
+      const cancelled = () => token !== runToken;
+      const start = initialState(l, currentTheme);
+      const path = pathBack(l, state, start);
+      effects.sad?.();
+      if (path && !(await world.walkBack(path, cancelled))) return;
+      state = start;
+      world.setState(state);
+      meter();
+      effects.cry?.();
+      if (!(await world.cry(cancelled))) return;
+      status(t('statusTryAnother', lang));
     }
 
     if (token === runToken) {
       running = false;
-      editor.lock(false);
+      settling = false;
+      // Already unlocked by settle(): relocking would cancel a drag the player has started.
+      if (editor.locked) editor.lock(false);
       $('#run').disabled = false;
     }
   };

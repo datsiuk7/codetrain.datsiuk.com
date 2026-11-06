@@ -3,7 +3,7 @@ import {
   categories
 } from './logic.mjs';
 import { setupMusic, setupEffects } from './music.js';
-import { renderHome, isCatUnlocked, getLevelSections, findNextLevel } from './home.js';
+import { renderHome, isCatUnlocked, getLevelSections, getLevelNumber, findNextLevel, findNewlyUnlockedSection } from './home.js';
 import { startGame } from './runner.js';
 import { getLang, setLang, t, getCategoryTitle, getLevelName } from './i18n.mjs';
 
@@ -541,7 +541,7 @@ function route() {
         <div class="panel" style="max-width:540px;margin:50px auto;text-align:center;padding:36px 28px">
           <div style="font-size:44px;margin-bottom:12px">🔒</div>
           <h2>${esc(t('levelLockedTitle', currentLang))}</h2>
-          <p>${currentLang === 'en' ? `To unlock "${esc(displayName)}", first complete all levels in <strong>"${esc(prevCatTitle)}"</strong>.` : `Щоб відкрити вулицю «${esc(displayName)}», спочатку пройди всі завдання теми <strong>«${esc(prevCatTitle)}»</strong>.`}</p>
+          <p>${currentLang === 'en' ? `To unlock "${esc(displayName)}", first complete all 1–3 star levels in <strong>"${esc(prevCatTitle)}"</strong>.` : `Щоб відкрити вулицю «${esc(displayName)}», спочатку пройди всі завдання на 1–3 зірки теми <strong>«${esc(prevCatTitle)}»</strong>.`}</p>
           <div style="margin-top:24px;display:flex;justify-content:center;gap:10px;flex-wrap:wrap">
             ${isLocal ? `<button type="button" id="unlock-local-level" class="btn-local-unlock-cat" style="padding:11px 20px;border-radius:9px">${esc(t('unlockLocalLevelBtn', currentLang))}</button>` : ''}
             <a href="#" class="primary" style="display:inline-block;padding:11px 24px;border-radius:9px">${esc(t('returnHome', currentLang))}</a>
@@ -565,10 +565,15 @@ function route() {
     cleanup = startGame(app, l, false, {
       currentTheme,
       lang: currentLang,
+      levelNumber: getLevelNumber(catsWithLevels, l.id),
       gameSettings,
       loadSavedProgram,
       saveProgram,
-      complete,
+      complete: (levelId) => {
+        const before = completed();
+        complete(levelId);
+        return findNewlyUnlockedSection(catsWithLevels, before, completed());
+      },
       isLocal,
       isCompleted: (levelId) => completed().includes(levelId),
       toggleComplete,

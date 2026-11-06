@@ -373,7 +373,7 @@ export class World {
     box(.32,.34,.26,'#bf945c',0,.35,0,robot);box(.25,.22,.24,'#efcfa4',0,.64,0,robot);
     this.hat=new THREE.Group();this.hat.position.set(0,.77,0);robot.add(this.hat);
     box(.38,.055,.35,'#2b3944',0,0,0,this.hat);box(.25,.13,.25,'#344655',0,.08,0,this.hat);
-    box(.2,.075,.02,'#394749',0,.65,-.13,robot,false,false);box(.045,.025,.015,'#f8e5b7',-.055,.66,-.145,robot,false,false);box(.045,.025,.015,'#f8e5b7',.055,.66,-.145,robot,false,false);this.leftLeg=box(.1,.15,.17,'#283744',-.09,.1,0,robot);this.rightLeg=box(.1,.15,.17,'#283744',.09,.1,0,robot);this.leftArm=box(.08,.26,.11,'#9e7b51',-.22,.36,0,robot);this.arm=box(.08,.26,.11,'#9e7b51',.22,.36,0,robot);
+    box(.2,.075,.02,'#394749',0,.65,-.13,robot,false,false);this.eyes=[box(.045,.025,.015,'#f8e5b7',-.055,.66,-.145,robot,false,false),box(.045,.025,.015,'#f8e5b7',.055,.66,-.145,robot,false,false)];this.leftLeg=box(.1,.15,.17,'#283744',-.09,.1,0,robot);this.rightLeg=box(.1,.15,.17,'#283744',.09,.1,0,robot);this.leftArm=box(.08,.26,.11,'#9e7b51',-.22,.36,0,robot);this.arm=box(.08,.26,.11,'#9e7b51',.22,.36,0,robot);
     const alertCanvas=document.createElement('canvas');alertCanvas.width=128;alertCanvas.height=128;
     const actx=alertCanvas.getContext('2d');
     actx.shadowColor='rgba(235,30,60,.75)';actx.shadowBlur=14;
@@ -517,13 +517,14 @@ export class World {
   resetFrustratedState(baseY=null){
     if(baseY!=null)this.robot.position.y=baseY;
     this.robot.scale.set(1,1,1);
-    this.robot.rotation.z=0;
+    this.robot.rotation.x=0;this.robot.rotation.z=0;
     this.leftLeg.rotation.x=0;this.rightLeg.rotation.x=0;
     this.leftLeg.rotation.z=0;this.rightLeg.rotation.z=0;
     this.leftArm.rotation.x=0;this.leftArm.rotation.z=0;
     this.arm.rotation.x=0;this.arm.rotation.z=0;
     if(this.hat){this.hat.position.set(0,.77,0);this.hat.rotation.set(0,0,0)}
     if(this.alertSign){this.alertSign.visible=false;this.alertSign.scale.set(0,0,1);this.alertSign.position.set(0,1.42,0)}
+    if(this.eyes)for(const eye of this.eyes)eye.scale.set(1,1,1);
   }
   setState(s){
     this.resetFrustratedState();
@@ -1050,6 +1051,80 @@ export class World {
         }
         if(t<1)requestAnimationFrame(tick);
         else{this.resetFrustratedState(baseY);resolve(true)}
+      };
+      requestAnimationFrame(tick);
+    });
+  }
+  async walkBack(path,cancelled){
+    const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+    for(const [index,next] of path.entries()){
+      const from=this.robot.position.clone(),to=this.position(next),old=this.angle;
+      let turn=(-next.dir*Math.PI/2-old)%(Math.PI*2);
+      if(turn>Math.PI)turn-=Math.PI*2;
+      if(turn<-Math.PI)turn+=Math.PI*2;
+      const hop=Math.abs(to.y-from.y)>.01,side=index%2?-1:1,duration=(reduced?120:hop?680:600)/this.speed;
+      const ok=await new Promise(resolve=>{
+        const start=performance.now();
+        const tick=now=>{
+          if(this.dead||cancelled()){this.resetFrustratedState();resolve(false);return}
+          const t=Math.min((now-start)/duration,1),turnT=Math.min(t/.3,1),moveT=Math.max(0,(t-.15)/.85);
+          const turnEase=turnT*turnT*(3-2*turnT),ease=moveT*moveT*(3-2*moveT),walk=Math.sin(Math.PI*moveT);
+          this.robot.position.lerpVectors(from,to,ease);
+          if(hop)this.robot.position.y+=walk*.4;
+          this.robot.position.y+=walk*.025;
+          this.robot.rotation.y=old+turn*turnEase;
+          this.robot.rotation.z=walk*.07*side;
+          this.leftLeg.rotation.x=walk*.35*side;this.rightLeg.rotation.x=-walk*.35*side;
+          this.leftArm.rotation.x=-walk*.12*side;this.arm.rotation.x=walk*.12*side;
+          this.hat.position.y=.74;
+          for(const eye of this.eyes)eye.scale.y=.55;
+          if(t<1)requestAnimationFrame(tick);else{this.angle=old+turn;resolve(true)}
+        };
+        requestAnimationFrame(tick);
+      });
+      if(!ok)return false;
+    }
+    this.resetFrustratedState();
+    return true;
+  }
+  async cry(cancelled){
+    const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const tearGeo=new THREE.SphereGeometry(.022,8,6);
+    const tearMat=new THREE.MeshStandardMaterial({color:0x8fd8ff,emissive:0x2a8fd0,emissiveIntensity:.6,transparent:true,opacity:.9});
+    return new Promise(resolve=>{
+      const start=performance.now(),duration=reduced?700:2600,baseY=this.robot.position.y,tears=[];
+      let last=start,nextTear=start;
+      const finish=ok=>{for(const tear of tears)this.robot.remove(tear.mesh);tearGeo.dispose();tearMat.dispose();this.resetFrustratedState(baseY);resolve(ok)};
+      const tick=now=>{
+        if(this.dead||cancelled()){finish(false);return}
+        const t=Math.min((now-start)/duration,1),dt=Math.min((now-last)/1000,.05),elapsed=now-start;
+        last=now;
+        const raise=Math.min(t/.12,1),lower=t>.85?(t-.85)/.15:0,pose=raise*(1-lower);
+        const sob=Math.abs(Math.sin(elapsed*.0095)),rub=Math.sin(elapsed*.02);
+        this.robot.position.y=baseY+sob*.03*pose;
+        this.robot.rotation.z=Math.sin(elapsed*.045)*.035*pose;
+        this.leftArm.rotation.x=(-2+rub*.18)*pose;this.leftArm.rotation.z=-.42*pose;
+        this.arm.rotation.x=(-2-rub*.18)*pose;this.arm.rotation.z=.42*pose;
+        this.leftLeg.rotation.x=0;this.rightLeg.rotation.x=0;
+        this.hat.position.y=.77-.035*pose;
+        for(const eye of this.eyes)eye.scale.y=1-.65*pose;
+        while(t<.85&&now>=nextTear){
+          for(const side of [-1,1]){
+            const mesh=new THREE.Mesh(tearGeo,tearMat);
+            mesh.position.set(side*.08,.65,-.15);
+            this.robot.add(mesh);
+            tears.push({mesh,velocity:new THREE.Vector3(side*(.45+Math.random()*.25),.5+Math.random()*.3,-.12-Math.random()*.15)});
+          }
+          nextTear+=reduced?220:95;
+        }
+        for(let i=tears.length-1;i>=0;i--){
+          const tear=tears[i];
+          tear.velocity.y-=3.2*dt;
+          tear.mesh.position.addScaledVector(tear.velocity,dt);
+          if(tear.mesh.position.y<.03){this.robot.remove(tear.mesh);tears.splice(i,1)}
+        }
+        if(t<1)requestAnimationFrame(tick);
+        else finish(true);
       };
       requestAnimationFrame(tick);
     });

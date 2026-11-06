@@ -197,6 +197,8 @@ export function setupEffects(button){
       tone(now+.82,60,.25,.14,'triangle',20);
     },
     win(){if(!on)return;const audio=getContext();if(!audio)return;const now=audio.currentTime;[523,659,784,1047].forEach((frequency,index)=>tone(now+index*.12,frequency,.32,.09,'sine',frequency*1.04));tone(now+.48,1047,.65,.12,'sine',1319)},
+    sad(){if(!on)return;const audio=getContext();if(!audio)return;const now=audio.currentTime;tone(now,392,.3,.08,'triangle',370);tone(now+.34,370,.3,.08,'triangle',349);tone(now+.68,349,.3,.08,'triangle',330);tone(now+1.02,330,.85,.09,'triangle',247)},
+    cry(){if(!on)return;const audio=getContext();if(!audio)return;const now=audio.currentTime;for(let index=0;index<5;index++)tone(now+index*.33,640-index*20,.16,.05,'sine',430);tone(now+1.75,720,.7,.05,'sine',360)},
     angry(){if(!on)return;const audio=getContext();if(!audio)return;const now=audio.currentTime;tone(now,260,.14,.11,'sawtooth',170);tone(now+.12,210,.16,.13,'sawtooth',130);tone(now+.26,160,.24,.15,'sawtooth',80)}
   };
 }

@@ -701,6 +701,11 @@ body.in-game textarea::selection,
   padding-right: 4px;
 }
 
+.game-level-name .level-title-number {
+  color: var(--gold);
+  font-variant-numeric: tabular-nums;
+}
+
 .game-level-name .difficulty-stars {
   font-size: 13px;
   gap: 2px;
@@ -1856,3 +1861,98 @@ body.in-game textarea::selection,
   color: #ffffff;
 }
 
+
+.section-unlocked {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(6, 12, 18, 0.72);
+  backdrop-filter: blur(3px);
+  animation: section-unlocked-fade 0.3s ease-out;
+}
+
+.section-unlocked-card {
+  width: min(460px, 100%);
+  text-align: center;
+  padding: 34px 28px 28px;
+  border: 1px solid var(--gold);
+  border-radius: 20px;
+  background: radial-gradient(ellipse at 50% 0%, #33402f, var(--panel) 70%);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.55), 0 0 40px rgba(237, 193, 124, 0.25);
+  animation: section-unlocked-pop 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.section-unlocked-icon {
+  font-size: 56px;
+  line-height: 1;
+  margin-bottom: 14px;
+}
+
+.section-unlocked-eyebrow {
+  margin: 0 0 8px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.section-unlocked-card h2 {
+  margin: 0 0 12px;
+  font-size: 30px;
+}
+
+.section-unlocked-text {
+  margin: 0 0 24px;
+}
+
+.section-unlocked-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.section-unlocked-actions a,
+.section-unlocked-actions button {
+  min-height: 46px;
+  padding: 0 24px;
+  border-radius: 10px;
+  font-size: 15px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.section-unlocked-go {
+  flex: 1 1 180px;
+  border: 1px solid var(--gold);
+}
+
+[data-theme="light"] .section-unlocked {
+  background: rgba(40, 52, 64, 0.45);
+}
+
+[data-theme="light"] .section-unlocked-card {
+  background: radial-gradient(ellipse at 50% 0%, #fff4dc, #ffffff 70%);
+  box-shadow: 0 20px 60px rgba(30, 40, 50, 0.25), 0 0 40px rgba(223, 152, 37, 0.25);
+}
+
+@keyframes section-unlocked-fade {
+  from { opacity: 0; }
+}
+
+@keyframes section-unlocked-pop {
+  from { opacity: 0; transform: translateY(16px) scale(0.92); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .section-unlocked,
+  .section-unlocked-card {
+    animation: none;
+  }
+}

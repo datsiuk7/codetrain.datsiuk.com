@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-import { findNextLevel, getLevelSections, isLocalHost, renderHome } from '../home.js';
+import { findNextLevel, getLevelNumber, getLevelSections, isLocalHost, renderHome } from '../home.js';
 
 const readJson = async (path) => JSON.parse(await readFile(new URL(path, import.meta.url), 'utf8'));
 
@@ -19,7 +19,7 @@ test('renderHome displays minimalist section header for unlocked categories', as
   // Section 2 is initially locked
   assert.ok(!container.innerHTML.includes('<h2 class="category-title">2. Цикли</h2>'));
   assert.ok(container.innerHTML.includes('Розділ під замком'));
-  assert.ok(container.innerHTML.includes('Щоб розблокувати, пройдіть всі попередні рівні'));
+  assert.ok(container.innerHTML.includes('Щоб розблокувати, пройдіть усі попередні рівні на 1–3 зірки'));
 
   // When Section 1 is finished, Section 2 displays its minimalist header
   const sections = getLevelSections(levels, categories);
@@ -162,3 +162,16 @@ test('renderHome automatically collapses category and displays Розділ пр
   assert.ok(container.innerHTML.includes('Section completed'));
 });
 
+
+test('level number in the game matches the number on the home page card', async () => {
+  const [ids, categories] = await Promise.all([
+    readJson('../levels/index.json'), readJson('../levels/categories.json')
+  ]);
+  const levels = await Promise.all(ids.map((id) => readJson(`../levels/${id}.json`)));
+  const sections = getLevelSections(levels, categories);
+
+  assert.equal(getLevelNumber(sections, sections[0].levels[0].id), '1.1');
+  assert.equal(getLevelNumber(sections, sections[1].levels[2].id), '2.3');
+  assert.equal(getLevelNumber(sections, 'testovyy'), '');
+  assert.equal(getLevelNumber(sections, 'no-such-level'), '');
+});
