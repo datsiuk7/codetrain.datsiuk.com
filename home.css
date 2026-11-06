@@ -909,3 +909,220 @@ summary.category-header:focus-visible {
   background: #f4effc;
   border-color: #d9c9f2;
 }
+
+/* Loading screen (index.html). --p is progress from 0 to 1. */
+.boot {
+  --p: 0;
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  padding: 16px;
+  background: radial-gradient(ellipse at 50% 35%, #1d2b38, #101820 70%);
+  transition: opacity 0.4s ease;
+}
+
+.boot.boot-done {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.boot-scene {
+  position: relative;
+  width: min(360px, 86vw);
+  height: 150px;
+  overflow: hidden;
+}
+
+.boot-stars i {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: #fff4d6;
+  animation: boot-twinkle 2.4s ease-in-out infinite;
+}
+
+.boot-stars i:nth-child(1) { left: 6%; top: 12%; }
+.boot-stars i:nth-child(2) { left: 19%; top: 34%; animation-delay: 0.6s; }
+.boot-stars i:nth-child(3) { left: 31%; top: 8%; animation-delay: 1.2s; }
+.boot-stars i:nth-child(4) { left: 44%; top: 26%; animation-delay: 0.3s; }
+.boot-stars i:nth-child(5) { left: 57%; top: 6%; animation-delay: 1.6s; }
+.boot-stars i:nth-child(6) { left: 68%; top: 30%; animation-delay: 0.9s; }
+.boot-stars i:nth-child(7) { left: 79%; top: 14%; animation-delay: 1.9s; }
+.boot-stars i:nth-child(8) { left: 90%; top: 36%; animation-delay: 0.4s; }
+.boot-stars i:nth-child(9) { left: 95%; top: 5%; animation-delay: 1.4s; }
+
+.boot-sun {
+  display: none;
+}
+
+.boot-lamps {
+  position: absolute;
+  left: 4%;
+  right: 4%;
+  bottom: 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.boot-lamps i {
+  position: relative;
+  width: 4px;
+  height: 46px;
+  border-radius: 2px 2px 0 0;
+  background: #3a4c58;
+}
+
+.boot-lamps i:nth-child(even) {
+  height: 38px;
+}
+
+/* Lamp head. */
+.boot-lamps i::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: -9px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  transform: translateX(-50%);
+  background: #4a5a66;
+  transition: background 0.3s ease, box-shadow 0.3s ease;
+}
+
+.boot-lamps i.on::before {
+  background: #ffd98a;
+  box-shadow: 0 0 10px 3px #edc17c, 0 0 28px 8px #edc17c66;
+  animation: boot-pop 0.35s ease-out;
+}
+
+.boot-ground {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 6px;
+  border-radius: 3px;
+  background: #22313c;
+}
+
+.boot-text {
+  margin: 0;
+  font-size: 15px;
+  color: var(--muted);
+}
+
+.boot-percent {
+  display: inline-block;
+  min-width: 3.2em;
+  color: var(--gold);
+  font-variant-numeric: tabular-nums;
+}
+
+.boot-bar {
+  width: min(360px, 86vw);
+  height: 6px;
+  border-radius: 3px;
+  overflow: hidden;
+  background: #22313c;
+}
+
+.boot-bar i {
+  display: block;
+  width: calc(var(--p) * 100%);
+  height: 100%;
+  border-radius: 3px;
+  background: linear-gradient(90deg, #b8894a, #edc17c, #ffe2a6);
+  box-shadow: 0 0 12px #edc17c88;
+}
+
+.boot-error {
+  text-align: center;
+}
+
+.boot-error-text {
+  margin: 0 0 12px;
+  color: #efa29a;
+}
+
+.boot-failed .boot-bar i {
+  background: #ef4444;
+  box-shadow: none;
+}
+
+/* Day: the sun rises and the lamps, lit at first, switch off one by one. */
+[data-theme="light"] .boot {
+  background: linear-gradient(#cfe6f7, #f8f9fa 75%);
+}
+
+[data-theme="light"] .boot-stars {
+  display: none;
+}
+
+[data-theme="light"] .boot-sun {
+  display: block;
+  position: absolute;
+  left: 50%;
+  top: 14px;
+  width: 54px;
+  height: 54px;
+  margin-left: -27px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #fff3c4, #ffc94d 60%, #f5a623);
+  box-shadow: 0 0 30px 10px #ffd36a88;
+  transform: translateY(calc((1 - var(--p)) * 110px));
+  animation: boot-sun-glow 3s ease-in-out infinite;
+}
+
+[data-theme="light"] .boot-lamps i {
+  background: #9fb0bd;
+}
+
+[data-theme="light"] .boot-lamps i::before {
+  background: #ffd98a;
+  box-shadow: 0 0 8px 2px #f5b94a;
+}
+
+[data-theme="light"] .boot-lamps i.on::before {
+  background: #c7d2da;
+  box-shadow: none;
+  animation: none;
+}
+
+[data-theme="light"] .boot-ground,
+[data-theme="light"] .boot-bar {
+  background: #d9e2e8;
+}
+
+[data-theme="light"] .boot-bar i {
+  background: linear-gradient(90deg, #f5a623, #ffc94d, #ffe08a);
+  box-shadow: 0 0 10px #ffc94d88;
+}
+
+@keyframes boot-twinkle {
+  0%, 100% { opacity: 0.25; transform: scale(0.8); }
+  50% { opacity: 1; transform: scale(1.2); }
+}
+
+@keyframes boot-pop {
+  from { transform: translateX(-50%) scale(1.5); }
+}
+
+@keyframes boot-sun-glow {
+  50% { box-shadow: 0 0 44px 16px #ffd36aaa; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .boot-stars i,
+  .boot-lamps i.on::before,
+  [data-theme="light"] .boot-sun {
+    animation: none;
+  }
+}

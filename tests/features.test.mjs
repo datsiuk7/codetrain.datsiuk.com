@@ -707,6 +707,10 @@ test('scripts and stylesheets in index.html and admin pages share one version qu
   for (const spec of imported) {
     assert.equal(importMap[spec], `${spec}?${[...versions][0]}`, `import map must map ${spec} to the current version`);
   }
+
+  // Preloading every module avoids a slow chain of import round trips.
+  const preloads = new Set([...index.matchAll(/<link rel="modulepreload" href="([^"]+)"/g)].map((m) => `./${m[1]}`));
+  for (const url of Object.values(importMap)) assert.ok(preloads.has(url), `index.html must modulepreload ${url}`);
 });
 
 

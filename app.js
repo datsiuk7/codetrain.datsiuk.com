@@ -443,42 +443,59 @@ if (resetProgressBtn) {
   };
 }
 
+// 'no-cache' revalidates with the server (cheap 304s) instead of re-downloading everything.
+const fetchJson = async (url) => {
+  const r = await fetch(url, { cache: 'no-cache' });
+  return r.ok ? r.json() : null;
+};
+
+const checkedLevel = (l) => {
+  const errors = validateLevel(l);
+  if (errors.length) throw new Error(`${l?.id}: ${errors.join(' ')}`);
+  return l;
+};
+
+// The published site has every level in levels/all.json (built on deploy);
+// locally the admin edits individual files, so fall back to index.json.
+async function loadLevels() {
+  if (!isLocal) {
+    const bundle = await fetchJson('./levels/all.json').catch(() => null);
+    if (Array.isArray(bundle) && bundle.length) return bundle.map(checkedLevel);
+  }
+
+  const ids = await fetchJson('./levels/index.json');
+  if (!Array.isArray(ids)) throw new Error('Не вдалося відкрити список рівнів.');
+  window.lamplighterBoot?.expect(ids.length);
+  return Promise.all(
+    ids.map(async (id) => {
+      if (!/^[a-z0-9-]+$/.test(id)) throw new Error('Некоректний ID рівня');
+      const l = await fetchJson(`./levels/${id}.json`);
+      if (!l) throw new Error(`Не знайдено рівень ${id}`);
+      return checkedLevel(l);
+    })
+  );
+}
+
 async function load() {
   try {
     isLocal = isLocalHost();
 
-    try {
-      const setRes = await fetch('./levels/settings.json', { cache: 'no-store' });
-      if (setRes.ok) {
-        const s = await setRes.json();
-        if (s) gameSettings = { ...gameSettings, ...s };
-        updateFooter(currentTheme);
-      }
-    } catch {}
-
-    try {
-      const catRes = await fetch('./levels/categories.json', { cache: 'no-store' });
-      if (catRes.ok) currentCategories = await catRes.json();
-    } catch {}
-
-    const response = await fetch('./levels/index.json', { cache: 'no-store' });
-    if (!response.ok) throw new Error('Не вдалося відкрити список рівнів.');
-    const ids = await response.json();
-
-    levels = await Promise.all(
-      ids.map(async (id) => {
-        if (!/^[a-z0-9-]+$/.test(id)) throw new Error('Некоректний ID рівня');
-        const r = await fetch(`./levels/${id}.json`, { cache: 'no-store' });
-        if (!r.ok) throw new Error(`Не знайдено рівень ${id}`);
-        const l = await r.json();
-        const errors = validateLevel(l);
-        if (errors.length) throw new Error(`${id}: ${errors.join(' ')}`);
-        return l;
-      })
-    );
+    const [settings, cats, loaded] = await Promise.all([
+      fetchJson('./levels/settings.json').catch(() => null),
+      fetchJson('./levels/categories.json').catch(() => null),
+      loadLevels()
+    ]);
+    if (settings) {
+      gameSettings = { ...gameSettings, ...settings };
+      updateFooter(currentTheme);
+    }
+    if (cats) currentCategories = cats;
+    levels = loaded;
     route();
   } catch (e) {
     app.innerHTML = `<div class="panel"><h2>Не вдалося завантажити рівні</h2><p>${esc(e.message)}</p><p>Локально запусти <code>node server.cjs</code> та відкрий localhost:5173.</p></div>`;
+  } finally {
+    window.lamplighterBoot?.done();
   }
 }
 

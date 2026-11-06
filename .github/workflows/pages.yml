@@ -35,6 +35,17 @@ jobs:
           cp index.html *.js *.mjs *.css CNAME _site/
           cp -r admin levels vendor _site/
 
+      # One request for all levels instead of one per level (the game falls back to index.json locally).
+      - name: Bundle levels
+        run: |
+          node -e "
+            const fs = require('fs');
+            const ids = JSON.parse(fs.readFileSync('levels/index.json', 'utf8'));
+            const levels = ids.map((id) => JSON.parse(fs.readFileSync('levels/' + id + '.json', 'utf8')));
+            fs.writeFileSync('_site/levels/all.json', JSON.stringify(levels));
+            console.log('Bundled ' + levels.length + ' levels');
+          "
+
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

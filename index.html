@@ -5,10 +5,54 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#101820">
   <title>Ліхтарник — запали ніч</title>
-  <link rel="stylesheet" href="style.css?v0.3">
-  <link rel="stylesheet" href="home.css?v0.3">
-  <link rel="stylesheet" href="blocks.css?v0.3">
-  <link rel="stylesheet" href="game.css?v0.3">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath fill='%23edc17c' d='M16 2l3.2 10.8L30 16l-10.8 3.2L16 30l-3.2-10.8L2 16l10.8-3.2z'/%3E%3C/svg%3E">
+  <!-- Apply the saved day/night theme before anything paints. -->
+  <script>try{if(localStorage.getItem('lamplighter-theme')==='light')document.documentElement.setAttribute('data-theme','light')}catch(e){}</script>
+  <link rel="stylesheet" href="style.css?v0.4">
+  <link rel="stylesheet" href="home.css?v0.4">
+  <link rel="stylesheet" href="blocks.css?v0.4">
+  <link rel="stylesheet" href="game.css?v0.4">
+  <!-- Versioned module URLs so browsers and the CDN never mix old and new modules. Keep the version in sync with the tags above. -->
+  <script type="importmap">
+  {
+    "imports": {
+      "./game-hints.js": "./game-hints.js?v0.4",
+      "./hint-data.mjs": "./hint-data.mjs?v0.4",
+      "./home.js": "./home.js?v0.4",
+      "./i18n.mjs": "./i18n.mjs?v0.4",
+      "./logic-run.mjs": "./logic-run.mjs?v0.4",
+      "./logic-validate.mjs": "./logic-validate.mjs?v0.4",
+      "./logic-world.mjs": "./logic-world.mjs?v0.4",
+      "./logic.mjs": "./logic.mjs?v0.4",
+      "./music.js": "./music.js?v0.4",
+      "./program-blocks.js": "./program-blocks.js?v0.4",
+      "./program-dnd.js": "./program-dnd.js?v0.4",
+      "./program-icons.js": "./program-icons.js?v0.4",
+      "./program.js": "./program.js?v0.4",
+      "./runner.js": "./runner.js?v0.4",
+      "./scene.js": "./scene.js?v0.4"
+    }
+  }
+  </script>
+  <!-- Fetch every module at once instead of discovering them one import at a time. -->
+  <link rel="modulepreload" href="app.js?v0.4">
+  <link rel="modulepreload" href="game-hints.js?v0.4">
+  <link rel="modulepreload" href="hint-data.mjs?v0.4">
+  <link rel="modulepreload" href="home.js?v0.4">
+  <link rel="modulepreload" href="i18n.mjs?v0.4">
+  <link rel="modulepreload" href="logic-run.mjs?v0.4">
+  <link rel="modulepreload" href="logic-validate.mjs?v0.4">
+  <link rel="modulepreload" href="logic-world.mjs?v0.4">
+  <link rel="modulepreload" href="logic.mjs?v0.4">
+  <link rel="modulepreload" href="music.js?v0.4">
+  <link rel="modulepreload" href="program-blocks.js?v0.4">
+  <link rel="modulepreload" href="program-dnd.js?v0.4">
+  <link rel="modulepreload" href="program-icons.js?v0.4">
+  <link rel="modulepreload" href="program.js?v0.4">
+  <link rel="modulepreload" href="runner.js?v0.4">
+  <link rel="modulepreload" href="scene.js?v0.4">
+  <link rel="modulepreload" href="vendor/three.module.js">
+  <link rel="modulepreload" href="vendor/three.core.js">
 </head>
 <body>
   <header>
@@ -33,33 +77,92 @@
     </div>
   </header>
 
-  <main id="app">
-    <p class="loading">Запалюємо зорі…</p>
-  </main>
+  <main id="app"></main>
 
   <footer>Ніч чекає на твою програму.</footer>
-  <!-- Versioned module URLs so browsers and the CDN never mix old and new modules. Keep the version in sync with the tags above. -->
-  <script type="importmap">
-  {
-    "imports": {
-      "./game-hints.js": "./game-hints.js?v0.3",
-      "./hint-data.mjs": "./hint-data.mjs?v0.3",
-      "./home.js": "./home.js?v0.3",
-      "./i18n.mjs": "./i18n.mjs?v0.3",
-      "./logic-run.mjs": "./logic-run.mjs?v0.3",
-      "./logic-validate.mjs": "./logic-validate.mjs?v0.3",
-      "./logic-world.mjs": "./logic-world.mjs?v0.3",
-      "./logic.mjs": "./logic.mjs?v0.3",
-      "./music.js": "./music.js?v0.3",
-      "./program-blocks.js": "./program-blocks.js?v0.3",
-      "./program-dnd.js": "./program-dnd.js?v0.3",
-      "./program-icons.js": "./program-icons.js?v0.3",
-      "./program.js": "./program.js?v0.3",
-      "./runner.js": "./runner.js?v0.3",
-      "./scene.js": "./scene.js?v0.3"
+
+  <!-- Loading screen: night lights the lamps one by one, day switches them off as the sun rises. -->
+  <div id="boot" class="boot" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Завантаження">
+    <div class="boot-scene" aria-hidden="true">
+      <div class="boot-stars"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      <div class="boot-sun"></div>
+      <div class="boot-lamps"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      <div class="boot-ground"></div>
+    </div>
+    <p class="boot-text"><span class="boot-label">Запалюємо зорі…</span> <b class="boot-percent">0%</b></p>
+    <div class="boot-bar" aria-hidden="true"><i></i></div>
+    <div class="boot-error" hidden>
+      <p class="boot-error-text"></p>
+      <button type="button" class="primary boot-retry"></button>
+    </div>
+  </div>
+  <script>
+  (function () {
+    var boot = document.getElementById('boot');
+    var root = document.documentElement;
+    var lang = 'uk';
+    try { if (localStorage.getItem('lamplighter-lang') === 'en') lang = 'en'; } catch (e) {}
+    var day = root.getAttribute('data-theme') === 'light';
+    var text = {
+      uk: { night: 'Запалюємо зорі…', day: 'Гасимо зайві ліхтарі…', slow: 'Ще трохи, повільний інтернет…',
+            error: 'Не вдалося завантажити гру. Онови сторінку.', retry: 'Оновити сторінку' },
+      en: { night: 'Lighting the stars…', day: 'Switching off spare lamps…', slow: 'Almost there, slow connection…',
+            error: 'The game failed to load. Please reload the page.', retry: 'Reload page' }
+    }[lang];
+    var label = boot.querySelector('.boot-label');
+    var percent = boot.querySelector('.boot-percent');
+    var lamps = boot.querySelectorAll('.boot-lamps i');
+    label.textContent = day ? text.day : text.night;
+    boot.setAttribute('aria-label', label.textContent);
+
+    // Progress = finished files / expected files. The game reports extra level files and the end.
+    var expected = 28, loaded = 0, finished = false, failed = false, shown = 0, started = performance.now();
+    try {
+      new PerformanceObserver(function (list) { loaded += list.getEntries().length; })
+        .observe({ type: 'resource', buffered: true });
+    } catch (e) {}
+
+    function fail() {
+      if (finished || failed) return;
+      failed = true;
+      boot.classList.add('boot-failed');
+      boot.querySelector('.boot-error-text').textContent = text.error;
+      var retry = boot.querySelector('.boot-retry');
+      retry.textContent = text.retry;
+      retry.onclick = function () { location.reload(); };
+      boot.querySelector('.boot-error').hidden = false;
     }
-  }
+    // A broken or stale module throws before the game can report anything (third-party scripts are ignored).
+    window.addEventListener('error', function (e) {
+      if (!finished && e.filename && e.filename.indexOf(location.origin) === 0) setTimeout(fail, 300);
+    });
+
+    function frame() {
+      var target = finished ? 100 : Math.min(95, loaded / expected * 100);
+      shown += (target - shown) * (finished ? 0.25 : 0.08);
+      if (target - shown < 0.5) shown = target;
+      var p = Math.round(shown);
+      percent.textContent = p + '%';
+      boot.setAttribute('aria-valuenow', p);
+      boot.style.setProperty('--p', (shown / 100).toFixed(3));
+      for (var i = 0; i < lamps.length; i++) lamps[i].classList.toggle('on', shown >= (i + 1) * 10 - 5);
+      if (!finished && !failed && performance.now() - started > 12000) label.textContent = text.slow;
+      if (failed) return;
+      if (finished && shown >= 100) {
+        boot.classList.add('boot-done');
+        setTimeout(function () { boot.remove(); }, 450);
+        return;
+      }
+      requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+
+    window.lamplighterBoot = {
+      expect: function (files) { expected = Math.max(expected, loaded + files); },
+      done: function () { if (!failed) finished = true; }
+    };
+  })();
   </script>
-  <script type="module" src="app.js?v0.3"></script>
+  <script type="module" src="app.js?v0.4"></script>
 </body>
 </html>
