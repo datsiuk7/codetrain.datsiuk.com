@@ -12,7 +12,7 @@
 ### Головні принципи проєкту:
 1. **Zero-Dependency на фронтенді**: Жодних npm-пакетів для збірки, Webpack, Vite, Tailwind чи Babel. Лише чистий Vanilla JavaScript (ES-модулі), нативний Vanilla CSS та ванільний HTML5.
 2. **Three.js у vendor**: 3D-рушій `three.module.js` (версія 0.180.0) локально збережений у `/vendor/`. Жодних CDN-залежностей під час роботи.
-3. **Процедурне аудіо**: Усі звуки та фонова музика синтезуються в реальному часі через нативний Web Audio API ([`music.js`](file:///d:/repository/games_programming/music.js)) без зовнішніх MP3/WAV файлів.
+3. **Процедурне аудіо**: Усі звуки та фонова музика синтезуються в реальному часі через нативний Web Audio API ([`music.js`](music.js)) без зовнішніх MP3/WAV файлів.
 4. **Українська мова**: Усі інтерфейсні тексти, підказки, повідомлення про помилки, описи рівнів та датчиків — виключно природною українською мовою.
 
 ---
@@ -32,7 +32,9 @@
   ```bash
   node --experimental-test-module-mocks --test --test-isolation=none tests/*.test.mjs
   ```
-  *(Обов'язково запускати після будь-яких змін! Усі тести мають проходити на 100%).*
+  *(Обов'язково запускати після будь-яких змін! Усі тести мають проходити на 100%). Потрібен Node.js 22.3+.*
+
+- **Публікація сайту (GitHub Pages)**: workflow [`.github/workflows/pages.yml`](.github/workflows/pages.yml) після push у `main` запускає тести й публікує лише кореневі `index.html`, `*.js`, `*.mjs`, `*.css`, `CNAME` та папки `admin/`, `levels/`, `vendor/`. `tests/`, `scratch/`, `server.cjs`, `*.md` на сайт не потрапляють. Нові файли чи папки, потрібні грі в браузері, додавай у крок «Collect site files».
 
 ---
 
@@ -69,8 +71,12 @@
 │   └── hint-editor.js         # Редактор підказок для рівня
 ├── levels/                    # JSON-файли рівнів
 │   ├── index.json             # Глобальний список активних рівнів у правильному порядку
+│   ├── categories.json        # Теми (категорії) рівнів та їхні набори команд
+│   ├── settings.json          # Тексти футера та підпис розробника
 │   └── <id>.json              # Специфікація кожного рівня
 ├── tests/                     # Повний набір автоматизованих тестів на чистому node:test
+├── scratch/                   # Допоміжні скрипти генерації рівнів і ручних перевірок (не публікуються)
+├── .github/workflows/pages.yml# Публікація сайту на GitHub Pages
 └── vendor/                    # Three.js ES-модулі (three.module.js, three.core.js)
 ```
 
@@ -143,7 +149,7 @@
 
 ## 6. Редактор рівнів (Admin Panel)
 
-Шлях: `/admin/index.html` (стилі в [`admin/editor.css`](file:///d:/repository/games_programming/admin/editor.css)).
+Шлях: `/admin/index.html` (стилі в [`admin/editor.css`](admin/editor.css)).
 
 ### 12 Інструментів пензля (`#tools`):
 Панель вирівняна строго в один ряд (`grid-template-columns: repeat(12, minmax(0, 1fr))`):
@@ -161,9 +167,9 @@
 12. **Дірка (`empty`)**: прибирає плитку, роблячи прірву.
 
 ### Додаткові можливості адмінки:
-- **Розумна зміна розмірів карти ([`admin/map-resize.js`](file:///d:/repository/games_programming/admin/map-resize.js))**: розширення/звуження 2×2 .. 10×10 зі збереженням габаритів побудованих об'єктів.
-- **Історія змін ([`admin/level-state.js`](file:///d:/repository/games_programming/admin/level-state.js))**: повноцінні стеки Undo (`Ctrl+Z`) та Redo (`Ctrl+Y`).
-- **Дерево категорій із Drag & Drop ([`admin/level-tree-dnd.js`](file:///d:/repository/games_programming/admin/level-tree-dnd.js))**: перетягування рівнів для зміни порядку збереження на сервері через ендпоінт `/api/levels/reorder`.
+- **Розумна зміна розмірів карти ([`admin/map-resize.js`](admin/map-resize.js))**: розширення/звуження 2×2 .. 10×10 зі збереженням габаритів побудованих об'єктів.
+- **Історія змін ([`admin/level-state.js`](admin/level-state.js))**: повноцінні стеки Undo (`Ctrl+Z`) та Redo (`Ctrl+Y`).
+- **Дерево категорій із Drag & Drop ([`admin/level-tree-dnd.js`](admin/level-tree-dnd.js))**: перетягування рівнів для зміни порядку збереження на сервері через ендпоінт `/api/levels/reorder`.
 
 ---
 
@@ -178,7 +184,7 @@
   "description": "Загальний опис або підказка",
   "descriptionNight": "Опис для темної теми (опціонально)",
   "descriptionDay": "Опис для денної теми (опціонально)",
-  "category": "basics", // "basics" | "loops" | "conditions" | "functions"
+  "category": "basics", // ID з levels/categories.json: "basics" | "loops" | "conditions" | "functions" | "lists" | "cat-mucmg9nd"
   "width": 4,
   "depth": 4,
   "start": {
@@ -228,16 +234,16 @@
 2. **Ніяких нових залежностей**:
    - Не додавайте сторонніх бібліотек, бандлерів чи пакетів npm, якщо про це явно не попросив користувач. Проєкт має запускатися миттєво через `node server.cjs`.
 3. **Естетика та 3D-візуалізація**:
-   - 3D-моделі в [`scene.js`](file:///d:/repository/games_programming/scene.js) повинні мати охайний, гармонійний низькополігональний стиль (low-poly), приємні кольори, красиві тіні та згладжені нормалі.
+   - 3D-моделі в [`scene.js`](scene.js) повинні мати охайний, гармонійний низькополігональний стиль (low-poly), приємні кольори, красиві тіні та згладжені нормалі.
    - Уникайте неакуратних геометричних форм. Створюйте об'єкти з увагою до дрібниць (наприклад, мох на камінцях, квіточки на кущику, залізні заклепки на коробці).
 4. **Валідація та тести**:
    - Будь-яка зміна логіки руху, команд або об'єктів повинна супроводжуватися перевіркою тестів:
      ```bash
      node --experimental-test-module-mocks --test --test-isolation=none tests/*.test.mjs
      ```
-   - Завжди переконуйтеся, що всі 53+ тестів проходять успішно (0 fails).
+   - Завжди переконуйтеся, що всі тести (зараз їх 171) проходять успішно (0 fails).
 5. **Форматування посилань**:
-   - Посилаючись на файли в повідомленнях користувачу, завжди використовуйте клікабельні Markdown-посилання з прямими слешами: `[filename](file:///d:/repository/games_programming/path/to/file)`.
+   - Посилаючись на файли в повідомленнях користувачу, завжди використовуйте клікабельні Markdown-посилання з прямими слешами та шляхом відносно кореня репозиторію: `[filename](path/to/file)`.
 
 ---
 *Документ актуальний станом на осінь 2026 року.*
