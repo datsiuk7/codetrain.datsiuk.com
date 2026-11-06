@@ -697,6 +697,16 @@ test('scripts and stylesheets in index.html and admin pages share one version qu
   }
 
   assert.equal(versions.size, 1, `all pages must use the same version, found: ${[...versions].join(', ')}`);
+
+  // Every game module must be versioned through the import map, or a cached old module breaks new code.
+  const index = fs.readFileSync(path.resolve('index.html'), 'utf8');
+  const importMap = JSON.parse(index.match(/<script type="importmap">([\s\S]*?)<\/script>/)[1]).imports;
+  const sources = fs.readdirSync('.').filter((f) => /\.m?js$/.test(f)).map((f) => fs.readFileSync(f, 'utf8'));
+  const imported = new Set(sources.flatMap((src) =>
+    [...src.matchAll(/(?:from|import)\s*['"](\.\/[^'"]+)['"]/g)].map((m) => m[1]).filter((s) => !s.startsWith('./vendor/'))));
+  for (const spec of imported) {
+    assert.equal(importMap[spec], `${spec}?${[...versions][0]}`, `import map must map ${spec} to the current version`);
+  }
 });
 
 
