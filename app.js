@@ -240,7 +240,9 @@ function updateHeaderTexts() {
   const musicBtn = document.querySelector('#music');
   if (musicBtn && musicBtn.getAttribute) {
     const isOn = musicBtn.getAttribute('aria-pressed') === 'true';
-    musicBtn.textContent = isOn ? t('musicOn', currentLang) : t('musicOff', currentLang);
+    musicBtn.textContent = isOn
+      ? t('musicOn', currentLang).replace('{n}', musicBtn.dataset?.track || '1')
+      : t('musicOff', currentLang);
   }
   const fsBtn = document.querySelector('#fullscreen');
   if (fsBtn && fsBtn.getAttribute) {
