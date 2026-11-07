@@ -1,5 +1,5 @@
 // Original, procedurally composed calm tracks. No audio downloads or autoplay.
-import { t } from './i18n.mjs';
+import { t, setIconLabel } from './i18n.mjs';
 
 const NOCTURNE=[69,72,76,72,67,71,74,71,65,69,72,76,64,67,71,67,69,76,79,76,67,74,77,74,65,72,76,72,64,71,76,71];
 
@@ -152,7 +152,7 @@ export function setupMusic(button){
     const on=isPlaying||pending;
     // app.js re-labels the button on language change from data-track.
     if(button.dataset)button.dataset.track=String(track+1);
-    button.textContent=on?t('musicOn').replace('{n}',track+1):t('musicOff');
+    setIconLabel(button,on?t('musicOn').replace('{n}',track+1):t('musicOff'));
     button.setAttribute('aria-pressed',String(on));
   }
 
@@ -254,7 +254,7 @@ export function setupEffects(button){
   on = restore();
   function updateButton(){
     if(!button)return;
-    button.textContent=on?t('soundOn'):t('soundOff');
+    setIconLabel(button,on?t('soundOn'):t('soundOff'));
     button.setAttribute('aria-pressed',String(on));
   }
   updateButton();

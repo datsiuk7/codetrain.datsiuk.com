@@ -1954,3 +1954,196 @@ body.in-game textarea::selection,
     animation: none;
   }
 }
+
+/* Blocks ⇄ Python. The textarea sits transparently over a highlighted <pre> with the same metrics. */
+.mode-switch {
+  display: inline-flex;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  overflow: hidden;
+}
+
+.mode-btn {
+  border: 0;
+  border-radius: 0;
+  padding: 6px 12px;
+  font-size: 12px;
+  background: transparent;
+  color: var(--muted);
+}
+
+.mode-btn[aria-pressed="true"] {
+  background: #2b3d48;
+  color: var(--gold);
+  font-weight: 650;
+}
+
+.program-panel.code-mode #program,
+.program-panel.code-mode .available-commands,
+.program-panel.code-mode #palette,
+.program-panel.code-mode .code-library,
+.program-panel.code-mode .compact-btn,
+.program-panel.code-mode .trash-confirm {
+  display: none !important;
+}
+
+.code-panel {
+  --code-font: 15px/1.6 ui-monospace, 'Cascadia Code', Consolas, 'Courier New', monospace;
+  --code-gutter: calc(3ch + 22px);
+  margin-top: 12px;
+}
+
+.code-editor {
+  position: relative;
+  height: clamp(220px, 40vh, 420px);
+  border: 1px solid #4b6371;
+  border-radius: 10px;
+  background: #0e1820;
+  overflow: hidden;
+}
+
+.code-editor:focus-within {
+  border-color: var(--gold);
+}
+
+.code-view,
+.code-input {
+  position: absolute;
+  inset: 0;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 12px 14px 12px 0;
+  font: var(--code-font);
+  letter-spacing: 0;
+  tab-size: 4;
+  white-space: pre;
+}
+
+.code-view {
+  overflow: hidden;
+  color: #d7e2e8;
+  pointer-events: none;
+}
+
+.code-input {
+  width: 100%;
+  height: 100%;
+  padding-left: var(--code-gutter);
+  overflow: auto;
+  resize: none;
+  border: 0;
+  border-radius: 0;
+  outline: none;
+  background: transparent;
+  color: transparent;
+  caret-color: #ffd98a;
+}
+
+.code-input::selection {
+  background: #edc17c40;
+  color: transparent;
+}
+
+.code-line {
+  display: block;
+  min-height: 1.6em;
+}
+
+.code-line.active {
+  background: #edc17c22;
+  box-shadow: inset 3px 0 0 var(--gold);
+}
+
+.code-line.error {
+  background: #ef44441f;
+  box-shadow: inset 3px 0 0 #ef4444;
+}
+
+.code-ln {
+  display: inline-block;
+  box-sizing: content-box;
+  width: 3ch;
+  margin-right: 12px;
+  padding-left: 10px;
+  text-align: right;
+  color: #4f6675;
+}
+
+.py-keyword { color: #c792ea; }
+.py-call { color: #82cfff; }
+.py-number { color: #f7a26c; }
+.py-string { color: #c3e88d; }
+.py-comment { color: #6f8796; font-style: italic; }
+
+.code-message {
+  min-height: 1.4em;
+  margin: 8px 0 0;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.code-message.error { color: #efa29a; }
+.code-message.ok { color: #9fd49a; }
+
+.code-inserts-label {
+  margin: 12px 0 6px;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.code-inserts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.code-chip {
+  padding: 6px 10px;
+  border-radius: 7px;
+  border: 1px solid #3b505c;
+  background: #1c2b35;
+  color: #cfe3ee;
+  font: 12px ui-monospace, 'Cascadia Code', Consolas, 'Courier New', monospace;
+}
+
+.code-chip:hover:not(:disabled) {
+  border-color: var(--gold);
+}
+
+/* Phones zoom into inputs smaller than 16px. */
+@media (pointer: coarse) {
+  .code-panel { --code-font: 16px/1.6 ui-monospace, 'Cascadia Code', Consolas, 'Courier New', monospace; }
+}
+
+[data-theme="light"] .mode-btn[aria-pressed="true"] {
+  background: #fdf3e1;
+}
+
+[data-theme="light"] .code-editor {
+  border-color: #d8e0e6;
+  background: #fbfcfd;
+}
+
+[data-theme="light"] .code-view { color: #1f2d3a; }
+/* Beat the generic light-theme textarea colours: the text must stay see-through over the highlighting. */
+[data-theme="light"] textarea.code-input {
+  background: transparent;
+  color: transparent;
+  caret-color: #b26b00;
+}
+[data-theme="light"] .code-input::selection { background: #df982533; }
+[data-theme="light"] .code-ln { color: #a3b1bc; }
+[data-theme="light"] .code-line.active { background: #df982522; }
+[data-theme="light"] .py-keyword { color: #8a3ffc; }
+[data-theme="light"] .py-call { color: #0b6bcb; }
+[data-theme="light"] .py-number { color: #c2410c; }
+[data-theme="light"] .py-string { color: #2f7d32; }
+[data-theme="light"] .py-comment { color: #7b8e9d; }
+[data-theme="light"] .code-message.ok { color: #2f7d32; }
+[data-theme="light"] .code-message.error { color: #c0392b; }
+
+[data-theme="light"] .code-chip {
+  border-color: #d8e0e6;
+  background: #f4f7f9;
+  color: #1f2d3a;
+}

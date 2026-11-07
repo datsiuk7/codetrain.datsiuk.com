@@ -854,7 +854,7 @@ html[lang="en"] .program-panel .code-body.empty::before {
 
 .code-library {
   margin-top: 10px;
-  max-height: 170px;
+  max-height: clamp(260px, 42vh, 440px);
   overflow-y: auto;
   overscroll-behavior: contain;
   flex-shrink: 0;
@@ -903,6 +903,13 @@ html[lang="en"] .program-panel .code-body.empty::before {
   margin-left: 0 !important;
   min-width: 0 !important;
   width: 100% !important;
+}
+
+/* Room for a few more blocks to be dropped in (beats the compact .code-body.empty rule). */
+.program-panel .function-card .code-body,
+.program-panel .function-card .code-body.empty {
+  min-height: 110px;
+  padding-bottom: 10px;
 }
 
 /* Animations */

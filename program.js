@@ -90,15 +90,13 @@ export class ProgramEditor {
         const n = parseInt(String(item.id).replace(/\D+/g, ''), 10);
         if (!isNaN(n) && n > serial) serial = n;
       }
-      if (Array.isArray(item.body)) item.body.forEach(scan);
-      if (Array.isArray(item.elseBody)) item.elseBody.forEach(scan);
+      // childLists covers body, every if/elif branch and else, so no nested id is missed.
+      for (const list of childLists(item)) list.forEach(scan);
     };
 
     this.blocks.forEach(scan);
-    this.functions.forEach((f) => {
-      scan(f);
-      if (Array.isArray(f.body)) f.body.forEach(scan);
-    });
+    // A function's own id and its body (childLists includes f.body).
+    this.functions.forEach(scan);
   }
 
   getProgram() {

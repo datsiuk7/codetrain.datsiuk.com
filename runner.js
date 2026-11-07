@@ -16,6 +16,7 @@ import { World } from './scene.js';
 import { ProgramEditor } from './program.js';
 import { setupGameHints } from './game-hints.js';
 import { getLang, t, getLevelName, getCategoryTitle } from './i18n.mjs';
+import { blocksToPython, pythonToBlocks, highlightPython, PY_COMMANDS, PY_SENSORS } from './program-python.mjs';
 
 const esc = (s) =>
   String(s).replace(/[&<>"']/g, (c) => ({
@@ -132,7 +133,22 @@ export function startGame(container, l, preview, options) {
             </svg>
           </button>
         </div>
-        <div class="section-label program-label"><span id="count" class="count"></span></div>
+        <div class="section-label program-label">
+          <span id="count" class="count"></span>
+          <div class="mode-switch" role="group" aria-label="${esc(t('modeSwitchAria', lang))}">
+            <button type="button" id="mode-blocks" class="mode-btn" aria-pressed="true">${esc(t('modeBlocks', lang))}</button>
+            <button type="button" id="mode-code" class="mode-btn" aria-pressed="false">${esc(t('modeCode', lang))}</button>
+          </div>
+        </div>
+        <div id="code-panel" class="code-panel" hidden>
+          <div class="code-editor">
+            <pre id="code-view" class="code-view" aria-hidden="true"></pre>
+            <textarea id="code-input" class="code-input" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" aria-label="${esc(t('codeInputAria', lang))}"></textarea>
+          </div>
+          <p id="code-message" class="code-message" aria-live="polite"></p>
+          <div class="code-inserts-label">${esc(t('codeInsert', lang))}</div>
+          <div id="code-inserts" class="code-inserts"></div>
+        </div>
         <div id="program" class="program" aria-label="${esc(t('programAria', lang))}">
           <button id="trash" class="trash-zone" type="button" aria-label="${esc(t('trashTitle', lang))}" title="${esc(t('trashTitle', lang))}">
             <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -209,6 +225,221 @@ export function startGame(container, l, preview, options) {
   if (compactBtn) {
     compactBtn.onclick = () => setCompact(!isCompact);
   }
+
+  // Blocks ⇄ Python. Both edit the same program: valid code replaces the blocks as you type,
+  // invalid code keeps the last good blocks and explains the problem by line.
+  const codeInput = $('#code-input');
+  const codeView = $('#code-view');
+  const codeMessage = $('#code-message');
+  const codeKey = `lamplighter-code-${l.id}`;
+  let codeMode = false;
+  let codeError = null;
+  let lineOf = {};
+  let activeLine = null;
+  let parseTimer;
+  let parsePending = false;
+  let tabLeavesEditor = false;
+
+  const parseCode = (text) => pythonToBlocks(text, l, { lang, theme: currentTheme, existingFunctions: editor.functions });
+
+  function renderCode() {
+    codeView.innerHTML = highlightPython(codeInput.value || '', {
+      activeLines: activeLine ? [activeLine - 1] : [],
+      errorLine: codeError?.line
+    });
+    syncCodeScroll();
+  }
+
+  function syncCodeScroll() {
+    codeView.scrollTop = codeInput.scrollTop;
+    codeView.scrollLeft = codeInput.scrollLeft;
+  }
+
+  function showCodeResult() {
+    codeMessage.textContent = codeError ? codeError.message : t('codeOk', lang);
+    codeMessage.className = `code-message ${codeError ? 'error' : 'ok'}`;
+    renderCode();
+  }
+
+  function applyCode() {
+    clearTimeout(parseTimer);
+    parsePending = false;
+    const result = parseCode(codeInput.value || '');
+    if (result.ok) {
+      codeError = null;
+      lineOf = result.lineOf;
+      editor.setProgram(result.program);
+      editor.notifyChange();
+    } else {
+      codeError = result;
+    }
+    showCodeResult();
+  }
+
+  function flushCode() {
+    if (parsePending) applyCode();
+  }
+
+  // Saved text keeps the player's comments and blank lines while it still matches the blocks,
+  // and unfinished code (with an error) survives a reload or a theme switch.
+  function codeForBlocks() {
+    const program = editor.getProgram();
+    const generated = blocksToPython(program, { theme: currentTheme });
+    let saved = null;
+    try { saved = preview ? null : localStorage.getItem(codeKey); } catch {}
+    if (saved) {
+      const result = parseCode(saved);
+      if (!result.ok) return { text: saved, lineOf: {}, error: result };
+      // Compare in one fixed theme: light() at night and switch_off() by day are the same block.
+      const same = blocksToPython(result.program).code === blocksToPython(program).code;
+      if (same) return { text: saved, lineOf: result.lineOf };
+    }
+    return {
+      text: generated.code,
+      lineOf: Object.fromEntries(generated.lines.map((line, i) => [line.blockId, i + 1]).filter(([id]) => id).reverse())
+    };
+  }
+
+  function setCodeMode(on) {
+    // Leaving code mode: apply the last keystrokes first, so a broken line is noticed (and dropped) below.
+    if (!on) flushCode();
+    codeMode = on;
+    $('#code-panel').hidden = !on;
+    if (on) programPanel?.classList.add('code-mode');
+    else programPanel?.classList.remove('code-mode');
+    $('#mode-blocks').setAttribute('aria-pressed', String(!on));
+    $('#mode-code').setAttribute('aria-pressed', String(on));
+    try { localStorage.setItem('lamplighter-code-mode', on ? 'code' : 'blocks'); } catch {}
+    if (on) {
+      const { text, lineOf: lines, error } = codeForBlocks();
+      codeInput.value = text;
+      lineOf = lines;
+      codeError = error || null;
+      activeLine = null;
+      if (codeError) {
+        showCodeResult();
+      } else {
+        codeMessage.textContent = t('codeHint', lang);
+        codeMessage.className = 'code-message';
+        renderCode();
+      }
+    } else if (codeError) {
+      // Back to blocks: the broken text is dropped so the code view follows the blocks again.
+      codeError = null;
+      try { localStorage.removeItem(codeKey); } catch {}
+      status(t('codeKeptBlocks', lang), 'error');
+    }
+  }
+
+  function onCodeInput() {
+    try { if (!preview) localStorage.setItem(codeKey, codeInput.value); } catch {}
+    activeLine = null;
+    renderCode();
+    clearTimeout(parseTimer);
+    parsePending = true;
+    parseTimer = setTimeout(applyCode, 350);
+  }
+
+  // Replaces the selection with `text` and keeps the editor in sync, like typing would.
+  function typeText(text, selectStart, selectEnd) {
+    codeInput.setRangeText(text, selectStart, selectEnd, 'end');
+    onCodeInput();
+  }
+
+  // lastIndexOf clamps a negative start to 0 and would find a newline at index 0, so the top is special.
+  const lineStart = (value, pos) => (pos > 0 ? value.lastIndexOf('\n', pos - 1) + 1 : 0);
+  const indentOf = (line) => line.match(/^ */)[0];
+
+  codeInput.oninput = onCodeInput;
+  codeInput.onscroll = syncCodeScroll;
+  codeInput.onfocus = () => { tabLeavesEditor = false; };
+  codeInput.onkeydown = (e) => {
+    // Let the keyboard finish composing a word (IME, phone suggestions) before we touch Enter or Tab.
+    if (codeInput.readOnly || e.isComposing || e.keyCode === 229) return;
+    // Esc releases the editor: the next Tab moves focus on instead of indenting (no keyboard trap).
+    if (e.key === 'Escape') {
+      tabLeavesEditor = true;
+      return;
+    }
+    if (e.key === 'Tab' && tabLeavesEditor) return;
+    tabLeavesEditor = false;
+    const { value, selectionStart: start, selectionEnd: end } = codeInput;
+    if (e.key === 'Tab') {
+      e.preventDefault();
+      const from = lineStart(value, start);
+      if (e.shiftKey) {
+        const remove = Math.min(4, indentOf(value.slice(from)).length);
+        if (remove) typeText('', from, from + remove);
+      } else {
+        typeText('    ', start, end);
+      }
+    } else if (e.key === 'Enter') {
+      // New lines keep the indent, and go one level deeper after a line ending with ":".
+      e.preventDefault();
+      const line = value.slice(lineStart(value, start), start);
+      const indent = indentOf(line) + (line.trimEnd().endsWith(':') ? '    ' : '');
+      typeText(`\n${indent}`, start, end);
+    }
+  };
+
+  // Snippet buttons: on a blank line they fill it, otherwise they go on a new line below.
+  function insertSnippet(snippet) {
+    if (codeInput.readOnly) return;
+    const value = codeInput.value;
+    const pos = codeInput.selectionStart ?? value.length;
+    const from = lineStart(value, pos);
+    let to = value.indexOf('\n', pos);
+    if (to === -1) to = value.length;
+    const line = value.slice(from, to);
+    const tail = snippet.endsWith(':') ? '\n' : '';
+    if (!line.trim()) {
+      const indent = line;
+      typeText(`${indent}${snippet}${tail ? tail + indent + '    ' : ''}`, from, to);
+    } else {
+      const indent = indentOf(line) + (line.trimEnd().endsWith(':') ? '    ' : '');
+      typeText(`\n${indent}${snippet}${tail ? tail + indent + '    ' : ''}`, to, to);
+    }
+    if (typeof matchMedia === 'function' && !matchMedia('(pointer: coarse)').matches) codeInput.focus();
+  }
+
+  const firstSensor = `${PY_SENSORS[(l.allowedSensors && l.allowedSensors[0]) || 'obstacleAhead']}()`;
+  const snippets = l.allowed.map((type) => {
+    if (type === 'loop') return 'for i in range(2):';
+    if (type === 'while') return `while not ${firstSensor}:`;
+    if (type === 'if') return `if ${firstSensor}:`;
+    if (type === 'call') return 'def my_function():';
+    if (type === 'light' && currentTheme === 'light') return 'switch_off()';
+    return PY_COMMANDS[type] ? `${PY_COMMANDS[type]}()` : null;
+  }).filter(Boolean);
+  const inserts = $('#code-inserts');
+  inserts.innerHTML = snippets
+    .map((s) => `<button type="button" class="code-chip" data-snippet="${esc(s)}">${esc(s.replace(/:$/, ''))}</button>`)
+    .join('');
+  inserts.onclick = (e) => {
+    const chip = e.target?.closest?.('[data-snippet]');
+    if (chip) insertSnippet(chip.getAttribute('data-snippet'));
+  };
+
+  // The run lights up the matching line of code as well as the block.
+  const highlightBlock = editor.highlight.bind(editor);
+  editor.highlight = (id) => {
+    highlightBlock(id);
+    if (!codeMode) return;
+    activeLine = id ? lineOf[id] ?? null : null;
+    renderCode();
+  };
+  const lockBlocks = editor.lock.bind(editor);
+  editor.lock = (value) => {
+    lockBlocks(value);
+    codeInput.readOnly = value;
+    inserts.querySelectorAll?.('button')?.forEach((b) => { b.disabled = value; });
+  };
+
+  $('#mode-blocks').onclick = () => { if (codeMode && !running) setCodeMode(false); };
+  $('#mode-code').onclick = () => { if (!codeMode && !running) setCodeMode(true); };
+  let savedMode = null;
+  try { savedMode = localStorage.getItem('lamplighter-code-mode'); } catch {}
+  if (savedMode === 'code') setCodeMode(true);
 
   const localCompleteBtn = isLocal && !preview ? $('#local-complete') : null;
   function updateLocalCompleteBtn() {
@@ -421,6 +652,14 @@ export function startGame(container, l, preview, options) {
     hideTrashConfirm();
     help.close();
     if (running) return;
+    if (codeMode) {
+      // Run exactly what is written, even if the last keystroke has not been parsed yet.
+      applyCode();
+      if (codeError) {
+        status(codeError.message, 'error');
+        return;
+      }
+    }
     let memory;
 
     try {
@@ -607,6 +846,8 @@ export function startGame(container, l, preview, options) {
   };
 
   return () => {
+    // Typed code that has not been parsed yet must reach the blocks before they are saved.
+    flushCode();
     if (typeof document !== 'undefined') {
       document.removeEventListener?.('click', handleGlobalClick);
       document.removeEventListener?.('keydown', handleGlobalKeydown);

@@ -400,6 +400,8 @@ summary.category-header:focus-visible {
   border-radius: 8px;
   display: inline-flex;
   align-items: center;
+  /* Flex drops the space between the icon and label spans, so the gap restores it. */
+  gap: 0.35em;
   justify-content: center;
   text-align: center;
   box-sizing: border-box;
@@ -811,22 +813,25 @@ summary.category-header:focus-visible {
 
   header .brand { flex: 1 1 100%; }
 
+  /* One compact toolbar: language and zoom on top, a row of icon buttons below. */
   .header-audio {
     width: 100%;
     margin: 0;
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    display: flex;
+    flex-wrap: wrap;
     gap: 8px;
+    padding: 8px;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: rgba(18, 29, 39, 0.6);
   }
 
-  .header-audio button,
+  /* Half a row each, so the icon buttons always start a row of their own. */
   .lang-switcher,
-  .header-zoom-control,
-  #theme, #sound, #music, #reset-progress, #fullscreen {
+  .header-zoom-control {
+    flex: 1 1 calc(50% - 4px);
     min-width: 0;
-    width: 100%;
-    min-height: 44px;
-    white-space: normal;
+    min-height: 40px;
   }
 
   .lang-switcher {
@@ -836,15 +841,72 @@ summary.category-header:focus-visible {
 
   .lang-switcher .lang-btn {
     flex: 1;
-    height: 36px;
+    height: 32px;
   }
 
-  #theme { order: 1; }
-  .header-zoom-control { order: 2; }
-  #sound { order: 3; }
-  #music { order: 4; }
-  #fullscreen { order: 5; }
-  #reset-progress { order: 6; }
+  .header-zoom-control {
+    order: 1;
+    justify-content: space-between;
+  }
+
+  /* Icon buttons share the second row equally; the text label stays the accessible name. */
+  #theme, #sound, #music, #fullscreen, #reset-progress {
+    order: 2;
+    position: relative;
+    flex: 1 1 0;
+    min-width: 44px;
+    min-height: 44px;
+    padding: 0;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+  }
+
+  #reset-progress { order: 3; }
+
+  .header-audio .btn-label {
+    display: none;
+  }
+
+  .header-audio .btn-icon {
+    font-size: 19px;
+    line-height: 1;
+  }
+
+  /* Off: dimmed icon with a slash. */
+  #sound[aria-pressed="false"] .btn-icon,
+  #music[aria-pressed="false"] .btn-icon {
+    opacity: 0.4;
+  }
+
+  #sound[aria-pressed="false"]::after,
+  #music[aria-pressed="false"]::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 24px;
+    height: 2px;
+    border-radius: 1px;
+    background: currentColor;
+    transform: translate(-50%, -50%) rotate(-45deg);
+    opacity: 0.75;
+  }
+
+  /* The playing track number as a small badge. */
+  #music[aria-pressed="true"][data-track]::after {
+    content: attr(data-track);
+    position: absolute;
+    top: 4px;
+    right: 6px;
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--gold);
+  }
+
+  [data-theme="light"] .header-audio {
+    background: #ffffff;
+  }
 
   .hero-copy { padding: 26px 20px; }
   .hero h1 { font-size: clamp(28px, 7vw, 38px); }

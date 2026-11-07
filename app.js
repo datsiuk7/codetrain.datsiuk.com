@@ -5,7 +5,7 @@ import {
 import { setupMusic, setupEffects } from './music.js';
 import { renderHome, isCatUnlocked, getLevelSections, getLevelNumber, findNextLevel, findNewlyUnlockedSection } from './home.js';
 import { startGame } from './runner.js';
-import { getLang, setLang, t, getCategoryTitle, getLevelName } from './i18n.mjs';
+import { getLang, setLang, t, getCategoryTitle, getLevelName, setIconLabel } from './i18n.mjs';
 
 const app = document.querySelector('#app');
 setupMusic(document.querySelector('#music'));
@@ -29,7 +29,7 @@ function setupFullscreen(button) {
     const fs = isFullscreen();
     const lang = getLang();
     button.setAttribute('aria-pressed', fs ? 'true' : 'false');
-    button.textContent = fs ? t('fullscreenExit', lang) : t('fullscreenEnter', lang);
+    setIconLabel(button, fs ? t('fullscreenExit', lang) : t('fullscreenEnter', lang));
     button.title = fs ? t('fullscreenExitTitle', lang) : t('fullscreenEnterTitle', lang);
   }
 
@@ -225,29 +225,29 @@ function updateHeaderTexts() {
   }
   const resetBtn = document.querySelector('#reset-progress');
   if (resetBtn) {
-    resetBtn.textContent = t('resetProgress', currentLang);
+    setIconLabel(resetBtn, t('resetProgress', currentLang));
     resetBtn.title = t('resetProgressTitle', currentLang);
   }
   if (themeBtn) {
-    themeBtn.textContent = currentTheme === 'light' ? t('themeDay', currentLang) : t('themeNight', currentLang);
+    setIconLabel(themeBtn, currentTheme === 'light' ? t('themeDay', currentLang) : t('themeNight', currentLang));
     themeBtn.setAttribute?.('aria-label', t('themeLabel', currentLang));
   }
   const soundBtn = document.querySelector('#sound');
   if (soundBtn && soundBtn.getAttribute) {
     const isOn = soundBtn.getAttribute('aria-pressed') !== 'false';
-    soundBtn.textContent = isOn ? t('soundOn', currentLang) : t('soundOff', currentLang);
+    setIconLabel(soundBtn, isOn ? t('soundOn', currentLang) : t('soundOff', currentLang));
   }
   const musicBtn = document.querySelector('#music');
   if (musicBtn && musicBtn.getAttribute) {
     const isOn = musicBtn.getAttribute('aria-pressed') === 'true';
-    musicBtn.textContent = isOn
+    setIconLabel(musicBtn, isOn
       ? t('musicOn', currentLang).replace('{n}', musicBtn.dataset?.track || '1')
-      : t('musicOff', currentLang);
+      : t('musicOff', currentLang));
   }
   const fsBtn = document.querySelector('#fullscreen');
   if (fsBtn && fsBtn.getAttribute) {
     const isFs = fsBtn.getAttribute('aria-pressed') === 'true';
-    fsBtn.textContent = isFs ? t('fullscreenExit', currentLang) : t('fullscreenEnter', currentLang);
+    setIconLabel(fsBtn, isFs ? t('fullscreenExit', currentLang) : t('fullscreenEnter', currentLang));
     fsBtn.title = isFs ? t('fullscreenExitTitle', currentLang) : t('fullscreenEnterTitle', currentLang);
   }
   if (langSwitcher) {
@@ -348,7 +348,7 @@ function applyTheme(th, animate = false) {
   if (metaTheme) metaTheme.setAttribute('content', th === 'light' ? '#f8f9fa' : '#101820');
   updateFooter(th);
   if (themeBtn) {
-    themeBtn.textContent = th === 'light' ? t('themeDay', currentLang) : t('themeNight', currentLang);
+    setIconLabel(themeBtn, th === 'light' ? t('themeDay', currentLang) : t('themeNight', currentLang));
     themeBtn.setAttribute('aria-pressed', String(th === 'light'));
   }
 }

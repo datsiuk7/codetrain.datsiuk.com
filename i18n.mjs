@@ -160,6 +160,14 @@ export const strings = {
     runBtnAria: 'Запустити програму',
     resetProgramTitle: 'Скинути програму',
     compactBlocksTitle: 'Стиснути блоки (компактний режим)',
+    modeSwitchAria: 'Як складати програму: блоками чи кодом Python',
+    modeBlocks: '▦ Блоки',
+    modeCode: '</> Python',
+    codeInputAria: 'Програма мовою Python',
+    codeHint: 'Пиши команди Python — блоки оновлюються самі. Відступ усередині циклу чи умови — 4 пробіли (клавіша Tab). Щоб вийти з редактора клавіатурою — Esc, потім Tab.',
+    codeOk: '✓ Код зрозумілий — блоки оновлено.',
+    codeInsert: 'Вставити рядок:',
+    codeKeptBlocks: 'У коді була помилка — показую останню правильну версію блоків.',
     normalBlocksTitle: 'Звичайний вигляд блоків',
     programAria: 'Програма',
     trashTitle: 'Очистити всі команди або перетягніть сюди блок',
@@ -279,6 +287,14 @@ export const strings = {
     runBtnAria: 'Run program',
     resetProgramTitle: 'Reset program',
     compactBlocksTitle: 'Compact blocks mode',
+    modeSwitchAria: 'How to build the program: blocks or Python code',
+    modeBlocks: '▦ Blocks',
+    modeCode: '</> Python',
+    codeInputAria: 'Program in Python',
+    codeHint: 'Type Python commands — the blocks update by themselves. Indent inside a loop or condition with 4 spaces (Tab key). To leave the editor by keyboard press Esc, then Tab.',
+    codeOk: '✓ Code understood — blocks updated.',
+    codeInsert: 'Insert a line:',
+    codeKeptBlocks: 'The code had an error — showing the last valid blocks.',
     normalBlocksTitle: 'Normal blocks view',
     programAria: 'Program',
     trashTitle: 'Clear all commands or drag a block here',
@@ -325,6 +341,26 @@ export const strings = {
     functionDefaultName: 'Function '
   }
 };
+
+// Header buttons like "🔊 Звуки: увімк." become an icon span and a label span,
+// so narrow screens can show just the icon. The full text stays the accessible name.
+export function setIconLabel(button, text) {
+  if (!button) return;
+  const space = text.indexOf(' ');
+  if (space < 1 || typeof button.replaceChildren !== 'function' || typeof document === 'undefined') {
+    button.textContent = text;
+    return;
+  }
+  const icon = document.createElement('span');
+  icon.className = 'btn-icon';
+  icon.setAttribute('aria-hidden', 'true');
+  icon.textContent = text.slice(0, space);
+  const label = document.createElement('span');
+  label.className = 'btn-label';
+  label.textContent = text.slice(space + 1);
+  button.replaceChildren(icon, ' ', label);
+  button.setAttribute('aria-label', text);
+}
 
 export function t(key, lang = getLang()) {
   const dict = strings[lang] || strings.uk;
