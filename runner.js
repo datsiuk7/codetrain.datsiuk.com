@@ -185,6 +185,9 @@ export function startGame(container, l, preview, options) {
     return () => { document.body.classList.remove('in-game'); };
   }
 
+  // Pauses between reactions follow the speed button too, so 3× really shortens a whole run.
+  const pause = (ms) => wait(ms / (world.speed || 1));
+
   const savedProgram = loadSavedProgram(l.id, preview);
   const editor = new ProgramEditor(
     $('#palette'),
@@ -777,13 +780,13 @@ export function startGame(container, l, preview, options) {
             await wait(80);
             world.robot.visible = true;
             status(t('statusFell', lang), 'error');
-            await wait(1800);
+            await pause(1800);
             if (token === runToken) status(t('statusRetry', lang), 'error');
           } else if (e instanceof ElectricShockError) {
             effects.shock?.();
             status(e.message, 'error');
             if (!(await world.shocked(() => token !== runToken))) return;
-            await wait(900);
+            await pause(900);
             if (token === runToken) {
               state = initialState(l, currentTheme);
               world.setState(state);
@@ -795,7 +798,7 @@ export function startGame(container, l, preview, options) {
             effects.angry?.();
             status(e.message, 'error');
             if (!(await world.frustrated(() => token !== runToken))) return;
-            await wait(2000);
+            await pause(2000);
             if (token === runToken) {
               state = initialState(l, currentTheme);
               world.setState(state);
@@ -821,7 +824,7 @@ export function startGame(container, l, preview, options) {
       settle();
       status(incompleteMsg);
       editor.highlight(null);
-      await wait(700);
+      await pause(700);
       if (token !== runToken) return;
       const cancelled = () => token !== runToken;
       const start = initialState(l, currentTheme);

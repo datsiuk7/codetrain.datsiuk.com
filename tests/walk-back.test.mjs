@@ -57,11 +57,11 @@ const stubWorld = () => {
   return world;
 };
 
-const withFrames = async (stepMs, run, onFrame = () => {}) => {
+const withFrames = async (stepMs, run, onFrame = () => {}, reducedMotion = false) => {
   const previousRaf = globalThis.requestAnimationFrame;
   const previousMatchMedia = globalThis.matchMedia;
   let now = performance.now();
-  globalThis.matchMedia = () => ({ matches: false });
+  globalThis.matchMedia = () => ({ matches: reducedMotion });
   globalThis.requestAnimationFrame = (callback) => { onFrame(); callback(now += stepMs); };
   try {
     return await run();
@@ -116,4 +116,29 @@ test('runner unlocks the editor for the aftermath and an edit snaps the characte
   assert.ok(incomplete.indexOf('settle();') < incomplete.indexOf('world.walkBack'), 'editor must unlock before walking back');
   const failure = runner.slice(runner.indexOf('} catch (e) {\n          failed = true;'));
   assert.ok(failure.indexOf('settle();') < failure.indexOf('world.fall'), 'editor must unlock before the failure animation');
+});
+
+const countFrames = async (world, run, reducedMotion = false) => {
+  let frames = 0;
+  await withFrames(20, () => run(world), () => { frames++; }, reducedMotion);
+  return frames;
+};
+
+test('the speed button shortens walking back and crying', async () => {
+  const path = [{ x: 1, z: 0, dir: 3 }, { x: 0, z: 0, dir: 3 }];
+  const slow = stubWorld();
+  const fast = Object.assign(stubWorld(), { speed: 3 });
+  const walk = (w) => w.walkBack(path, () => false);
+  const cry = (w) => w.cry(() => false);
+  assert.ok(await countFrames(fast, walk) < (await countFrames(slow, walk)) / 2, 'walking is faster at 3×');
+  assert.ok(await countFrames(fast, cry) < (await countFrames(Object.assign(stubWorld(), { speed: 1 }), cry)) / 2, 'crying is faster at 3×');
+});
+
+test('reduced motion does not cancel the speed choice for walking', async () => {
+  const path = [{ x: 1, z: 0, dir: 3 }];
+  const walk = (w) => w.walkBack(path, () => false);
+  const slow = await countFrames(stubWorld(), walk, true);
+  const fast = await countFrames(Object.assign(stubWorld(), { speed: 3 }), walk, true);
+  assert.ok(slow >= 25, `a step at 1× stays visible with reduced motion (${slow} frames of 20 ms)`);
+  assert.ok(fast < slow / 2, '3× is clearly faster with reduced motion');
 });

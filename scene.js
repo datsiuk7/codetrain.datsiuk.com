@@ -785,7 +785,8 @@ export class World {
   async animate(next,command,cancelled){
     const from=this.robot.position.clone(),to=this.position(next),old=this.angle;
     this.angle+=command==='left'?Math.PI/2:command==='right'?-Math.PI/2:0;
-    const end=this.angle,duration=(matchMedia('(prefers-reduced-motion: reduce)').matches?100:command==='light'?550:command==='fix'?850:command==='take'?850:460)/this.speed;
+    // Step length follows only the speed button (reduced motion trims the decorative reactions instead).
+    const end=this.angle,duration=(command==='light'?550:command==='fix'?850:command==='take'?850:460)/this.speed;
     const pickup=command==='take'?this.createPickupEffect(next):null;
     const repair=command==='fix'?this.createRepairEffect(next):null;
 
@@ -929,7 +930,7 @@ export class World {
       requestAnimationFrame(tick);
     });
   }
-  async celebrate(cancelled){return new Promise(resolve=>{const start=performance.now(),duration=1400,base=this.robot.position.y;const tick=now=>{if(this.dead||cancelled()){resolve(false);return}const t=Math.min((now-start)/duration,1),wave=Math.sin(t*Math.PI*6),bounce=Math.abs(Math.sin(t*Math.PI*3));this.robot.position.y=base+bounce*.12;this.robot.rotation.z=wave*.08;this.leftArm.rotation.z=wave*.8;this.arm.rotation.z=-wave*.8;this.leftLeg.rotation.x=-wave*.25;this.rightLeg.rotation.x=wave*.25;if(t<1)requestAnimationFrame(tick);else{this.robot.position.y=base;this.robot.rotation.z=0;this.leftArm.rotation.z=0;this.arm.rotation.z=0;this.leftLeg.rotation.x=0;this.rightLeg.rotation.x=0;resolve(true)}};requestAnimationFrame(tick)})}
+  async celebrate(cancelled){return new Promise(resolve=>{const start=performance.now(),duration=1400/this.speed,base=this.robot.position.y;const tick=now=>{if(this.dead||cancelled()){resolve(false);return}const t=Math.min((now-start)/duration,1),wave=Math.sin(t*Math.PI*6),bounce=Math.abs(Math.sin(t*Math.PI*3));this.robot.position.y=base+bounce*.12;this.robot.rotation.z=wave*.08;this.leftArm.rotation.z=wave*.8;this.arm.rotation.z=-wave*.8;this.leftLeg.rotation.x=-wave*.25;this.rightLeg.rotation.x=wave*.25;if(t<1)requestAnimationFrame(tick);else{this.robot.position.y=base;this.robot.rotation.z=0;this.leftArm.rotation.z=0;this.arm.rotation.z=0;this.leftLeg.rotation.x=0;this.rightLeg.rotation.x=0;resolve(true)}};requestAnimationFrame(tick)})}
   async shocked(cancelled){
     const base=this.robot.position.clone();
     const flash=new THREE.PointLight(0x8ad8ff,0,3,1.5);
@@ -1006,7 +1007,7 @@ export class World {
   }
   async frustrated(cancelled){
     return new Promise(resolve=>{
-      const start=performance.now(),duration=1650,baseY=this.robot.position.y;
+      const start=performance.now(),duration=1650/this.speed,baseY=this.robot.position.y;
       this.alertSign.visible=true;
       const tick=now=>{
         if(this.dead||cancelled()){this.resetFrustratedState(baseY);resolve(false);return}
@@ -1056,13 +1057,12 @@ export class World {
     });
   }
   async walkBack(path,cancelled){
-    const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
     for(const [index,next] of path.entries()){
       const from=this.robot.position.clone(),to=this.position(next),old=this.angle;
       let turn=(-next.dir*Math.PI/2-old)%(Math.PI*2);
       if(turn>Math.PI)turn-=Math.PI*2;
       if(turn<-Math.PI)turn+=Math.PI*2;
-      const hop=Math.abs(to.y-from.y)>.01,side=index%2?-1:1,duration=(reduced?120:hop?680:600)/this.speed;
+      const hop=Math.abs(to.y-from.y)>.01,side=index%2?-1:1,duration=(hop?680:600)/this.speed;
       const ok=await new Promise(resolve=>{
         const start=performance.now();
         const tick=now=>{
@@ -1092,7 +1092,7 @@ export class World {
     const tearGeo=new THREE.SphereGeometry(.022,8,6);
     const tearMat=new THREE.MeshStandardMaterial({color:0x8fd8ff,emissive:0x2a8fd0,emissiveIntensity:.6,transparent:true,opacity:.9});
     return new Promise(resolve=>{
-      const start=performance.now(),duration=reduced?700:2600,baseY=this.robot.position.y,tears=[];
+      const start=performance.now(),duration=(reduced?700:2600)/this.speed,baseY=this.robot.position.y,tears=[];
       let last=start,nextTear=start;
       const finish=ok=>{for(const tear of tears)this.robot.remove(tear.mesh);tearGeo.dispose();tearMat.dispose();this.resetFrustratedState(baseY);resolve(ok)};
       const tick=now=>{
