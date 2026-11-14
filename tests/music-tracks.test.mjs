@@ -33,13 +33,19 @@ test('there are three calm tracks with valid, quiet notes', () => {
   }
 });
 
-test('the three tracks really sound different: flowing 4/4, a 3/4 waltz and slow ambient pads', () => {
-  const [nocturne, waltz, stars] = MUSIC_TRACKS.map((song) => record(song));
-  const barLengths = [nocturne, waltz, stars].map((r) => r.lengths[0]);
+test('the three tracks really sound different: flowing 4/4, a 3/4 waltz and a slow relaxing harbour', () => {
+  const [nocturne, waltz, harbour] = MUSIC_TRACKS.map((song) => record(song, 16));
+  const barLengths = [nocturne, waltz, harbour].map((r) => r.lengths[0]);
   assert.equal(new Set(barLengths).size, 3, 'each track has its own tempo/meter');
   assert.ok(nocturne.notes.every((n) => !n.bell) && nocturne.pads.length === 0, 'nocturne: plain sine voices');
   assert.ok(waltz.notes.some((n) => n.bell && n.echo) && waltz.notes.some((n) => n.wave === 'triangle'), 'waltz: plucked chords and echoing bells');
-  assert.ok(stars.pads.length > 0 && stars.lengths[0] >= 5, 'stars: long sustained pads');
+  assert.ok(harbour.lengths[0] >= 3, 'harbour: slow and unhurried');
+  assert.equal(harbour.pads.length, 16, 'harbour: a warm pad under every bar');
+  const firstRound = 8 * harbour.lengths[0];
+  const tune = (from, to) => harbour.notes.filter((n) => n.echo && !n.bell && n.at >= from && n.at < to);
+  assert.ok(tune(0, firstRound).length >= 12, 'harbour: the first time round has a tune');
+  assert.equal(tune(firstRound, Infinity).length, 0, 'harbour: the second time round the tune rests');
+  assert.ok(harbour.notes.some((n) => n.bell && n.at >= firstRound), 'harbour: only a few high drops fall then');
 });
 
 // A fake browser with just enough Web Audio to schedule notes.

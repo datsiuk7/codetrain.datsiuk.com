@@ -202,6 +202,8 @@ export function startGame(container, l, preview, options) {
   const help = setupGameHints(container, l, preview);
   editor.onChange = (data) => {
     saveProgram(l.id, preview, data);
+    // Block edits make the saved Python text stale, so code mode regenerates it from the blocks.
+    if (!codeMode) forgetCode();
     // Editing while the character walks back, cries or falls snaps it straight to the start.
     if (settling) reset();
     help.refresh();
@@ -224,6 +226,19 @@ export function startGame(container, l, preview, options) {
     try { localStorage.setItem('lamplighter-compact-blocks', isCompact ? '1' : '0'); } catch {}
   }
 
+  // A height the player dragged a program field to (by its corner) is kept for every level.
+  const sizeObservers = [];
+  for (const [field, key] of [[$('#program'), 'lamplighter-program-height'], [$('.code-editor'), 'lamplighter-code-height']]) {
+    if (!field?.style) continue;
+    try { const height = localStorage.getItem(key); if (height) field.style.height = height; } catch {}
+    if (typeof ResizeObserver !== 'function') continue;
+    const observer = new ResizeObserver(() => {
+      try { if (field.style.height) localStorage.setItem(key, field.style.height); } catch {}
+    });
+    observer.observe(field);
+    sizeObservers.push(observer);
+  }
+
   if (isCompact) setCompact(true);
   if (compactBtn) {
     compactBtn.onclick = () => setCompact(!isCompact);
@@ -234,7 +249,8 @@ export function startGame(container, l, preview, options) {
   const codeInput = $('#code-input');
   const codeView = $('#code-view');
   const codeMessage = $('#code-message');
-  const codeKey = `lamplighter-code-${l.id}`;
+  // v2: older saved text could lag behind later block edits, so it is not trusted any more.
+  const codeKey = `lamplighter-python-${l.id}`;
   let codeMode = false;
   let codeError = null;
   let lineOf = {};
@@ -283,20 +299,27 @@ export function startGame(container, l, preview, options) {
     if (parsePending) applyCode();
   }
 
-  // Saved text keeps the player's comments and blank lines while it still matches the blocks,
-  // and unfinished code (with an error) survives a reload or a theme switch.
+  function forgetCode() {
+    try { localStorage.removeItem(codeKey); } catch {}
+  }
+
+  // Saved text is the newest version of the program: block edits remove it. It keeps the player's
+  // comments and blank lines, and unfinished code (with an error) survives a reload or a theme switch.
   function codeForBlocks() {
-    const program = editor.getProgram();
-    const generated = blocksToPython(program, { theme: currentTheme });
     let saved = null;
     try { saved = preview ? null : localStorage.getItem(codeKey); } catch {}
-    if (saved) {
+    if (saved !== null) {
       const result = parseCode(saved);
       if (!result.ok) return { text: saved, lineOf: {}, error: result };
+      // The page may have closed before the last keystrokes were parsed: those blocks catch up now.
       // Compare in one fixed theme: light() at night and switch_off() by day are the same block.
-      const same = blocksToPython(result.program).code === blocksToPython(program).code;
-      if (same) return { text: saved, lineOf: result.lineOf };
+      if (blocksToPython(result.program).code !== blocksToPython(editor.getProgram()).code) {
+        editor.setProgram(result.program);
+        editor.notifyChange();
+      }
+      return { text: saved, lineOf: result.lineOf };
     }
+    const generated = blocksToPython(editor.getProgram(), { theme: currentTheme });
     return {
       text: generated.code,
       lineOf: Object.fromEntries(generated.lines.map((line, i) => [line.blockId, i + 1]).filter(([id]) => id).reverse())
@@ -329,7 +352,7 @@ export function startGame(container, l, preview, options) {
     } else if (codeError) {
       // Back to blocks: the broken text is dropped so the code view follows the blocks again.
       codeError = null;
-      try { localStorage.removeItem(codeKey); } catch {}
+      forgetCode();
       status(t('codeKeptBlocks', lang), 'error');
     }
   }
@@ -651,6 +674,22 @@ export function startGame(container, l, preview, options) {
   }
   $('#reset').onclick = reset;
 
+  // The character goes back to the start (walking when a route exists, otherwise it just appears there)
+  // and cries. Resolves false if the run was reset or replaced meanwhile.
+  async function backToStartAndCry(runToken, walk = true) {
+    const cancelled = () => token !== runToken;
+    const start = initialState(l, currentTheme);
+    const path = walk ? pathBack(l, state, start) : null;
+    effects.sad?.();
+    if (path && !(await world.walkBack(path, cancelled))) return false;
+    if (cancelled()) return false;
+    state = start;
+    world.setState(state);
+    meter();
+    effects.cry?.();
+    return world.cry(cancelled);
+  }
+
   $('#run').onclick = async () => {
     hideTrashConfirm();
     help.close();
@@ -780,8 +819,9 @@ export function startGame(container, l, preview, options) {
             await wait(80);
             world.robot.visible = true;
             status(t('statusFell', lang), 'error');
-            await pause(1800);
-            if (token === runToken) status(t('statusRetry', lang), 'error');
+            // Back on the start after the fall: the character cries before the next try.
+            if (!(await backToStartAndCry(runToken, false))) return;
+            status(t('statusRetry', lang), 'error');
           } else if (e instanceof ElectricShockError) {
             effects.shock?.();
             status(e.message, 'error');
@@ -798,14 +838,12 @@ export function startGame(container, l, preview, options) {
             effects.angry?.();
             status(e.message, 'error');
             if (!(await world.frustrated(() => token !== runToken))) return;
-            await pause(2000);
-            if (token === runToken) {
-              state = initialState(l, currentTheme);
-              world.setState(state);
-              meter();
-              editor.highlight(null);
-              status(t('statusBackAtStart', lang), 'error');
-            }
+            editor.highlight(null);
+            await pause(600);
+            if (token !== runToken) return;
+            // After grumbling at what it could not do, the character trudges back and cries.
+            if (!(await backToStartAndCry(runToken))) return;
+            status(t('statusBackAtStart', lang), 'error');
           }
           break;
         }
@@ -826,16 +864,7 @@ export function startGame(container, l, preview, options) {
       editor.highlight(null);
       await pause(700);
       if (token !== runToken) return;
-      const cancelled = () => token !== runToken;
-      const start = initialState(l, currentTheme);
-      const path = pathBack(l, state, start);
-      effects.sad?.();
-      if (path && !(await world.walkBack(path, cancelled))) return;
-      state = start;
-      world.setState(state);
-      meter();
-      effects.cry?.();
-      if (!(await world.cry(cancelled))) return;
+      if (!(await backToStartAndCry(runToken))) return;
       status(t('statusTryAnother', lang));
     }
 
@@ -851,6 +880,7 @@ export function startGame(container, l, preview, options) {
   return () => {
     // Typed code that has not been parsed yet must reach the blocks before they are saved.
     flushCode();
+    sizeObservers.forEach((observer) => observer.disconnect());
     if (typeof document !== 'undefined') {
       document.removeEventListener?.('click', handleGlobalClick);
       document.removeEventListener?.('keydown', handleGlobalKeydown);

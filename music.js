@@ -15,9 +15,19 @@ const WALTZ=[
   [40,[52,55,59],[[0,76,3]]]
 ];
 
-// Ambient chords (Fmaj7, Dm9, B♭maj7, Cadd9) and the high "stars" that twinkle over them.
-const STARS=[[41,[57,60,64,65]],[38,[57,60,62,65]],[34,[57,62,65,69]],[36,[55,60,62,64]]];
-const TWINKLE=[77,79,81,84,86,89];
+// Quiet harbour in D major: [bass, soft electric-piano chord, melody as [beat, note, beats long]].
+// Dmaj9, Bm11, Gmaj9, A9, Em9, F#m7, Gmaj9, A7sus4 — rootless voicings that float.
+const HARBOUR=[
+  [38,[57,61,64,66],[[1,81,1.5],[2.5,78,1.5]]],
+  [35,[57,62,64,66],[[.5,76,1],[1.5,78,2.5]]],
+  [43,[59,62,66,69],[[1,83,1.5],[2.5,81,1.5]]],
+  [45,[59,61,64,67],[[0,78,3]]],
+  [40,[55,59,62,66],[[1,79,1],[2,78,1],[3,76,1]]],
+  [42,[57,61,64,69],[[0,76,1.5],[1.5,73,2.5]]],
+  [43,[59,62,66,69],[[1,74,1],[2,76,1],[3,78,1]]],
+  [45,[57,62,64,67],[[0,76,4]]]
+];
+const DROPS=[86,88,90,93];
 
 // Each track schedules one bar at time `t` (bar number `n`) through `play` and returns the bar length in seconds.
 export const MUSIC_TRACKS=[
@@ -42,18 +52,24 @@ export const MUSIC_TRACKS=[
       return 3*beat;
     }
   },
-  { // 3. Stars over the city: warm slow pads with a few twinkling stars and their echo.
-    name:'stars',
+  { // 3. Quiet harbour: a slow, relaxing piece — gently rolled electric-piano chords over a warm pad and a soft bass,
+    // and a simple tune with lots of air; every second time round the tune rests and only a few high drops fall.
+    name:'harbour',
     bar(play,t,n){
-      const len=6,[bass,chord]=STARS[n%STARS.length];
-      play.pad(chord,t,len+1.5,.02);
-      play.note(bass,t,len,.07);
-      const count=2+n%3;
-      for(let i=0;i<count;i++){
-        const at=t+.8+i*(len-1.5)/count+((n+i)%2)*.4;
-        play.note(TWINKLE[(n*5+i*3)%TWINKLE.length],at,2.2,.035,{bell:true,echo:true});
+      const beat=.85,[bass,chord,melody]=HARBOUR[n%HARBOUR.length],second=Math.floor(n/HARBOUR.length)%2===1;
+      play.note(bass,t,4*beat,.085);
+      play.note(bass+7,t+2.5*beat,1.6*beat,.035);
+      play.pad(chord,t,4*beat+1,.011);
+      chord.forEach((m,i)=>{
+        play.note(m,t+i*.07,3.2*beat,.03,{attack:.02});
+        play.note(m,t+2.5*beat+i*.05,1.4*beat,.016,{attack:.02});
+      });
+      if(!second){
+        for(const [b,m,len] of melody)play.note(m,t+b*beat,len*beat+.8,.07,{attack:.06,echo:true});
+      }else if(n%2===0){
+        play.note(DROPS[(n/2)%DROPS.length],t+(1+n%3)*beat,2.4,.03,{bell:true,echo:true});
       }
-      return len;
+      return 4*beat;
     }
   }
 ];
@@ -67,7 +83,8 @@ export function setupMusic(button){
 
   function cleanup(...nodes){return()=>{for(const node of nodes){try{node.disconnect()}catch{}}}}
 
-  // opts.wave: oscillator type; opts.bell: quick strike with a quiet octave; opts.echo: also feed the echo.
+  // opts.wave: oscillator type; opts.bell: quick strike with a quiet octave; opts.echo: also feed the echo;
+  // opts.attack: seconds to full volume (plucks and ticks are almost instant).
   function note(midi,time,duration,volume,opts={}){
     if(!context||!master)return;
     try{
@@ -75,7 +92,7 @@ export function setupMusic(button){
       osc.type=opts.wave||'sine';
       osc.frequency.value=frequency(midi);
       gain.gain.setValueAtTime(0,time);
-      gain.gain.linearRampToValueAtTime(volume,time+(opts.bell?.01:.04));
+      gain.gain.linearRampToValueAtTime(volume,time+(opts.attack??(opts.bell?.01:.04)));
       gain.gain.exponentialRampToValueAtTime(.0001,time+duration);
       osc.connect(gain);
       gain.connect(master);

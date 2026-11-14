@@ -174,3 +174,18 @@ test('highlighting escapes HTML and marks the active and error lines', () => {
   assert.match(html, /<span class="code-line active"><span class="code-ln">2<\/span>    <span class="py-call">forward<\/span>\(\)<\/span>/);
   assert.ok(!/<x>/.test(html));
 });
+
+test('deeper indent levels get guide lines, the first level and leftover spaces do not', () => {
+  const line = (html) => html.replace(/^<span class="code-line"><span class="code-ln">1<\/span>/, '').replace(/<\/span>$/, '');
+  assert.equal(line(highlightPython('    x')), '    x');
+  assert.equal(line(highlightPython('          x')), '    <span class="py-indent">    </span>  x');
+  assert.equal(line(highlightPython('        ')), '    <span class="py-indent">    </span>');
+});
+
+test('saved Python text is the newest program: block edits drop it, and it is applied on load', async () => {
+  const { readFile } = await import('node:fs/promises');
+  const runner = await readFile(new URL('../runner.js', import.meta.url), 'utf8');
+  assert.match(runner, /if \(!codeMode\) forgetCode\(\);/, 'block edits forget the stale text');
+  const load = runner.slice(runner.indexOf('function codeForBlocks'), runner.indexOf('function setCodeMode'));
+  assert.match(load, /editor\.setProgram\(result\.program\);\s*editor\.notifyChange\(\);/, 'unparsed keystrokes reach the blocks after a reload');
+});

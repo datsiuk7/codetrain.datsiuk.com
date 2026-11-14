@@ -433,11 +433,19 @@ function highlightLine(text) {
   return html + escapeHtml(text.slice(last));
 }
 
+// Leading spaces in steps of 4; every step after the first gets a faint guide line
+// (the first one starts at the line's beginning, which the gutter already marks).
+function indentGuides(spaces) {
+  const steps = spaces.match(/ {1,4}/g) || [];
+  return steps.map((step, i) => (i && step.length === 4 ? `<span class="py-indent">${step}</span>` : step)).join('');
+}
+
 // Syntax-highlighted HTML, one <span class="code-line"> per line with its number.
 export function highlightPython(code, { activeLines = [], errorLine = null } = {}) {
   const active = new Set(activeLines);
   return String(code).split('\n').map((text, i) => {
-    const html = highlightLine(text);
+    const indent = text.match(/^ */)[0];
+    const html = indentGuides(indent) + highlightLine(text.slice(indent.length));
     const cls = ['code-line', active.has(i) && 'active', errorLine === i + 1 && 'error'].filter(Boolean).join(' ');
     return `<span class="${cls}"><span class="code-ln">${i + 1}</span>${html || ' '}</span>`;
   }).join('');

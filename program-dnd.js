@@ -82,7 +82,8 @@ export class ProgramDnd {
 
       this.floating.classList.toggle('invalid', !list || !this.canDrop(list));
 
-      const scrollZone = hit?.closest?.('.program, .code-library') || this.editor.host;
+      // The nearest field that scrolls: the program, a function body, or else the whole sticky panel.
+      const scrollZone = hit?.closest?.('.program, .function-card .code-body, .program-panel') || this.editor.host;
       if (scrollZone && typeof scrollZone.getBoundingClientRect === 'function') {
         const rect = scrollZone.getBoundingClientRect();
         const edgeThreshold = 42;

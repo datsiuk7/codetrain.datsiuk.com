@@ -69,11 +69,10 @@
   align-items: stretch;
   gap: 5px;
   padding: 8px;
-  min-height: 200px;
-  max-height: clamp(240px, calc(100vh - 330px), 480px);
+  min-height: 270px;
+  max-height: clamp(300px, calc(100vh - 330px), 540px);
   overflow-y: auto;
   overflow-x: hidden;
-  overscroll-behavior: contain;
   scrollbar-width: thin;
   scrollbar-color: rgba(147, 163, 174, 0.38) transparent;
   flex: 1 1 auto;
@@ -854,9 +853,7 @@ html[lang="en"] .program-panel .code-body.empty::before {
 
 .code-library {
   margin-top: 10px;
-  max-height: clamp(260px, 42vh, 440px);
-  overflow-y: auto;
-  overscroll-behavior: contain;
+  /* The library grows with its functions (also when one is stretched); the panel scrolls around it. */
   flex-shrink: 0;
 }
 
@@ -910,6 +907,12 @@ html[lang="en"] .program-panel .code-body.empty::before {
 .program-panel .function-card .code-body.empty {
   min-height: 110px;
   padding-bottom: 10px;
+}
+
+/* The function field stretches by its bottom-right corner like the main program field. */
+.program-panel .function-card .code-body {
+  resize: vertical;
+  overflow-y: auto;
 }
 
 /* Animations */
@@ -1112,4 +1115,64 @@ html[lang="en"] .program-panel .code-body.empty::before {
 [data-theme="light"] .program-panel .block-head .block-remove:hover {
   color: #dc2626;
   background: #fee2e2;
+}
+
+/* A function body is a field of its own, like the main program: a quiet frame, and when it is empty
+   a small "+ Drop here" slot at the bottom instead of one big dashed box that stretches with the field. */
+.program-panel .function-card .code-body,
+.program-panel .function-card .code-body.empty {
+  margin-top: 8px;
+  padding: 8px;
+  border: 1px solid rgba(68, 92, 108, 0.55);
+  border-left: 1px solid rgba(68, 92, 108, 0.55) !important;
+  border-radius: 10px;
+  background: rgba(10, 18, 24, 0.35);
+  cursor: default;
+}
+
+.program-panel .function-card .code-body.selected,
+.program-panel .function-card .code-body.drop-target {
+  border-color: rgba(237, 193, 124, 0.6) !important;
+}
+
+/* Like the main field, the slot stays at the bottom when the function already has blocks. */
+.program-panel .function-card .code-body:not(.empty)::after {
+  content: '＋ Поклади';
+  display: flex;
+  align-items: center;
+  padding: 0 2px;
+}
+
+html[lang="en"] .program-panel .function-card .code-body:not(.empty)::after {
+  content: '＋ Drop here';
+}
+
+.program-panel .function-card .code-body:not(.empty)::after,
+.program-panel .function-card .code-body.empty::before {
+  flex: none;
+  margin-top: auto;
+  height: auto;
+  min-height: 36px;
+  justify-content: center;
+  border: 1.5px dashed rgba(92, 120, 138, 0.55);
+  border-radius: 8px;
+  background: rgba(22, 35, 45, 0.65);
+  color: #87a1b2;
+  font-size: 11.5px;
+  font-weight: 550;
+  cursor: pointer;
+}
+
+[data-theme="light"] .program-panel .function-card .code-body,
+[data-theme="light"] .program-panel .function-card .code-body.empty {
+  border: 1px solid #ddd5c5;
+  border-left: 1px solid #ddd5c5 !important;
+  background: rgba(255, 255, 255, 0.6);
+}
+
+[data-theme="light"] .program-panel .function-card .code-body:not(.empty)::after,
+[data-theme="light"] .program-panel .function-card .code-body.empty::before {
+  border-color: #d5cbb8;
+  background: rgba(255, 255, 255, 0.85);
+  color: #64748b;
 }

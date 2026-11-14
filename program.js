@@ -17,6 +17,7 @@ import {
 import { ProgramDnd } from './program-dnd.js';
 
 let serial = 0;
+const FUNCTION_HEIGHT_KEY = 'lamplighter-function-height';
 
 export class ProgramEditor {
   constructor(palette, host, count, level, trash, theme = 'dark', initialProgram = null) {
@@ -691,7 +692,28 @@ export class ProgramEditor {
     }
   }
 
+  // Function bodies are rebuilt on every draw, so the height the player dragged one to lives here
+  // (shared by all function cards and kept between levels).
+  keepFunctionHeight(body) {
+    if (!body?.style) return;
+    if (this.functionHeight === undefined) {
+      try { this.functionHeight = localStorage.getItem(FUNCTION_HEIGHT_KEY); } catch { this.functionHeight = null; }
+    }
+    if (this.functionHeight) body.style.height = this.functionHeight;
+    if (typeof ResizeObserver !== 'function') return;
+    this.sizeObserver ??= new ResizeObserver((entries) => {
+      for (const { target } of entries) {
+        const height = target.style.height;
+        if (!height || height === this.functionHeight) continue;
+        this.functionHeight = height;
+        try { localStorage.setItem(FUNCTION_HEIGHT_KEY, height); } catch {}
+      }
+    });
+    this.sizeObserver.observe(body);
+  }
+
   renderLibrary() {
+    this.sizeObserver?.disconnect();
     this.library.replaceChildren();
     if (!this.level.allowed.includes('call')) return;
 
@@ -732,6 +754,7 @@ export class ProgramEditor {
           this.notifyChange();
         }));
         this.bodyZone(card, fn.body);
+        this.keepFunctionHeight(card.lastChild);
         section.append(card);
       }
     }

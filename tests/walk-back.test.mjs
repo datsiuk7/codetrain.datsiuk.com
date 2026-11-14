@@ -113,9 +113,22 @@ test('runner unlocks the editor for the aftermath and an edit snaps the characte
   const runner = await readFile(new URL('../runner.js', import.meta.url), 'utf8');
   assert.match(runner, /if \(settling\) reset\(\);/, 'editing while settling must reset to the start');
   const incomplete = runner.slice(runner.indexOf('const incompleteMsg'));
-  assert.ok(incomplete.indexOf('settle();') < incomplete.indexOf('world.walkBack'), 'editor must unlock before walking back');
+  assert.ok(incomplete.indexOf('settle();') < incomplete.indexOf('backToStartAndCry('), 'editor must unlock before walking back');
   const failure = runner.slice(runner.indexOf('} catch (e) {\n          failed = true;'));
   assert.ok(failure.indexOf('settle();') < failure.indexOf('world.fall'), 'editor must unlock before the failure animation');
+});
+
+test('falling off and bumping into something also end with going back to the start and crying', async () => {
+  const { readFile } = await import('node:fs/promises');
+  const runner = await readFile(new URL('../runner.js', import.meta.url), 'utf8');
+  const failure = runner.slice(runner.indexOf('} catch (e) {\n          failed = true;'), runner.indexOf('const incompleteMsg'));
+  const fall = failure.slice(failure.indexOf('world.fall'), failure.indexOf('ElectricShockError'));
+  const bump = failure.slice(failure.indexOf('world.frustrated'));
+  assert.match(fall, /backToStartAndCry\(runToken, false\)/, 'after a fall the character reappears at the start and cries');
+  assert.match(bump, /backToStartAndCry\(runToken\)/, 'after grumbling the character walks back and cries');
+  const helper = runner.slice(runner.indexOf('async function backToStartAndCry'), runner.indexOf("$('#run').onclick"));
+  assert.match(helper, /world\.walkBack/);
+  assert.match(helper, /world\.cry/);
 });
 
 const countFrames = async (world, run, reducedMotion = false) => {

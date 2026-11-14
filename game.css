@@ -213,7 +213,10 @@ body.in-game textarea::selection,
   position: sticky;
   top: 12px;
   max-height: calc(100vh - 24px);
-  overflow: hidden;
+  /* A field stretched taller than the screen scrolls inside the sticky panel instead of being cut off. */
+  overflow-x: hidden;
+  overflow-y: auto;
+  scrollbar-width: thin;
   box-sizing: border-box;
 }
 
@@ -308,14 +311,14 @@ body.in-game textarea::selection,
 .program-panel .program {
   gap: 6px;
   padding: 10px;
-  min-height: 200px;
-  max-height: clamp(240px, calc(100vh - 330px), 480px);
+  min-height: 270px;
+  max-height: clamp(300px, calc(100vh - 330px), 540px);
   overflow-y: auto;
   overflow-x: auto;
-  overscroll-behavior: contain;
   scrollbar-width: thin;
   scrollbar-color: rgba(147, 163, 174, 0.38) transparent;
-  flex: 1 1 auto;
+  /* Never squeezed by the panel: a height dragged by the corner must stick (the panel scrolls instead). */
+  flex: 0 0 auto;
   box-sizing: border-box;
 }
 
@@ -1453,7 +1456,7 @@ body.in-game textarea::selection,
   .program-panel { padding: 14px; min-width: 0; position: static; max-height: none; overflow: visible; }
   .program-panel .palette { gap: 8px; }
   .program-panel .command { width: 48px; height: 48px; min-width: 48px; min-height: 48px; }
-  .program-panel .program { min-height: 180px; max-height: clamp(220px, 45svh, 360px); overflow-y: auto; }
+  .program-panel .program { min-height: 250px; max-height: clamp(280px, 50svh, 420px); overflow-y: auto; }
   .program-panel .program:not(:empty)::after { flex-basis: 48px; }
   .program-panel .advanced-block { min-width: 0; max-width: 100%; }
   .program-panel .condition-editor select { max-width: 100%; }
@@ -1598,7 +1601,7 @@ body.in-game textarea::selection,
 .program-panel.compact-blocks .program {
   gap: 4px;
   padding: 6px 8px;
-  min-height: 140px;
+  min-height: 200px;
   max-height: clamp(240px, calc(100vh - 280px), 540px);
 }
 
@@ -1991,15 +1994,34 @@ body.in-game textarea::selection,
   --code-font: 15px/1.6 ui-monospace, 'Cascadia Code', Consolas, 'Courier New', monospace;
   --code-gutter: calc(3ch + 22px);
   margin-top: 12px;
+  flex-shrink: 0;
 }
 
 .code-editor {
   position: relative;
   height: clamp(220px, 40vh, 420px);
+  min-height: 140px;
   border: 1px solid #4b6371;
   border-radius: 10px;
   background: #0e1820;
   overflow: hidden;
+}
+
+/* Both program fields stretch by their bottom-right corner; a size the player chose lifts the default cap
+   (in the sticky desktop panel the blocks still shrink to fit the screen). */
+.program-panel .program,
+.code-editor {
+  resize: vertical;
+}
+
+.program-panel .program[style*="height"],
+.code-editor[style*="height"] {
+  max-height: none;
+}
+
+/* Dragged smaller than the roomy default is fine too. */
+.program-panel .program[style*="height"] {
+  min-height: 150px;
 }
 
 .code-editor:focus-within {
@@ -2059,14 +2081,21 @@ body.in-game textarea::selection,
   box-shadow: inset 3px 0 0 #ef4444;
 }
 
+/* The gutter's right border is the light line where every line begins (12px in total, like --code-gutter). */
 .code-ln {
   display: inline-block;
   box-sizing: content-box;
   width: 3ch;
-  margin-right: 12px;
-  padding-left: 10px;
+  margin-right: 3px;
+  padding: 0 8px 0 10px;
+  border-right: 1px solid #ffffff2e;
   text-align: right;
   color: #4f6675;
+}
+
+/* Each further indent level of 4 spaces shows a fainter guide at its start. */
+.py-indent {
+  box-shadow: inset 1px 0 0 #ffffff1a;
 }
 
 .py-keyword { color: #c792ea; }
@@ -2132,7 +2161,8 @@ body.in-game textarea::selection,
   caret-color: #b26b00;
 }
 [data-theme="light"] .code-input::selection { background: #df982533; }
-[data-theme="light"] .code-ln { color: #a3b1bc; }
+[data-theme="light"] .code-ln { color: #a3b1bc; border-right-color: #0000001f; }
+[data-theme="light"] .py-indent { box-shadow: inset 1px 0 0 #00000014; }
 [data-theme="light"] .code-line.active { background: #df982522; }
 [data-theme="light"] .py-keyword { color: #8a3ffc; }
 [data-theme="light"] .py-call { color: #0b6bcb; }
