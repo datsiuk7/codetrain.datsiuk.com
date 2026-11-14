@@ -41,6 +41,16 @@ footer {
 [data-theme="light"] .footer-developer {
   color: #4a6374;
 }
+.footer-developer a,
+.footer-quote a {
+  color: var(--gold);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.footer-developer a:hover,
+.footer-quote a:hover {
+  opacity: 0.85;
+}
 
 [data-theme="light"] button {
   background: #ffffff;

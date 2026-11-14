@@ -664,6 +664,7 @@ export function startGame(container, l, preview, options) {
     running = false;
     settling = false;
     state = initialState(l, currentTheme);
+    world.clearTileHighlight?.();
     world.setState(state);
     editor.active = null;
     editor.lock(false);
@@ -724,6 +725,7 @@ export function startGame(container, l, preview, options) {
 
     reset();
     const runToken = token;
+    const visitedTiles = [`${state.x},${state.z}`];
     let failed = false;
     let solved = false;
     running = true;
@@ -773,6 +775,8 @@ export function startGame(container, l, preview, options) {
 
           if (!(await world.animate(next, block.type, () => token !== runToken))) return;
           state = next;
+          const visitedKey = `${state.x},${state.z}`;
+          if (!visitedTiles.includes(visitedKey)) visitedTiles.push(visitedKey);
           meter();
 
           if (won(l, state)) {
@@ -837,6 +841,7 @@ export function startGame(container, l, preview, options) {
           } else {
             effects.angry?.();
             status(e.message, 'error');
+            world.highlightVisitedTiles?.(visitedTiles, 3000);
             if (!(await world.frustrated(() => token !== runToken))) return;
             editor.highlight(null);
             await pause(600);
@@ -862,7 +867,9 @@ export function startGame(container, l, preview, options) {
       settle();
       status(incompleteMsg);
       editor.highlight(null);
-      await pause(700);
+      world.highlightVisitedTiles?.(visitedTiles, 3000);
+      effects.angry?.();
+      if (!(await world.stopAlert(() => token !== runToken, 1000))) return;
       if (token !== runToken) return;
       if (!(await backToStartAndCry(runToken))) return;
       status(t('statusTryAnother', lang));

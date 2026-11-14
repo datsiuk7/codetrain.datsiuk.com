@@ -2,6 +2,38 @@ const $ = s => document.querySelector(s);
 let isLocal = false;
 let previewMode = 'night';
 
+const esc = (s) =>
+  String(s).replace(/[&<>"']/g, (c) => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;'
+  }[c]));
+
+function linkifyText(str) {
+  const s = String(str || '');
+  const urlRe = /(https?:\/\/[^\s<>"']+|(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(?:\/[^\s<>"']*)?)/g;
+  let out = '';
+  let last = 0;
+  for (const m of s.matchAll(urlRe)) {
+    const idx = m.index ?? 0;
+    out += esc(s.slice(last, idx));
+    let raw = m[0];
+    let trail = '';
+    const trailMatch = raw.match(/[.,!?;:)]+$/);
+    if (trailMatch) {
+      trail = trailMatch[0];
+      raw = raw.slice(0, -trail.length);
+    }
+    const href = /^https?:\/\//i.test(raw) ? raw : `https://${raw}`;
+    out += `<a class="footer-link" href="${esc(href)}" target="_blank" rel="noopener noreferrer">${esc(raw)}</a>${esc(trail)}`;
+    last = idx + m[0].length;
+  }
+  out += esc(s.slice(last));
+  return out;
+}
+
 const defaults = {
   footerDayText: 'Місто чекає на твою програму.',
   footerNightText: 'Ніч чекає на твою програму.',
@@ -53,11 +85,11 @@ function updatePreview() {
     const quote = previewMode === 'day'
       ? (dayVal || defaults.footerDayText)
       : (nightVal || defaults.footerNightText);
-    quoteEl.textContent = quote;
+    quoteEl.innerHTML = linkifyText(quote);
   }
 
   if (devEl) {
-    devEl.textContent = devVal;
+    devEl.innerHTML = linkifyText(devVal);
     devEl.style.display = devVal ? 'block' : 'none';
   }
 }

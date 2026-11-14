@@ -189,6 +189,29 @@ let gameSettings = {
   developerText: ''
 };
 
+export function linkifyText(str) {
+  const s = String(str || '');
+  const urlRe = /(https?:\/\/[^\s<>"']+|(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(?:\/[^\s<>"']*)?)/g;
+  let out = '';
+  let last = 0;
+  for (const m of s.matchAll(urlRe)) {
+    const idx = m.index ?? 0;
+    out += esc(s.slice(last, idx));
+    let raw = m[0];
+    let trail = '';
+    const trailMatch = raw.match(/[.,!?;:)]+$/);
+    if (trailMatch) {
+      trail = trailMatch[0];
+      raw = raw.slice(0, -trail.length);
+    }
+    const href = /^https?:\/\//i.test(raw) ? raw : `https://${raw}`;
+    out += `<a class="footer-link" href="${esc(href)}" target="_blank" rel="noopener noreferrer">${esc(raw)}</a>${esc(trail)}`;
+    last = idx + m[0].length;
+  }
+  out += esc(s.slice(last));
+  return out;
+}
+
 function updateFooter(th = currentTheme) {
   const footer = document.querySelector('footer');
   if (!footer) return;
@@ -202,9 +225,9 @@ function updateFooter(th = currentTheme) {
         : gameSettings.footerNightText || t('footerDefaultNight', 'uk');
   }
   const dev = gameSettings.developerText
-    ? `<div class="footer-developer">${esc(gameSettings.developerText)}</div>`
+    ? `<div class="footer-developer">${linkifyText(gameSettings.developerText)}</div>`
     : '';
-  footer.innerHTML = `<div class="footer-quote">${esc(quote)}</div>${dev}`;
+  footer.innerHTML = `<div class="footer-quote">${linkifyText(quote)}</div>${dev}`;
 }
 
 const themeBtn = document.querySelector('#theme');

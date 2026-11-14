@@ -67,6 +67,8 @@ export class World {
     this.smokePuffs = [];
     this.currentSparks = new Set();
     this.tiles = [];
+    this.tileMap = new Map();
+    this.tileHighlightToken = 0;
 
     const mesh = (geometry, color, x, y, z, parent = this.scene, castShadow = true, receiveShadow = true) => {
       const m = new THREE.Mesh(geometry, new THREE.MeshStandardMaterial({ color, roughness: 0.8 }));
@@ -84,8 +86,11 @@ export class World {
       const isTarget=Boolean(c.lamp||c.house);
       const tileColor=isLight?(isTarget?'#c8ab6e':c.height%2?'#dfd2be':'#d2c2aa'):(isTarget?'#52605a':c.height%2?'#405361':'#384d5b');
       const tileTopColor=isLight?(isTarget?'#ebd494':c.height%2?'#faf5ea':'#f2ead9'):(isTarget?'#777051':'#536977');
-      const tile=box(.94,y+.22,.94,tileColor,px,(y-.22)/2,pz);tile.userData={x,z};this.tiles.push(tile);
-      box(.88,.035,.88,tileTopColor,px,y+.012,pz,this.scene,false,true);
+      const tile=box(.94,y+.22,.94,tileColor,px,(y-.22)/2,pz);
+      const top=box(.88,.035,.88,tileTopColor,px,y+.012,pz,this.scene,false,true);
+      tile.userData={x,z,tile,top,tileColor,tileTopColor};
+      this.tiles.push(tile);
+      this.tileMap.set(key(x,z),tile.userData);
       if(c.tree){box(.13,.55,.13,isLight?'#7a5f4a':'#685549',px,sy+.27,pz);mesh(new THREE.ConeGeometry(.42,.85,6),isLight?'#2f6e4a':'#31574f',px,sy+.79,pz);mesh(new THREE.ConeGeometry(.32,.65,6),isLight?'#3d835b':'#3e6a5c',px,sy+1.19,pz)}
       if(c.bush){
         const bg=new THREE.Group();bg.position.set(px,sy,pz);
@@ -1049,6 +1054,111 @@ export class World {
           this.hat.rotation.z=(1-ease)*.6;
           const s=(1-ease)*.8;
           this.alertSign.scale.set(s,s,1);
+        }
+        if(t<1)requestAnimationFrame(tick);
+        else{this.resetFrustratedState(baseY);resolve(true)}
+      };
+      requestAnimationFrame(tick);
+    });
+  }
+  clearTileHighlight(){
+    this.tileHighlightToken=(this.tileHighlightToken||0)+1;
+    if(!this.tileMap)return;
+    for(const info of this.tileMap.values()){
+      if(info.tile?.material){
+        info.tile.material.color.set(info.tileColor);
+        info.tile.material.emissive?.set('#000000');
+        info.tile.material.emissiveIntensity=0;
+      }
+      if(info.top?.material){
+        info.top.material.color.set(info.tileTopColor);
+        info.top.material.emissive?.set('#000000');
+        info.top.material.emissiveIntensity=0;
+      }
+    }
+  }
+  highlightVisitedTiles(keys, duration = 3000){
+    this.clearTileHighlight();
+    if(!this.tileMap||!Array.isArray(keys)||!keys.length)return Promise.resolve(false);
+    const seen=new Set();
+    const entries=[];
+    for(const k of keys){
+      if(seen.has(k))continue;
+      seen.add(k);
+      const info=this.tileMap.get(k);
+      if(info)entries.push({
+        info,
+        baseTile:new THREE.Color(info.tileColor),
+        baseTop:new THREE.Color(info.tileTopColor)
+      });
+    }
+    if(!entries.length)return Promise.resolve(false);
+    const token=this.tileHighlightToken;
+    const isLight=this.theme==='light';
+    const targetTop=new THREE.Color(isLight?'#ffb300':'#ffd54f');
+    const targetTile=new THREE.Color(isLight?'#f59e0b':'#eab308');
+    const emissiveTop=new THREE.Color(isLight?'#ff8f00':'#ffab00');
+    const emissiveTile=new THREE.Color(isLight?'#fb8c00':'#ff8f00');
+    return new Promise(resolve=>{
+      const start=performance.now();
+      const tick=now=>{
+        if(this.dead||this.tileHighlightToken!==token){resolve(false);return}
+        const elapsed=now-start;
+        const t=Math.min(elapsed/duration,1);
+        const fadeIn=Math.min(1,elapsed/220);
+        const fadeOut=Math.min(1,(duration-elapsed)/450);
+        const pulse=0.88+0.12*Math.sin(elapsed*0.008);
+        const strength=Math.max(0,Math.min(1,fadeIn,fadeOut))*pulse;
+        for(const {info,baseTile,baseTop} of entries){
+          if(info.top?.material){
+            info.top.material.color.copy(baseTop).lerp(targetTop,0.78*strength);
+            info.top.material.emissive?.copy(emissiveTop);
+            info.top.material.emissiveIntensity=(isLight?0.55:0.72)*strength;
+          }
+          if(info.tile?.material){
+            info.tile.material.color.copy(baseTile).lerp(targetTile,0.35*strength);
+            info.tile.material.emissive?.copy(emissiveTile);
+            info.tile.material.emissiveIntensity=(isLight?0.2:0.24)*strength;
+          }
+        }
+        if(t<1)requestAnimationFrame(tick);
+        else{
+          if(this.tileHighlightToken===token&&!this.dead)this.clearTileHighlight();
+          resolve(true);
+        }
+      };
+      requestAnimationFrame(tick);
+    });
+  }
+  async stopAlert(cancelled, duration = 1000){
+    return new Promise(resolve=>{
+      const start=performance.now(),baseY=this.robot.position.y;
+      this.alertSign.visible=true;
+      this.alertSign.position.set(0,1.42,0);
+      const tick=now=>{
+        if(this.dead||cancelled()){this.resetFrustratedState(baseY);resolve(false);return}
+        const t=Math.min((now-start)/duration,1);
+        if(t<.18){
+          const p=t/.18,s=Math.sin(p*Math.PI*.75)*1.15;
+          this.alertSign.scale.set(s*.85,s*.85,1);
+          this.alertSign.position.y=1.42+Math.sin(p*Math.PI)*.05;
+          this.robot.position.y=baseY+Math.sin(p*Math.PI)*.055;
+          this.leftArm.rotation.x=-p*.85;this.arm.rotation.x=-p*.85;
+          this.leftArm.rotation.z=-p*.32;this.arm.rotation.z=p*.32;
+        }else if(t<.82){
+          const pulse=.88+Math.sin(now*.022)*.07;
+          this.alertSign.scale.set(pulse,pulse,1);
+          this.alertSign.position.x=Math.sin(now*.045)*.035;
+          this.alertSign.position.y=1.42+Math.abs(Math.sin(now*.014))*.04;
+          this.robot.position.y=baseY;
+          this.leftArm.rotation.x=-.85;this.arm.rotation.x=-.85;
+          this.leftArm.rotation.z=-.32;this.arm.rotation.z=.32;
+        }else{
+          const p=(t-.82)/.18,ease=1-p*p*(3-2*p);
+          this.alertSign.scale.set(.85*ease,.85*ease,1);
+          this.alertSign.position.x=0;
+          this.leftArm.rotation.x=-.85*ease;this.arm.rotation.x=-.85*ease;
+          this.leftArm.rotation.z=-.32*ease;this.arm.rotation.z=.32*ease;
         }
         if(t<1)requestAnimationFrame(tick);
         else{this.resetFrustratedState(baseY);resolve(true)}
