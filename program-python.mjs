@@ -450,3 +450,179 @@ export function highlightPython(code, { activeLines = [], errorLine = null } = {
     return `<span class="${cls}"><span class="code-ln">${i + 1}</span>${html || ' '}</span>`;
   }).join('');
 }
+
+export function indentPythonSelection(value, selectionStart, selectionEnd, shiftKey = false) {
+  const s = String(value ?? '');
+  const start = Math.max(0, Math.min(s.length, selectionStart ?? 0));
+  const end = Math.max(start, Math.min(s.length, selectionEnd ?? start));
+  const from = start > 0 ? s.lastIndexOf('\n', start - 1) + 1 : 0;
+  const effectiveEnd = end > start && s[end - 1] === '\n' ? end - 1 : end;
+  const nl = s.indexOf('\n', effectiveEnd);
+  const lineEndPos = nl === -1 ? s.length : nl;
+
+  if (!shiftKey) {
+    if (start === end) {
+      return {
+        value: s.slice(0, start) + '    ' + s.slice(end),
+        selectionStart: start + 4,
+        selectionEnd: start + 4
+      };
+    }
+    const lines = s.slice(from, lineEndPos).split('\n');
+    const indented = lines.map((line) => '    ' + line).join('\n');
+    return {
+      value: s.slice(0, from) + indented + s.slice(lineEndPos),
+      selectionStart: start === from ? from : start + 4,
+      selectionEnd: end + 4 * lines.length
+    };
+  }
+
+  const lines = s.slice(from, lineEndPos).split('\n');
+  let firstRemove = 0;
+  let totalRemoved = 0;
+  const unindented = lines.map((line, idx) => {
+    const m = line.match(/^(?:\t| {1,4})/);
+    const remove = m ? m[0].length : 0;
+    if (idx === 0) firstRemove = remove;
+    totalRemoved += remove;
+    return line.slice(remove);
+  });
+
+  if (totalRemoved === 0) {
+    return { value: s, selectionStart: start, selectionEnd: end };
+  }
+
+  const nextStart = Math.max(from, start - firstRemove);
+  const nextEnd = Math.max(nextStart, end - totalRemoved);
+  return {
+    value: s.slice(0, from) + unindented.join('\n') + s.slice(lineEndPos),
+    selectionStart: nextStart,
+    selectionEnd: nextEnd
+  };
+}
+
+export function matchCodeHistoryShortcut(event) {
+  if (!event) return null;
+  const hasModifier = Boolean(event.ctrlKey || event.metaKey);
+  if (!hasModifier || event.altKey) return null;
+
+  const keyLower = typeof event.key === 'string' ? event.key.toLowerCase() : '';
+  const code = event.code || '';
+  const isZKey = keyLower === 'z' || keyLower === 'я';
+  const isYKey = keyLower === 'y' || keyLower === 'н';
+  const isZ = isZKey || (!isYKey && code === 'KeyZ');
+  const isY = isYKey || (!isZKey && code === 'KeyY');
+
+  if (isZ && !event.shiftKey) return 'undo';
+  if (isY || (isZ && event.shiftKey)) return 'redo';
+  return null;
+}
+
+export function createCodeHistory(initialValue = '') {
+  const init = String(initialValue ?? '');
+  let stack = [{ value: init, selectionStart: init.length, selectionEnd: init.length }];
+  let index = 0;
+  const maxSize = 200;
+
+  return {
+    reset(value = '', selectionStart = value.length, selectionEnd = selectionStart) {
+      const v = String(value ?? '');
+      stack = [{ value: v, selectionStart, selectionEnd }];
+      index = 0;
+    },
+    record(value, selectionStart = value.length, selectionEnd = selectionStart) {
+      const v = String(value ?? '');
+      const cur = stack[index];
+      if (cur && cur.value === v) {
+        cur.selectionStart = selectionStart;
+        cur.selectionEnd = selectionEnd;
+        return;
+      }
+      stack = stack.slice(0, index + 1);
+      stack.push({ value: v, selectionStart, selectionEnd });
+      if (stack.length > maxSize) stack.shift();
+      index = stack.length - 1;
+    },
+    undo(currentValue, currentStart, currentEnd) {
+      if (currentValue !== undefined) {
+        this.record(currentValue, currentStart, currentEnd);
+      }
+      if (index <= 0) return null;
+      index -= 1;
+      return { ...stack[index] };
+    },
+    redo() {
+      if (index + 1 >= stack.length) return null;
+      index += 1;
+      return { ...stack[index] };
+    }
+  };
+}
+
+/**
+ * Updates the condition on a while/if/elif header line at the cursor,
+ * or inserts a new conditional block below when the cursor is elsewhere.
+ */
+export function applyPythonConditionChip(
+  value,
+  selectionStart,
+  selectionEnd,
+  chipValue,
+  { defaultKeyword = 'if', defaultSensor = 'obstacle_ahead()' } = {}
+) {
+  const s = String(value ?? '');
+  const pos = Math.max(0, Math.min(s.length, selectionStart ?? selectionEnd ?? s.length));
+  const from = pos > 0 ? s.lastIndexOf('\n', pos - 1) + 1 : 0;
+  const nl = s.indexOf('\n', pos);
+  const to = nl === -1 ? s.length : nl;
+  const line = s.slice(from, to);
+
+  const headerMatch = line.match(/^(\s*)(while|if|elif)\b(.*)$/);
+  if (headerMatch) {
+    const [, indent, kw, rawRest] = headerMatch;
+    const cond = rawRest.replace(/:\s*$/, '').trim();
+    let newLine;
+    if (chipValue === 'not') {
+      if (/^not\b/.test(cond)) {
+        const stripped = cond.replace(/^not\b\s*/, '') || defaultSensor;
+        newLine = `${indent}${kw} ${stripped}:`;
+      } else {
+        const targetCond = cond || defaultSensor;
+        newLine = `${indent}${kw} not ${targetCond}:`;
+      }
+    } else {
+      const hasNot = /^not\b/.test(cond);
+      newLine = `${indent}${kw} ${hasNot ? 'not ' : ''}${chipValue}:`;
+    }
+    return {
+      value: s.slice(0, from) + newLine + s.slice(to),
+      selectionStart: from + newLine.length,
+      selectionEnd: from + newLine.length
+    };
+  }
+
+  const snippet =
+    chipValue === 'not'
+      ? `${defaultKeyword} not ${defaultSensor}:`
+      : defaultKeyword === 'while'
+        ? `while not ${chipValue}:`
+        : `${defaultKeyword} ${chipValue}:`;
+
+  if (!line.trim()) {
+    const indent = line;
+    const inserted = `${indent}${snippet}\n${indent}    `;
+    return {
+      value: s.slice(0, from) + inserted + s.slice(to),
+      selectionStart: from + inserted.length,
+      selectionEnd: from + inserted.length
+    };
+  }
+
+  const indent = (line.match(/^\s*/)?.[0] ?? '') + (line.trimEnd().endsWith(':') ? '    ' : '');
+  const inserted = `\n${indent}${snippet}\n${indent}    `;
+  return {
+    value: s.slice(0, to) + inserted + s.slice(to),
+    selectionStart: to + inserted.length,
+    selectionEnd: to + inserted.length
+  };
+}

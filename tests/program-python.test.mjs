@@ -1,7 +1,16 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-import { blocksToPython, pythonToBlocks, highlightPython, functionNames } from '../program-python.mjs';
+import {
+  blocksToPython,
+  pythonToBlocks,
+  highlightPython,
+  functionNames,
+  indentPythonSelection,
+  createCodeHistory,
+  matchCodeHistoryShortcut,
+  applyPythonConditionChip
+} from '../program-python.mjs';
 import { validateProgram } from '../logic.mjs';
 
 const ALL = ['forward', 'left', 'right', 'jump', 'light', 'take', 'fix', 'loop', 'if', 'while', 'call'];
@@ -188,4 +197,111 @@ test('saved Python text is the newest program: block edits drop it, and it is ap
   assert.match(runner, /if \(!codeMode\) forgetCode\(\);/, 'block edits forget the stale text');
   const load = runner.slice(runner.indexOf('function codeForBlocks'), runner.indexOf('function setCodeMode'));
   assert.match(load, /editor\.setProgram\(result\.program\);\s*editor\.notifyChange\(\);/, 'unparsed keystrokes reach the blocks after a reload');
+});
+
+test('indentPythonSelection indents and unindents single and multi-line selections cleanly', () => {
+  // Single cursor (no selection): inserts 4 spaces
+  const caret = indentPythonSelection('forward()\njump()', 0, 0, false);
+  assert.equal(caret.value, '    forward()\njump()');
+  assert.deepEqual([caret.selectionStart, caret.selectionEnd], [4, 4]);
+
+  // Single-line partial selection: indents entire line and keeps selection aligned
+  const single = indentPythonSelection('forward()\njump()', 2, 7, false);
+  assert.equal(single.value, '    forward()\njump()');
+  assert.deepEqual([single.selectionStart, single.selectionEnd], [6, 11]);
+
+  // Multi-line selection across 2 lines
+  const multi = indentPythonSelection('forward()\njump()\nlight()', 2, 14, false);
+  assert.equal(multi.value, '    forward()\n    jump()\nlight()');
+  assert.deepEqual([multi.selectionStart, multi.selectionEnd], [6, 22]);
+
+  // Selection ending right after trailing newline must not indent the next line
+  const trailingNl = indentPythonSelection('forward()\njump()\nlight()', 0, 10, false);
+  assert.equal(trailingNl.value, '    forward()\njump()\nlight()');
+  assert.deepEqual([trailingNl.selectionStart, trailingNl.selectionEnd], [0, 14]);
+
+  // Shift+Tab unindents up to 4 spaces on every selected line and preserves selection
+  const unindent = indentPythonSelection('    forward()\n    jump()\n  light()', 4, 30, true);
+  assert.equal(unindent.value, 'forward()\njump()\nlight()');
+  assert.deepEqual([unindent.selectionStart, unindent.selectionEnd], [0, 20]);
+});
+
+test('createCodeHistory and matchCodeHistoryShortcut support undo/redo and Ukrainian layout keys', () => {
+  assert.equal(matchCodeHistoryShortcut({ ctrlKey: true, key: 'z' }), 'undo');
+  assert.equal(matchCodeHistoryShortcut({ ctrlKey: true, key: 'я' }), 'undo');
+  assert.equal(matchCodeHistoryShortcut({ metaKey: true, shiftKey: true, key: 'Z' }), 'redo');
+  assert.equal(matchCodeHistoryShortcut({ ctrlKey: true, shiftKey: true, key: 'Я' }), 'redo');
+  assert.equal(matchCodeHistoryShortcut({ ctrlKey: true, key: 'y' }), 'redo');
+  assert.equal(matchCodeHistoryShortcut({ ctrlKey: true, key: 'н' }), 'redo');
+  assert.equal(matchCodeHistoryShortcut({ ctrlKey: true, altKey: true, key: 'z' }), null);
+
+  const history = createCodeHistory('forward()\njump()');
+  history.record('forward()\njump()\nlight()', 25, 25);
+  const indented = indentPythonSelection('forward()\njump()\nlight()', 0, 16, false);
+  history.record(indented.value, indented.selectionStart, indented.selectionEnd);
+
+  const u1 = history.undo();
+  assert.equal(u1.value, 'forward()\njump()\nlight()');
+  assert.deepEqual([u1.selectionStart, u1.selectionEnd], [25, 25]);
+
+  const u2 = history.undo();
+  assert.equal(u2.value, 'forward()\njump()');
+
+  assert.equal(history.undo(), null);
+
+  const r1 = history.redo();
+  assert.equal(r1.value, 'forward()\njump()\nlight()');
+
+  const r2 = history.redo();
+  assert.equal(r2.value, '    forward()\n    jump()\nlight()');
+  assert.deepEqual([r2.selectionStart, r2.selectionEnd], [0, 24]);
+});
+
+test('runner wires multi-line Tab/Shift+Tab and undo/redo history into codeInput.onkeydown', async () => {
+  const runner = await readFile(new URL('../runner.js', import.meta.url), 'utf8');
+  assert.match(runner, /matchCodeHistoryShortcut\(e\)/);
+  assert.match(runner, /codeHistory\.undo\(/);
+  assert.match(runner, /codeHistory\.redo\(/);
+  assert.match(runner, /indentPythonSelection\(value, start, end, e\.shiftKey\)/);
+  assert.match(runner, /applyCodeState\(next\.value, next\.selectionStart, next\.selectionEnd\)/);
+});
+
+test('applyPythonConditionChip inserts blocks or updates conditions on while/if/elif headers', () => {
+  // Blank line inserts a new header with indented body according to defaultKeyword
+  const onBlankIf = applyPythonConditionChip('', 0, 0, 'can_jump()', { defaultKeyword: 'if' });
+  assert.equal(onBlankIf.value, 'if can_jump():\n    ');
+  assert.equal(onBlankIf.selectionStart, onBlankIf.value.length);
+
+  const onBlankWhile = applyPythonConditionChip('    ', 4, 4, 'obstacle_ahead()', { defaultKeyword: 'while' });
+  assert.equal(onBlankWhile.value, '    while not obstacle_ahead():\n        ');
+  assert.equal(onBlankWhile.selectionStart, onBlankWhile.value.length);
+
+  // After a regular command line, inserts below with matching indent
+  const afterCmd = applyPythonConditionChip('forward()\njump()', 3, 3, 'on_lamp()', { defaultKeyword: 'if' });
+  assert.equal(afterCmd.value, 'forward()\nif on_lamp():\n    \njump()');
+
+  // On a while/if/elif header line, swaps sensor and keeps existing `not`
+  const replaceWhile = applyPythonConditionChip('while not obstacle_ahead():\n    forward()', 6, 6, 'can_jump()');
+  assert.equal(replaceWhile.value, 'while not can_jump():\n    forward()');
+
+  const replaceElif = applyPythonConditionChip('    elif can_jump():\n        jump()', 12, 12, 'lamp_shorts()');
+  assert.equal(replaceElif.value, '    elif lamp_shorts():\n        jump()');
+
+  // Clicking `not` toggles `not` on the current while/if/elif header
+  const addNot = applyPythonConditionChip('if can_jump():\n    jump()', 5, 5, 'not');
+  assert.equal(addNot.value, 'if not can_jump():\n    jump()');
+
+  const removeNot = applyPythonConditionChip('while not can_jump():\n    forward()', 10, 10, 'not');
+  assert.equal(removeNot.value, 'while can_jump():\n    forward()');
+});
+
+test('runner wires available while/if condition chips, elif/else snippets, and getSensors', async () => {
+  const runner = await readFile(new URL('../runner.js', import.meta.url), 'utf8');
+  assert.match(runner, /getSensors/);
+  assert.match(runner, /applyPythonConditionChip/);
+  assert.match(runner, /#code-conditions-wrap/);
+  assert.match(runner, /#code-conditions/);
+  assert.match(runner, /elif \$\{firstSensor\}:/);
+  assert.match(runner, /list\.push\('else:'\)/);
+  assert.match(runner, /l\.allowed\.includes\('while'\) \|\| l\.allowed\.includes\('if'\)/);
 });

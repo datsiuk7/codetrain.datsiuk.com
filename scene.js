@@ -527,7 +527,7 @@ export class World {
     this.leftLeg.rotation.z=0;this.rightLeg.rotation.z=0;
     this.leftArm.rotation.x=0;this.leftArm.rotation.z=0;
     this.arm.rotation.x=0;this.arm.rotation.z=0;
-    if(this.hat){this.hat.position.set(0,.77,0);this.hat.rotation.set(0,0,0)}
+    if(this.hat){this.hat.position.set(0,.77,0);this.hat.rotation.set(0,0,0);this.hat.scale.set(1,1,1)}
     if(this.alertSign){this.alertSign.visible=false;this.alertSign.scale.set(0,0,1);this.alertSign.position.set(0,1.42,0)}
     if(this.eyes)for(const eye of this.eyes)eye.scale.set(1,1,1);
   }
@@ -1196,6 +1196,167 @@ export class World {
     }
     this.resetFrustratedState();
     return true;
+  }
+  async flyBack(target, cancelled) {
+    const from = this.robot.position.clone();
+    const to = this.position(target);
+    const old = this.angle;
+    const endAngle = -target.dir * Math.PI / 2;
+    const dx = to.x - from.x;
+    const dz = to.z - from.z;
+    const dist = Math.hypot(dx, dz);
+    const travelAngle = dist > 0.01 ? Math.atan2(-dx, -dz) : endAngle;
+    const normTurn = (a, b) => {
+      let d = (b - a) % (Math.PI * 2);
+      if (d > Math.PI) d -= Math.PI * 2;
+      if (d < -Math.PI) d += Math.PI * 2;
+      return d;
+    };
+    const turnToFlight = normTurn(old, travelAngle);
+    const turnToStart = normTurn(travelAngle, endAngle);
+    const peakBoost = Math.max(1.35, Math.min(2.6, 0.95 + dist * 0.28));
+    const duration = Math.min(1500, Math.max(850, 700 + dist * 140)) / this.speed;
+
+    // Temporary helicopter propeller assembly attached to the hat during flight.
+    const rotorGroup = new THREE.Group();
+    const mastGeo = new THREE.CylinderGeometry(0.022, 0.028, 0.11, 8);
+    const mastMat = new THREE.MeshStandardMaterial({ color: 0xf3c65f, metalness: 0.45, roughness: 0.35 });
+    const mast = new THREE.Mesh(mastGeo, mastMat);
+    mast.position.y = 0.17;
+    const capGeo = new THREE.SphereGeometry(0.038, 8, 6);
+    const capMat = new THREE.MeshStandardMaterial({ color: 0xff6b4a, metalness: 0.3, roughness: 0.4 });
+    const cap = new THREE.Mesh(capGeo, capMat);
+    cap.position.y = 0.22;
+    const bladeGeo1 = new THREE.BoxGeometry(0.72, 0.014, 0.075);
+    const bladeGeo2 = new THREE.BoxGeometry(0.075, 0.014, 0.72);
+    const bladeMat = new THREE.MeshStandardMaterial({
+      color: 0xffd97d,
+      emissive: 0xd98a1e,
+      emissiveIntensity: 0.35,
+      metalness: 0.4,
+      roughness: 0.3
+    });
+    const blade1 = new THREE.Mesh(bladeGeo1, bladeMat);
+    blade1.position.y = 0.21;
+    const blade2 = new THREE.Mesh(bladeGeo2, bladeMat);
+    blade2.position.y = 0.21;
+    const ringGeo = new THREE.RingGeometry(0.24, 0.36, 20);
+    const ringMat = new THREE.MeshBasicMaterial({
+      color: 0x9be7ff,
+      transparent: true,
+      opacity: 0,
+      side: THREE.DoubleSide,
+      depthWrite: false
+    });
+    const airRing = new THREE.Mesh(ringGeo, ringMat);
+    airRing.rotation.x = -Math.PI / 2;
+    airRing.position.y = 0.2;
+    rotorGroup.add(mast, cap, blade1, blade2, airRing);
+    rotorGroup.scale.setScalar(0);
+    this.hat.add(rotorGroup);
+
+    const finish = (ok) => {
+      this.hat.remove(rotorGroup);
+      mastGeo.dispose();
+      capGeo.dispose();
+      bladeGeo1.dispose();
+      bladeGeo2.dispose();
+      ringGeo.dispose();
+      mastMat.dispose();
+      capMat.dispose();
+      bladeMat.dispose();
+      ringMat.dispose();
+      this.hat.scale.set(1, 1, 1);
+      this.hat.rotation.set(0, 0, 0);
+      this.hat.position.set(0, 0.77, 0);
+      this.robot.rotation.x = 0;
+      this.robot.rotation.z = 0;
+      if (ok) {
+        this.robot.position.copy(to);
+        this.angle = endAngle;
+        this.robot.rotation.y = endAngle;
+      }
+      this.resetFrustratedState(ok ? to.y : from.y);
+      return ok;
+    };
+
+    return new Promise((resolve) => {
+      const start = performance.now();
+      const tick = (now) => {
+        if (this.dead || cancelled()) {
+          resolve(finish(false));
+          return;
+        }
+        const t = Math.min((now - start) / duration, 1);
+        if (t < 0.18) {
+          const p = t / 0.18;
+          const ease = p * p * (3 - 2 * p);
+          const hatScaleXZ = 1 + ease * 0.95;
+          const hatScaleY = 1 + ease * 0.28;
+          this.robot.position.copy(from);
+          this.robot.position.y = from.y - Math.sin(p * Math.PI) * 0.06;
+          this.robot.rotation.y = old + turnToFlight * ease;
+          this.hat.position.y = 0.77 + ease * 0.14;
+          this.hat.scale.set(hatScaleXZ, hatScaleY, hatScaleXZ);
+          rotorGroup.scale.setScalar(ease);
+          ringMat.opacity = ease * 0.45;
+          this.hat.rotation.y = p * p * Math.PI * 10;
+          rotorGroup.rotation.y = p * p * Math.PI * 14;
+          this.leftArm.rotation.z = -ease * 0.95;
+          this.arm.rotation.z = ease * 0.95;
+        } else if (t < 0.86) {
+          const p = (t - 0.18) / 0.68;
+          const ease = p * p * (3 - 2 * p);
+          const arc = Math.sin(p * Math.PI);
+          const flap = Math.sin(p * Math.PI * 10);
+          const pulse = 1.95 + Math.sin(p * Math.PI * 14) * 0.1;
+          this.robot.position.lerpVectors(from, to, ease);
+          this.robot.position.y += arc * peakBoost + Math.sin(p * Math.PI * 6) * 0.04;
+          this.robot.rotation.y = travelAngle;
+          this.robot.rotation.x = arc * 0.28;
+          this.robot.rotation.z = Math.sin(p * Math.PI * 4) * 0.1;
+          this.hat.scale.set(pulse, 1.28, pulse);
+          rotorGroup.scale.setScalar(1);
+          this.hat.position.y = 0.91 + arc * 0.05;
+          this.hat.rotation.x = arc * 0.18;
+          this.hat.rotation.z = Math.sin(p * Math.PI * 6) * 0.08;
+          this.hat.rotation.y = (now - start) * 0.055;
+          rotorGroup.rotation.y = (now - start) * 0.085;
+          ringMat.opacity = 0.38 + Math.sin(p * Math.PI * 16) * 0.18;
+          this.leftArm.rotation.z = -0.95 - flap * 0.35;
+          this.arm.rotation.z = 0.95 + flap * 0.35;
+          this.leftLeg.rotation.x = flap * 0.45;
+          this.rightLeg.rotation.x = -flap * 0.45;
+          for (const eye of this.eyes) eye.scale.y = 0.65;
+        } else {
+          const p = (t - 0.86) / 0.14;
+          const ease = p * p * (3 - 2 * p);
+          const rem = 1 - ease;
+          const sXZ = 1 + rem * 0.95;
+          const sY = 1 + rem * 0.28;
+          this.robot.position.copy(to);
+          this.robot.position.y = to.y - Math.sin(p * Math.PI) * 0.04;
+          this.robot.rotation.y = travelAngle + turnToStart * ease;
+          this.robot.rotation.x = rem * 0.1;
+          this.robot.rotation.z = 0;
+          this.hat.scale.set(sXZ, sY, sXZ);
+          rotorGroup.scale.setScalar(rem);
+          ringMat.opacity = rem * 0.4;
+          this.hat.position.y = 0.77 + rem * 0.14;
+          this.hat.rotation.x = 0;
+          this.hat.rotation.z = 0;
+          this.hat.rotation.y = rem * Math.PI * 4;
+          rotorGroup.rotation.y = rem * Math.PI * 6;
+          this.leftArm.rotation.z = -0.95 * rem;
+          this.arm.rotation.z = 0.95 * rem;
+          this.leftLeg.rotation.x = 0;
+          this.rightLeg.rotation.x = 0;
+        }
+        if (t < 1) requestAnimationFrame(tick);
+        else resolve(finish(true));
+      };
+      requestAnimationFrame(tick);
+    });
   }
   async cry(cancelled){
     const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;

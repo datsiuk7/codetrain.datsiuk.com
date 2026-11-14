@@ -295,7 +295,7 @@ export function setupEffects(button){
     const audio=getContext();if(!audio)return;
     const oscillator=audio.createOscillator(),gain=audio.createGain();
     oscillator.type=type;oscillator.frequency.setValueAtTime(frequency,start);oscillator.frequency.exponentialRampToValueAtTime(Math.max(20,endFrequency),start+duration);
-    gain.gain.setValueAtTime(.0001,start);gain.gain.exponentialRampToValueAtTime(volume,start+.015);gain.gain.exponentialRampToValueAtTime(.0001,start+duration);
+    gain.gain.setValueAtTime(.0001,start);gain.gain.exponentialRampToValueAtTime(Math.max(.0002,volume),start+.015);gain.gain.exponentialRampToValueAtTime(.0001,start+duration);
     oscillator.connect(gain);gain.connect(audio.destination);oscillator.start(start);oscillator.stop(start+duration+.03);
   }
   return {
@@ -329,6 +329,25 @@ export function setupEffects(button){
     win(){if(!on)return;const audio=getContext();if(!audio)return;const now=audio.currentTime;[523,659,784,1047].forEach((frequency,index)=>tone(now+index*.12,frequency,.32,.09,'sine',frequency*1.04));tone(now+.48,1047,.65,.12,'sine',1319)},
     sad(){if(!on)return;const audio=getContext();if(!audio)return;const now=audio.currentTime;tone(now,392,.3,.08,'triangle',370);tone(now+.34,370,.3,.08,'triangle',349);tone(now+.68,349,.3,.08,'triangle',330);tone(now+1.02,330,.85,.09,'triangle',247)},
     cry(){if(!on)return;const audio=getContext();if(!audio)return;const now=audio.currentTime;for(let index=0;index<5;index++)tone(now+index*.33,640-index*20,.16,.05,'sine',430);tone(now+1.75,720,.7,.05,'sine',360)},
-    angry(){if(!on)return;const audio=getContext();if(!audio)return;const now=audio.currentTime;tone(now,260,.14,.11,'sawtooth',170);tone(now+.12,210,.16,.13,'sawtooth',130);tone(now+.26,160,.24,.15,'sawtooth',80)}
+    angry(){if(!on)return;const audio=getContext();if(!audio)return;const now=audio.currentTime;tone(now,260,.14,.11,'sawtooth',170);tone(now+.12,210,.16,.13,'sawtooth',130);tone(now+.26,160,.24,.15,'sawtooth',80)},
+    helicopter(durationMs=1100){
+      if(!on)return;
+      try{
+        const audio=getContext();if(!audio)return;
+        const now=audio.currentTime;
+        const dur=Math.max(.45,Math.min(2.2,(Number(durationMs)||1100)/1000));
+        const step=.068;
+        for(let tOff=0;tOff<dur;tOff+=step){
+          const p=tOff/dur;
+          const env=p<.16?.25+(p/.16)*.75:p>.82?Math.max(.15,(1-p)/.18):1;
+          const base=78+Math.sin(p*Math.PI)*34;
+          tone(now+tOff,base*1.4,.052,.095*env,'sawtooth',base*.65);
+          tone(now+tOff+.012,base*2.5,.038,.05*env,'triangle',base*1.25);
+        }
+        tone(now,135,dur*.3,.045,'sine',265);
+        tone(now+dur*.25,265,dur*.5,.04,'sine',245);
+        tone(now+dur*.72,245,dur*.28,.045,'sine',105);
+      }catch{}
+    }
   };
 }

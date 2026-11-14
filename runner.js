@@ -9,6 +9,7 @@ import {
   executeProgram,
   getCommandInfo,
   getLevelDescription,
+  getSensors,
   ElectricShockError,
   renderDifficultyStars
 } from './logic.mjs';
@@ -16,7 +17,17 @@ import { World } from './scene.js';
 import { ProgramEditor } from './program.js';
 import { setupGameHints } from './game-hints.js';
 import { getLang, t, getLevelName, getCategoryTitle } from './i18n.mjs';
-import { blocksToPython, pythonToBlocks, highlightPython, PY_COMMANDS, PY_SENSORS } from './program-python.mjs';
+import {
+  blocksToPython,
+  pythonToBlocks,
+  highlightPython,
+  indentPythonSelection,
+  createCodeHistory,
+  matchCodeHistoryShortcut,
+  applyPythonConditionChip,
+  PY_COMMANDS,
+  PY_SENSORS
+} from './program-python.mjs';
 
 const esc = (s) =>
   String(s).replace(/[&<>"']/g, (c) => ({
@@ -148,6 +159,10 @@ export function startGame(container, l, preview, options) {
           <p id="code-message" class="code-message" aria-live="polite"></p>
           <div class="code-inserts-label">${esc(t('codeInsert', lang))}</div>
           <div id="code-inserts" class="code-inserts"></div>
+          <div id="code-conditions-wrap" class="code-conditions-wrap" hidden>
+            <div class="code-inserts-label">${esc(t('codeInsertConditions', lang))}</div>
+            <div id="code-conditions" class="code-inserts code-conditions"></div>
+          </div>
         </div>
         <div id="program" class="program" aria-label="${esc(t('programAria', lang))}">
           <button id="trash" class="trash-zone" type="button" aria-label="${esc(t('trashTitle', lang))}" title="${esc(t('trashTitle', lang))}">
@@ -258,6 +273,7 @@ export function startGame(container, l, preview, options) {
   let parseTimer;
   let parsePending = false;
   let tabLeavesEditor = false;
+  const codeHistory = createCodeHistory('');
 
   const parseCode = (text) => pythonToBlocks(text, l, { lang, theme: currentTheme, existingFunctions: editor.functions });
 
@@ -339,6 +355,7 @@ export function startGame(container, l, preview, options) {
     if (on) {
       const { text, lineOf: lines, error } = codeForBlocks();
       codeInput.value = text;
+      codeHistory.reset(text, text.length, text.length);
       lineOf = lines;
       codeError = error || null;
       activeLine = null;
@@ -357,7 +374,14 @@ export function startGame(container, l, preview, options) {
     }
   }
 
-  function onCodeInput() {
+  function onCodeInput(fromHistory = false) {
+    if (fromHistory !== true) {
+      codeHistory.record(
+        codeInput.value,
+        codeInput.selectionStart ?? codeInput.value.length,
+        codeInput.selectionEnd ?? codeInput.value.length
+      );
+    }
     try { if (!preview) localStorage.setItem(codeKey, codeInput.value); } catch {}
     activeLine = null;
     renderCode();
@@ -366,10 +390,29 @@ export function startGame(container, l, preview, options) {
     parseTimer = setTimeout(applyCode, 350);
   }
 
+  function applyCodeState(nextValue, nextStart, nextEnd) {
+    codeHistory.record(
+      codeInput.value,
+      codeInput.selectionStart ?? 0,
+      codeInput.selectionEnd ?? 0
+    );
+    codeInput.value = nextValue;
+    if (typeof codeInput.setSelectionRange === 'function') {
+      codeInput.setSelectionRange(nextStart, nextEnd);
+    } else {
+      codeInput.selectionStart = nextStart;
+      codeInput.selectionEnd = nextEnd;
+    }
+    codeHistory.record(nextValue, nextStart, nextEnd);
+    onCodeInput(true);
+  }
+
   // Replaces the selection with `text` and keeps the editor in sync, like typing would.
   function typeText(text, selectStart, selectEnd) {
-    codeInput.setRangeText(text, selectStart, selectEnd, 'end');
-    onCodeInput();
+    const cur = codeInput.value;
+    const nextValue = cur.slice(0, selectStart) + text + cur.slice(selectEnd);
+    const caret = selectStart + text.length;
+    applyCodeState(nextValue, caret, caret);
   }
 
   // lastIndexOf clamps a negative start to 0 and would find a newline at index 0, so the top is special.
@@ -382,6 +425,25 @@ export function startGame(container, l, preview, options) {
   codeInput.onkeydown = (e) => {
     // Let the keyboard finish composing a word (IME, phone suggestions) before we touch Enter or Tab.
     if (codeInput.readOnly || e.isComposing || e.keyCode === 229) return;
+    const historyAction = matchCodeHistoryShortcut(e);
+    if (historyAction) {
+      e.preventDefault();
+      const snap =
+        historyAction === 'undo'
+          ? codeHistory.undo(codeInput.value, codeInput.selectionStart ?? 0, codeInput.selectionEnd ?? 0)
+          : codeHistory.redo();
+      if (snap) {
+        codeInput.value = snap.value;
+        if (typeof codeInput.setSelectionRange === 'function') {
+          codeInput.setSelectionRange(snap.selectionStart, snap.selectionEnd);
+        } else {
+          codeInput.selectionStart = snap.selectionStart;
+          codeInput.selectionEnd = snap.selectionEnd;
+        }
+        onCodeInput(true);
+      }
+      return;
+    }
     // Esc releases the editor: the next Tab moves focus on instead of indenting (no keyboard trap).
     if (e.key === 'Escape') {
       tabLeavesEditor = true;
@@ -392,12 +454,9 @@ export function startGame(container, l, preview, options) {
     const { value, selectionStart: start, selectionEnd: end } = codeInput;
     if (e.key === 'Tab') {
       e.preventDefault();
-      const from = lineStart(value, start);
-      if (e.shiftKey) {
-        const remove = Math.min(4, indentOf(value.slice(from)).length);
-        if (remove) typeText('', from, from + remove);
-      } else {
-        typeText('    ', start, end);
+      const next = indentPythonSelection(value, start, end, e.shiftKey);
+      if (next.value !== value || next.selectionStart !== start || next.selectionEnd !== end) {
+        applyCodeState(next.value, next.selectionStart, next.selectionEnd);
       }
     } else if (e.key === 'Enter') {
       // New lines keep the indent, and go one level deeper after a line ending with ":".
@@ -429,14 +488,19 @@ export function startGame(container, l, preview, options) {
   }
 
   const firstSensor = `${PY_SENSORS[(l.allowedSensors && l.allowedSensors[0]) || 'obstacleAhead']}()`;
-  const snippets = l.allowed.map((type) => {
-    if (type === 'loop') return 'for i in range(2):';
-    if (type === 'while') return `while not ${firstSensor}:`;
-    if (type === 'if') return `if ${firstSensor}:`;
-    if (type === 'call') return 'def my_function():';
-    if (type === 'light' && currentTheme === 'light') return 'switch_off()';
-    return PY_COMMANDS[type] ? `${PY_COMMANDS[type]}()` : null;
-  }).filter(Boolean);
+  const snippets = l.allowed.flatMap((type) => {
+    if (type === 'loop') return ['for i in range(2):'];
+    if (type === 'while') return [`while not ${firstSensor}:`];
+    if (type === 'if') {
+      const list = [`if ${firstSensor}:`];
+      if (l.allowElif !== false) list.push(`elif ${firstSensor}:`);
+      if (l.allowElse !== false) list.push('else:');
+      return list;
+    }
+    if (type === 'call') return ['def my_function():'];
+    if (type === 'light' && currentTheme === 'light') return ['switch_off()'];
+    return PY_COMMANDS[type] ? [`${PY_COMMANDS[type]}()`] : [];
+  });
   const inserts = $('#code-inserts');
   inserts.innerHTML = snippets
     .map((s) => `<button type="button" class="code-chip" data-snippet="${esc(s)}">${esc(s.replace(/:$/, ''))}</button>`)
@@ -445,6 +509,43 @@ export function startGame(container, l, preview, options) {
     const chip = e.target?.closest?.('[data-snippet]');
     if (chip) insertSnippet(chip.getAttribute('data-snippet'));
   };
+
+  const conditionsWrap = $('#code-conditions-wrap');
+  const conditionsEl = $('#code-conditions');
+  const hasConditions = l.allowed.includes('while') || l.allowed.includes('if');
+  if (conditionsWrap && conditionsEl && hasConditions) {
+    conditionsWrap.hidden = false;
+    const allowedSensorKeys = (
+      Array.isArray(l.allowedSensors) && l.allowedSensors.length
+        ? l.allowedSensors
+        : Object.keys(PY_SENSORS)
+    ).filter((k) => PY_SENSORS[k]);
+    const sensorLabels = getSensors(lang);
+    const notTitle = t('notBtn', lang);
+    const conditionChips = [
+      `<button type="button" class="code-chip code-chip-cond" data-cond="not" title="${esc(notTitle)}"><span class="code-chip-code">not</span><span class="code-chip-desc">— ${esc(notTitle)}</span></button>`,
+      ...allowedSensorKeys.map((key) => {
+        const call = `${PY_SENSORS[key]}()`;
+        const desc = sensorLabels[key] || '';
+        return `<button type="button" class="code-chip code-chip-cond" data-cond="${esc(call)}" title="${esc(desc)}"><span class="code-chip-code">${esc(call)}</span>${desc ? `<span class="code-chip-desc">— ${esc(desc)}</span>` : ''}</button>`;
+      })
+    ];
+    conditionsEl.innerHTML = conditionChips.join('');
+    conditionsEl.onclick = (e) => {
+      const chip = e.target?.closest?.('[data-cond]');
+      if (!chip || codeInput.readOnly) return;
+      const defaultKeyword = l.allowed.includes('if') ? 'if' : 'while';
+      const next = applyPythonConditionChip(
+        codeInput.value,
+        codeInput.selectionStart,
+        codeInput.selectionEnd,
+        chip.getAttribute('data-cond'),
+        { defaultKeyword, defaultSensor: firstSensor }
+      );
+      applyCodeState(next.value, next.selectionStart, next.selectionEnd);
+      if (typeof matchMedia === 'function' && !matchMedia('(pointer: coarse)').matches) codeInput.focus();
+    };
+  }
 
   // The run lights up the matching line of code as well as the block.
   const highlightBlock = editor.highlight.bind(editor);
@@ -459,6 +560,7 @@ export function startGame(container, l, preview, options) {
     lockBlocks(value);
     codeInput.readOnly = value;
     inserts.querySelectorAll?.('button')?.forEach((b) => { b.disabled = value; });
+    conditionsEl?.querySelectorAll?.('button')?.forEach((b) => { b.disabled = value; });
   };
 
   $('#mode-blocks').onclick = () => { if (codeMode && !running) setCodeMode(false); };
@@ -681,8 +783,17 @@ export function startGame(container, l, preview, options) {
     const cancelled = () => token !== runToken;
     const start = initialState(l, currentTheme);
     const path = walk ? pathBack(l, state, start) : null;
-    effects.sad?.();
-    if (path && !(await world.walkBack(path, cancelled))) return false;
+    if (path) {
+      effects.sad?.();
+      if (!(await world.walkBack(path, cancelled))) return false;
+    } else if (walk && (state.x !== start.x || state.z !== start.z || state.onBox)) {
+      const dist = Math.hypot(start.x - state.x, start.z - state.z);
+      const flyDuration = Math.min(1500, Math.max(850, 700 + dist * 140)) / (world.speed || 1);
+      effects.helicopter?.(flyDuration);
+      if (world.flyBack && !(await world.flyBack(start, cancelled))) return false;
+    } else {
+      effects.sad?.();
+    }
     if (cancelled()) return false;
     state = start;
     world.setState(state);

@@ -2139,6 +2139,39 @@ body.in-game textarea::selection,
   border-color: var(--gold);
 }
 
+.code-conditions-wrap {
+  display: grid;
+  gap: 6px;
+  margin-top: 2px;
+}
+
+.code-conditions-wrap[hidden] {
+  display: none;
+}
+
+.code-conditions-wrap .code-inserts-label {
+  margin-bottom: 0;
+}
+
+.code-chip-cond {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 5px;
+  border-color: #c5a2e844;
+  background: #1e1828;
+}
+
+.code-chip-cond .code-chip-code {
+  color: #d8b9ff;
+  font-weight: 600;
+}
+
+.code-chip-cond .code-chip-desc {
+  font-family: var(--font-sans, system-ui, sans-serif);
+  font-size: 11px;
+  color: var(--muted);
+}
+
 /* Phones zoom into inputs smaller than 16px. */
 @media (pointer: coarse) {
   .code-panel { --code-font: 16px/1.6 ui-monospace, 'Cascadia Code', Consolas, 'Courier New', monospace; }
@@ -2176,4 +2209,17 @@ body.in-game textarea::selection,
   border-color: #d8e0e6;
   background: #f4f7f9;
   color: #1f2d3a;
+}
+
+[data-theme="light"] .code-chip-cond {
+  border-color: #8a3ffc33;
+  background: #f5effe;
+}
+
+[data-theme="light"] .code-chip-cond .code-chip-code {
+  color: #6d28d9;
+}
+
+[data-theme="light"] .code-chip-cond .code-chip-desc {
+  color: #5a6c7a;
 }

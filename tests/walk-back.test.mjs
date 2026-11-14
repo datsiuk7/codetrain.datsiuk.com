@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
-import { pathBack, initialState } from '../logic.mjs';
+import { pathBack, initialState, step } from '../logic.mjs';
 import { World } from '../scene.js';
 
 const grid = (width, depth, extra = () => ({})) => ({
@@ -128,6 +128,7 @@ test('falling off and bumping into something also end with going back to the sta
   assert.match(bump, /backToStartAndCry\(runToken\)/, 'after grumbling the character walks back and cries');
   const helper = runner.slice(runner.indexOf('async function backToStartAndCry'), runner.indexOf("$('#run').onclick"));
   assert.match(helper, /world\.walkBack/);
+  assert.match(helper, /world\.flyBack/);
   assert.match(helper, /world\.cry/);
 });
 
@@ -154,4 +155,71 @@ test('reduced motion does not cancel the speed choice for walking', async () => 
   const fast = await countFrames(Object.assign(stubWorld(), { speed: 3 }), walk, true);
   assert.ok(slow >= 25, `a step at 1× stays visible with reduced motion (${slow} frames of 20 ms)`);
   assert.ok(fast < slow / 2, '3× is clearly faster with reduced motion');
+});
+
+test('pathBack still finds a route back after pushing a box', () => {
+  const l = grid(4, 1, (x) => (x === 1 ? { box: true } : {}));
+  l.start = { x: 0, z: 0, dir: 1 };
+  let s = initialState(l, 'dark');
+  s = step(l, s, 'forward');
+  assert.ok(s.pushedBox, 'box was pushed on this step');
+  assert.equal(s.x, 1);
+
+  const back = pathBack(l, s, l.start);
+  assert.ok(Array.isArray(back) && back.length === 1, 'pathBack must not be blocked by stale pushedBox');
+  assert.deepEqual([back[0].x, back[0].z], [0, 0]);
+});
+
+test('flyBack flies the robot in a high arc to start, resets transforms, and respects speed and cancellation', async () => {
+  const world = stubWorld();
+  world.robot.position.set(3, 0.5, 2);
+  let maxY = 0;
+  let maxHatScale = 1;
+  let maxHatRotY = 0;
+  let sawRotorChildren = false;
+  const target = { x: 0, z: 0, dir: 1 };
+
+  const ok = await withFrames(60, () => world.flyBack(target, () => false), () => {
+    maxY = Math.max(maxY, world.robot.position.y);
+    maxHatScale = Math.max(maxHatScale, world.hat.scale.x, world.hat.scale.z);
+    maxHatRotY = Math.max(maxHatRotY, Math.abs(world.hat.rotation.y));
+    if (world.hat.children.length > 0) sawRotorChildren = true;
+  });
+  assert.equal(ok, true);
+  assert.ok(maxY > 1, `expected high arc above 1 unit, got ${maxY}`);
+  assert.ok(maxHatScale > 1.7, `expected enlarged helicopter hat during flight, got ${maxHatScale}`);
+  assert.ok(maxHatRotY > Math.PI * 4, `expected fast helicopter hat spin, got ${maxHatRotY}`);
+  assert.equal(sawRotorChildren, true, 'expected temporary 3D rotor assembly on hat during flight');
+  assert.equal(world.robot.position.x, 0);
+  assert.equal(world.robot.position.z, 0);
+  assert.equal(world.angle, -Math.PI / 2);
+  assert.equal(world.hat.rotation.y, 0);
+  assert.deepEqual([world.hat.scale.x, world.hat.scale.y, world.hat.scale.z], [1, 1, 1]);
+  assert.equal(world.hat.children.length, 0);
+  assert.equal(world.leftArm.rotation.z, 0);
+  assert.equal(world.arm.rotation.z, 0);
+  assert.equal(world.leftLeg.rotation.x, 0);
+  assert.equal(world.rightLeg.rotation.x, 0);
+
+  const slowWorld = stubWorld();
+  slowWorld.robot.position.set(3, 0, 2);
+  const fastWorld = Object.assign(stubWorld(), { speed: 3 });
+  fastWorld.robot.position.set(3, 0, 2);
+  const slowFrames = await countFrames(slowWorld, (w) => w.flyBack(target, () => false));
+  const fastFrames = await countFrames(fastWorld, (w) => w.flyBack(target, () => false));
+  assert.ok(fastFrames < slowFrames / 2, 'flyBack is faster at 3× speed');
+
+  const cancelWorld = stubWorld();
+  cancelWorld.robot.position.set(3, 0, 2);
+  let frames = 0;
+  let cancelled = false;
+  const res = await withFrames(60, () => cancelWorld.flyBack(target, () => cancelled), () => {
+    if (++frames === 4) cancelled = true;
+  });
+  assert.equal(res, false);
+  assert.equal(cancelWorld.hat.rotation.y, 0);
+  assert.deepEqual([cancelWorld.hat.scale.x, cancelWorld.hat.scale.y, cancelWorld.hat.scale.z], [1, 1, 1]);
+  assert.equal(cancelWorld.hat.children.length, 0);
+  assert.equal(cancelWorld.leftArm.rotation.z, 0);
+  assert.equal(cancelWorld.robot.rotation.x, 0);
 });

@@ -175,6 +175,7 @@ export class ElectricShockError extends Error {
 
 export function step(l, s, cmd) {
   if (!l.allowed.includes(cmd)) throw new Error('Ця команда недоступна в цьому рівні.');
+  if (s.pushedBox) s = { ...s, pushedBox: undefined };
 
   const k = key(s.x, s.z);
 
@@ -288,6 +289,7 @@ export function step(l, s, cmd) {
     }
 
     if (targetHasBox) {
+      if (cell.height !== curHeight) throw new Error('Інша висота. Використай стрибок.');
       const bx = x + dx;
       const bz = z + dz;
       const cellBeyond = l.cells[bz]?.[bx];

@@ -329,7 +329,8 @@ test('setupEffects provides procedural sound methods for every command', () => {
     'shock',
     'fall',
     'win',
-    'angry'
+    'angry',
+    'helicopter'
   ];
   for (const name of requiredSounds) {
     assert.equal(typeof fx[name], 'function', `Expected fx.${name} to be a function`);
@@ -413,6 +414,74 @@ test('fall sound plays scream glide, air whoosh and impact with audible frequenc
     // Verify offsets: now, now+.02, now+.05, now+.08, now+.82, now+.82
     const startTimes = tones.map((t) => Math.round((t.startTime - 10) * 100) / 100);
     assert.deepEqual(startTimes, [0, 0.02, 0.05, 0.08, 0.82, 0.82]);
+  } finally {
+    if (previousAudioContext === undefined) delete globalThis.AudioContext;
+    else globalThis.AudioContext = previousAudioContext;
+  }
+});
+
+test('helicopter sound plays rhythmic rotor blade pulses and turbine hum', () => {
+  const previousAudioContext = globalThis.AudioContext;
+  const tones = [];
+  const gainPeaks = [];
+  const allGainTargets = [];
+  globalThis.AudioContext = class {
+    currentTime = 5;
+    state = 'running';
+    destination = {};
+    createOscillator() {
+      const osc = {
+        type: 'sine',
+        frequency: {
+          setValueAtTime(freq, time) {
+            osc.startFreq = freq;
+            osc.startTime = time;
+          },
+          exponentialRampToValueAtTime(freq, time) {
+            osc.endFreq = freq;
+            osc.endTime = time;
+          }
+        },
+        connect() {},
+        start() {
+          tones.push(osc);
+        },
+        stop() {}
+      };
+      return osc;
+    }
+    createGain() {
+      let rampIndex = 0;
+      return {
+        gain: {
+          setValueAtTime() {},
+          exponentialRampToValueAtTime(val) {
+            if (val <= 0) {
+              throw new RangeError(`The float target value provided (${val}) is outside the positive range`);
+            }
+            allGainTargets.push(val);
+            if (rampIndex++ === 0) gainPeaks.push(val);
+          }
+        },
+        connect() {}
+      };
+    }
+  };
+  try {
+    setupEffects(null).helicopter(1000);
+    // ~15 blade steps * 2 tones + 3 turbine tones >= 30 tones
+    assert.ok(tones.length >= 30, `Expected >= 30 helicopter tones, got ${tones.length}`);
+    assert.equal(gainPeaks.length, tones.length);
+    for (const peak of gainPeaks) {
+      assert.ok(peak > 0.0001, `Peak gain target ${peak} must be strictly > 0.0001`);
+    }
+    for (const val of allGainTargets) {
+      assert.ok(val >= 0.0001, `Gain target ${val} must be >= 0.0001`);
+    }
+    for (const t of tones) {
+      assert.ok(t.startFreq >= 50, `Tone start frequency ${t.startFreq} must be >= 50 Hz`);
+      assert.ok(t.startTime >= 5, 'Tone start time must be >= audio currentTime');
+    }
   } finally {
     if (previousAudioContext === undefined) delete globalThis.AudioContext;
     else globalThis.AudioContext = previousAudioContext;
