@@ -37,8 +37,11 @@ function linkifyText(str) {
 const defaults = {
   footerDayText: 'Місто чекає на твою програму.',
   footerNightText: 'Ніч чекає на твою програму.',
-  developerText: ''
+  developerText: '',
+  cloudUrl: ''
 };
+
+const isCloudUrl = (url) => /^https:\/\/script\.google(usercontent)?\.com\/\S+$/.test(url);
 
 let currentSettings = { ...defaults };
 
@@ -119,17 +122,27 @@ async function loadSettings() {
   $('#field-day-text').value = currentSettings.footerDayText || '';
   $('#field-night-text').value = currentSettings.footerNightText || '';
   $('#field-dev-text').value = currentSettings.developerText || '';
+  $('#field-cloud-url').value = currentSettings.cloudUrl || '';
   updatePreview();
 }
 
 async function saveSettings() {
+  const cloudUrl = $('#field-cloud-url').value.trim();
+  const cloudOk = !cloudUrl || isCloudUrl(cloudUrl);
+  $('#cloud-url-error').hidden = cloudOk;
+  if (!cloudOk) {
+    showToast('Перевір адресу Google Таблиці.', true);
+    return;
+  }
+
   const btns = [$('#btn-save-settings'), $('#btn-save-settings-bottom')].filter(Boolean);
   btns.forEach(b => b.disabled = true);
 
   const newSettings = {
     footerDayText: $('#field-day-text').value.trim() || defaults.footerDayText,
     footerNightText: $('#field-night-text').value.trim() || defaults.footerNightText,
-    developerText: $('#field-dev-text').value.trim()
+    developerText: $('#field-dev-text').value.trim(),
+    cloudUrl
   };
 
   try {

@@ -6,6 +6,8 @@ import { setupMusic, setupEffects } from './music.js';
 import { renderHome, isCatUnlocked, getLevelSections, getLevelNumber, findNextLevel, findNewlyUnlockedSection } from './home.js';
 import { startGame } from './runner.js';
 import { getLang, setLang, t, getCategoryTitle, getLevelName, setIconLabel } from './i18n.mjs';
+import { createCloud } from './cloud.mjs';
+import { setupStudent } from './student.js';
 
 const app = document.querySelector('#app');
 setupMusic(document.querySelector('#music'));
@@ -146,6 +148,26 @@ let isLocal = isLocalHost();
 
 const programMemoryCache = new Map();
 
+// The tutor's Google Sheet: switched on once settings.json brings its URL (see apps-script/Code.gs).
+let cloud = null;
+let student = null;
+
+function setupCloud(url) {
+  cloud = createCloud({ url, onChange: () => student?.render() });
+  student = setupStudent({
+    cloud,
+    getLang: () => currentLang,
+    onLogin: (ids) => {
+      // Progress from another computer joins this one; nothing done here is lost.
+      setLevelsCompleted(ids, true);
+      route();
+    }
+  });
+  if (!cloud.status().enabled) return;
+  window.addEventListener('online', () => cloud.flush());
+  cloud.flush();
+}
+
 function getProgramStorageKey(levelId, isPreview) {
   return isPreview ? 'lamplighter-preview-program' : `lamplighter-program-${levelId}`;
 }
@@ -285,6 +307,7 @@ function updateHeaderTexts() {
       btn.setAttribute?.('aria-pressed', active ? 'true' : 'false');
     });
   }
+  student?.render();
   updateFooter(currentTheme);
 }
 
@@ -518,9 +541,12 @@ async function load() {
       gameSettings = { ...gameSettings, ...settings };
       updateFooter(currentTheme);
     }
+    setupCloud(gameSettings.cloudUrl);
     if (cats) currentCategories = cats;
     levels = loaded;
     route();
+    // Nobody signed in yet: ask to sign in or register (not while the admin previews a level).
+    if (!String(location.hash || '').includes('level=preview')) student?.prompt?.();
   } catch (e) {
     app.innerHTML = `<div class="panel"><h2>Не вдалося завантажити рівні</h2><p>${esc(e.message)}</p><p>Локально запусти <code>node server.cjs</code> та відкрий localhost:5173.</p></div>`;
   } finally {
@@ -624,6 +650,7 @@ function route() {
       isCompleted: (levelId) => completed().includes(levelId),
       toggleComplete,
       getNextLevel: (levelId) => findNextLevel(levels, currentCategories, completed(), levelId),
+      onAttempt: (attempt) => cloud?.record(attempt),
       effects
     });
   } else {

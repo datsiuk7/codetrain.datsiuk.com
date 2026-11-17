@@ -1188,3 +1188,134 @@ summary.category-header:focus-visible {
     animation: none;
   }
 }
+
+/* Student sign-in for the tutor's Google Sheet (student.js). */
+#student {
+  position: relative;
+  max-width: 180px;
+  color: var(--gold);
+  border-color: #4a4236;
+}
+#student .btn-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+#student[data-sync="ok"]::after,
+#student[data-sync="sending"]::after,
+#student[data-sync="warn"]::after {
+  content: '';
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #7fc48c;
+}
+#student[data-sync="sending"]::after { background: var(--gold); }
+#student[data-sync="warn"]::after { background: #e0806f; }
+
+.student-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(6, 12, 18, 0.72);
+  backdrop-filter: blur(3px);
+}
+.student-card {
+  width: 100%;
+  max-width: 380px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 24px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--panel);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+}
+.student-card h2 {
+  margin: 0;
+  font-size: 20px;
+}
+.student-card p {
+  margin: 0;
+  font-size: 13px;
+}
+.student-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.student-field input {
+  font-size: 15px;
+}
+.student-error {
+  min-height: 1.2em;
+  color: #efa29a;
+}
+.student-error:empty { min-height: 0; }
+.student-sync[data-sync="ok"] { color: #a3d2ac; }
+.student-sync[data-sync="warn"] { color: #e8c48a; }
+.student-actions {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 4px;
+}
+[data-theme="light"] .student-overlay { background: rgba(40, 52, 64, 0.45); }
+[data-theme="light"] .student-card { background: #fff; box-shadow: 0 20px 60px rgba(30, 40, 50, 0.25); }
+[data-theme="light"] #student { color: #9a6a1c; border-color: #e6d3ae; }
+
+@media (max-width: 740px) {
+  /* The name matters more than an icon: the sign-in button keeps its label on a row of its own. */
+  .header-audio #student {
+    order: 4;
+    flex: 1 1 100%;
+    max-width: none;
+    min-height: 40px;
+  }
+  .header-audio #student .btn-label { display: inline; }
+}
+
+.student-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 3px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+.student-tab {
+  flex: 1;
+  padding: 8px 10px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 12.5px;
+}
+.student-tab[aria-selected="true"] {
+  background: #2c3d49;
+  color: #fff;
+  font-weight: 600;
+}
+.student-card .student-hint {
+  font-size: 11.5px;
+  color: var(--muted);
+}
+[data-theme="light"] .student-tab[aria-selected="true"] { background: #f1e6cf; color: #4a3a1c; }
+.student-card .student-detail {
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.25);
+  font-family: ui-monospace, Consolas, monospace;
+  font-size: 11px;
+  overflow-wrap: anywhere;
+}

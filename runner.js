@@ -11,7 +11,8 @@ import {
   getLevelDescription,
   getSensors,
   ElectricShockError,
-  renderDifficultyStars
+  renderDifficultyStars,
+  blockCount
 } from './logic.mjs';
 import { World } from './scene.js';
 import { ProgramEditor } from './program.js';
@@ -72,6 +73,7 @@ export function startGame(container, l, preview, options) {
     isCompleted = null,
     toggleComplete = null,
     levelNumber = '',
+    onAttempt = null,
     effects
   } = options;
 
@@ -802,6 +804,25 @@ export function startGame(container, l, preview, options) {
     return world.cry(cancelled);
   }
 
+  // Every press of «Запустити» goes to the tutor's sheet once, failed and stopped runs too.
+  function reportAttempt(result, note = '') {
+    if (preview || typeof onAttempt !== 'function') return;
+    try {
+      const functions = editor.functions || [];
+      const code = codeMode && codeError
+        ? codeInput.value
+        : blocksToPython(editor.getProgram(), { theme: currentTheme }).code;
+      onAttempt({
+        levelId: l.id,
+        level: levelNumber || l.id,
+        result,
+        note: String(note || ''),
+        cmds: blockCount(editor.blocks) + functions.reduce((n, f) => n + blockCount(f.body || []), 0),
+        code
+      });
+    } catch {}
+  }
+
   $('#run').onclick = async () => {
     hideTrashConfirm();
     help.close();
@@ -811,6 +832,7 @@ export function startGame(container, l, preview, options) {
       applyCode();
       if (codeError) {
         status(codeError.message, 'error');
+        reportAttempt('invalid', codeError.message);
         return;
       }
     }
@@ -821,6 +843,7 @@ export function startGame(container, l, preview, options) {
       memory = createMemory();
     } catch (e) {
       status(e.message, 'error');
+      reportAttempt('invalid', e.message);
       if (!editor.blocks.length) {
         effects.angry?.();
         const runToken = ++token;
@@ -834,6 +857,21 @@ export function startGame(container, l, preview, options) {
       return;
     }
 
+    let reported = false;
+    const finish = (result, note) => {
+      if (reported) return;
+      reported = true;
+      reportAttempt(result, note);
+    };
+    try {
+      await execute(memory, finish);
+    } finally {
+      // Reset, «Назад» or another level cut the run short before it ended.
+      finish('stopped');
+    }
+  };
+
+  async function execute(memory, finish) {
     reset();
     const runToken = token;
     const visitedTiles = [`${state.x},${state.z}`];
@@ -892,6 +930,7 @@ export function startGame(container, l, preview, options) {
 
           if (won(l, state)) {
             solved = true;
+            finish('win');
             let unlockedSection = null;
             if (!preview) {
               unlockedSection = complete(l.id);
@@ -923,6 +962,7 @@ export function startGame(container, l, preview, options) {
           failed = true;
           settle();
           if (e.message.startsWith('Попереду немає плитки.')) {
+            finish('fell', e.message);
             effects.fall?.();
             await world.fall(state, () => token !== runToken);
             if (token !== runToken) return;
@@ -938,6 +978,7 @@ export function startGame(container, l, preview, options) {
             if (!(await backToStartAndCry(runToken, false))) return;
             status(t('statusRetry', lang), 'error');
           } else if (e instanceof ElectricShockError) {
+            finish('shock', e.message);
             effects.shock?.();
             status(e.message, 'error');
             if (!(await world.shocked(() => token !== runToken))) return;
@@ -950,6 +991,7 @@ export function startGame(container, l, preview, options) {
               status(t('statusShockReset', lang), 'error');
             }
           } else {
+            finish('error', e.message);
             effects.angry?.();
             status(e.message, 'error');
             world.highlightVisitedTiles?.(visitedTiles, 3000);
@@ -966,6 +1008,7 @@ export function startGame(container, l, preview, options) {
       }
     } catch (e) {
       failed = true;
+      finish('error', e.message);
       settle();
       status(e.message, 'error');
     }
@@ -975,6 +1018,7 @@ export function startGame(container, l, preview, options) {
         currentTheme === 'light'
           ? t('statusIncompleteDay', lang)
           : t('statusIncompleteNight', lang);
+      finish('incomplete', incompleteMsg);
       settle();
       status(incompleteMsg);
       editor.highlight(null);
@@ -993,7 +1037,7 @@ export function startGame(container, l, preview, options) {
       if (editor.locked) editor.lock(false);
       $('#run').disabled = false;
     }
-  };
+  }
 
   return () => {
     // Typed code that has not been parsed yet must reach the blocks before they are saved.

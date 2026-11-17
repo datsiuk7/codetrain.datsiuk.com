@@ -85,6 +85,19 @@
           <input type="text" id="field-dev-text" maxlength="200" placeholder="Розробник: Твоє ім'я або назва команди">
         </div>
 
+        <!-- Tutor's Google Sheet (apps-script/Code.gs) -->
+        <div class="field" style="background:#111d27;border:1px solid #233746;border-radius:14px;padding:16px 18px">
+          <label for="field-cloud-url" style="font-weight:650;font-size:13.5px;color:#f0f4f8;display:flex;align-items:center;gap:6px">
+            <span>📊 Google Таблиця для учнів</span>
+          </label>
+          <p style="margin:4px 0 10px;font-size:11.5px;color:#859dae">
+            URL веб-застосунку Apps Script (закінчується на <em>/exec</em>). Інструкція — у файлі <em>apps-script/Code.gs</em>.
+            Поки поле порожнє, кнопки входу учня в грі немає.
+          </p>
+          <input type="url" id="field-cloud-url" maxlength="300" placeholder="https://script.google.com/macros/s/…/exec">
+          <p id="cloud-url-error" style="margin:6px 0 0;font-size:11.5px;color:#efa29a" hidden>Адреса має починатися з https://script.google.com/</p>
+        </div>
+
         <!-- Live Preview Card -->
         <div class="preview-box" style="margin-top:10px;padding:18px;background:#101c25;border:1px solid #233544;border-radius:12px">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px">

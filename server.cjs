@@ -42,7 +42,8 @@ http.createServer(async(req,res)=>{
     const settings={
       footerDayText:typeof body.footerDayText==='string'?body.footerDayText.slice(0,200):'Місто чекає на твою програму.',
       footerNightText:typeof body.footerNightText==='string'?body.footerNightText.slice(0,200):'Ніч чекає на твою програму.',
-      developerText:typeof body.developerText==='string'?body.developerText.slice(0,200):''
+      developerText:typeof body.developerText==='string'?body.developerText.slice(0,200):'',
+      cloudUrl:typeof body.cloudUrl==='string'&&/^https:\/\/script\.google(usercontent)?\.com\/\S+$/.test(body.cloudUrl.trim())?body.cloudUrl.trim().slice(0,300):''
     };
     const operation=async()=>{
       await atomic(path.join(levelDir,'settings.json'),JSON.stringify(settings,null,2)+'\n');
