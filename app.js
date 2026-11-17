@@ -183,6 +183,9 @@ function saveProgram(levelId, isPreview, programData) {
   }
 }
 
+// The release version comes from this module's own cache-busting query (app.js?v0.7 in index.html).
+const APP_VERSION = new URL(import.meta.url).search.match(/^\?(v\d+\.\d+)$/)?.[1] || '';
+
 let gameSettings = {
   footerDayText: 'Місто чекає на твою програму.',
   footerNightText: 'Ніч чекає на твою програму.',
@@ -227,7 +230,8 @@ function updateFooter(th = currentTheme) {
   const dev = gameSettings.developerText
     ? `<div class="footer-developer">${linkifyText(gameSettings.developerText)}</div>`
     : '';
-  footer.innerHTML = `<div class="footer-quote">${linkifyText(quote)}</div>${dev}`;
+  const version = APP_VERSION ? `<div class="footer-version">${esc(APP_VERSION)}</div>` : '';
+  footer.innerHTML = `<div class="footer-quote">${linkifyText(quote)}</div>${dev}${version}`;
 }
 
 const themeBtn = document.querySelector('#theme');

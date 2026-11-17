@@ -41,6 +41,12 @@ footer {
 [data-theme="light"] .footer-developer {
   color: #4a6374;
 }
+.footer-version {
+  font-size: 10px;
+  letter-spacing: 0.6px;
+  opacity: 0.7;
+  font-variant-numeric: tabular-nums;
+}
 .footer-developer a,
 .footer-quote a {
   color: var(--gold);
