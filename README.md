@@ -38,7 +38,7 @@ node server.cjs
 
 ## GitHub Pages
 
-Сайт публікує workflow [.github/workflows/pages.yml](.github/workflows/pages.yml) після кожного push у `main`. Спершу він запускає тести, а потім копіює на сайт лише потрібні файли: кореневі `index.html`, `*.js`, `*.mjs`, `*.css`, `CNAME`, `robots.txt`, `sitemap.xml`, `og-image.png` і папки `admin`, `levels`, `vendor`. Тести, `scratch`, `server.cjs` та документація на сайт не потрапляють. Якщо додаєш нову папку чи тип файлів, потрібні грі, допиши їх у крок «Collect site files». У налаштуваннях репозиторію (Settings → Pages → Source) має бути вибрано «GitHub Actions».
+Сайт публікує workflow [.github/workflows/pages.yml](.github/workflows/pages.yml) після кожного push у `main`. Спершу він запускає тести, а потім копіює на сайт лише потрібні файли: кореневі `index.html`, `*.js`, `*.mjs`, `*.css`, `*.png`, `*.svg`, `favicon.ico`, `site.webmanifest`, `CNAME`, `robots.txt`, `sitemap.xml` і папки `admin`, `levels`, `vendor`. Тести, `scratch`, `server.cjs` та документація на сайт не потрапляють. Якщо додаєш нову папку чи тип файлів, потрібні грі, допиши їх у крок «Collect site files». У налаштуваннях репозиторію (Settings → Pages → Source) має бути вибрано «GitHub Actions».
 
 Гра працює статично з відносними URL, у тому числі в підпапці репозиторію. Запис через адмінку потребує локального Node.js-сервера; GitHub Pages його не запускає. На Pages доступні редагування, тестування й експорт JSON, але не запис на сервер. Пряме відкриття index.html через file:// не підтримується через ES-модулі.
 

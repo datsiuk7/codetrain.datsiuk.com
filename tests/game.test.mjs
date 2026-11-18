@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
-import * as THREE from '../vendor/three.module.js';
+import * as THREE from '../vendor/three.module.min.js';
 import {validateLevel,initialState,step,won,compile,blockCount} from '../logic.mjs';
 import {World} from '../scene.js';
 const load=async id=>JSON.parse(await readFile(new URL(`./fixtures/${id}.json`,import.meta.url),'utf8'));

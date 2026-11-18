@@ -11,7 +11,7 @@
 
 ### Головні принципи проєкту:
 1. **Zero-Dependency на фронтенді**: Жодних npm-пакетів для збірки, Webpack, Vite, Tailwind чи Babel. Лише чистий Vanilla JavaScript (ES-модулі), нативний Vanilla CSS та ванільний HTML5.
-2. **Three.js у vendor**: 3D-рушій `three.module.js` (версія 0.180.0) локально збережений у `/vendor/`. Жодних CDN-залежностей під час роботи.
+2. **Three.js у vendor**: 3D-рушій `three.module.min.js` (версія 0.180.0, мініфікована збірка) локально збережений у `/vendor/`. Жодних CDN-залежностей під час роботи.
 3. **Процедурне аудіо**: Усі звуки та фонова музика синтезуються в реальному часі через нативний Web Audio API ([`music.js`](music.js)) без зовнішніх MP3/WAV файлів.
 4. **Українська мова**: Усі інтерфейсні тексти, підказки, повідомлення про помилки, описи рівнів та датчиків — виключно природною українською мовою.
 
@@ -34,7 +34,7 @@
   ```
   *(Обов'язково запускати після будь-яких змін! Усі тести мають проходити на 100%). Потрібен Node.js 22.3+.*
 
-- **Публікація сайту (GitHub Pages)**: workflow [`.github/workflows/pages.yml`](.github/workflows/pages.yml) після push у `main` запускає тести й публікує лише кореневі `index.html`, `*.js`, `*.mjs`, `*.css`, `CNAME`, `robots.txt`, `sitemap.xml`, `og-image.png` та папки `admin/`, `levels/`, `vendor/`. `tests/`, `scratch/`, `server.cjs`, `*.md` на сайт не потрапляють. Нові файли чи папки, потрібні грі в браузері, додавай у крок «Collect site files».
+- **Публікація сайту (GitHub Pages)**: workflow [`.github/workflows/pages.yml`](.github/workflows/pages.yml) після push у `main` запускає тести й публікує лише кореневі `index.html`, `*.js`, `*.mjs`, `*.css`, `*.png`, `*.svg`, `favicon.ico`, `site.webmanifest`, `CNAME`, `robots.txt`, `sitemap.xml` та папки `admin/`, `levels/`, `vendor/`. `tests/`, `scratch/`, `server.cjs`, `*.md` на сайт не потрапляють. Нові файли чи папки, потрібні грі в браузері, додавай у крок «Collect site files».
 
 ---
 
@@ -80,7 +80,7 @@
 ├── tests/                     # Повний набір автоматизованих тестів на чистому node:test
 ├── scratch/                   # Допоміжні скрипти генерації рівнів і ручних перевірок (не публікуються)
 ├── .github/workflows/pages.yml# Публікація сайту на GitHub Pages
-└── vendor/                    # Three.js ES-модулі (three.module.js, three.core.js)
+└── vendor/                    # Three.js ES-модулі (three.module.min.js, three.core.min.js)
 ```
 
 ---

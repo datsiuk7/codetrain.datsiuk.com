@@ -777,9 +777,22 @@ test('scripts and stylesheets in index.html and admin pages share one version qu
     assert.equal(importMap[spec], `${spec}?${[...versions][0]}`, `import map must map ${spec} to the current version`);
   }
 
-  // Preloading every module avoids a slow chain of import round trips.
+  // The game screen is imported on demand, still through the import map.
+  assert.match(fs.readFileSync('app.js', 'utf8'), /import\('\.\/runner\.js'\)/, 'app.js must load runner.js on demand');
+  assert.equal(importMap['./runner.js'], `./runner.js?${[...versions][0]}`, 'import map must version runner.js');
+
+  // Preloading every home page module avoids a slow chain of import round trips;
+  // the game screen and Three.js stay out of the preloads so the home page shows up sooner.
   const preloads = new Set([...index.matchAll(/<link rel="modulepreload" href="([^"]+)"/g)].map((m) => `./${m[1]}`));
-  for (const url of Object.values(importMap)) assert.ok(preloads.has(url), `index.html must modulepreload ${url}`);
+  const staticImports = (file) => [...fs.readFileSync(file, 'utf8').matchAll(/(?:from|import)\s*['"](\.\/[^'"]+)['"]/g)].map((m) => m[1]);
+  const homeModules = new Set(['./app.js']);
+  for (const spec of homeModules) for (const dep of staticImports(spec)) homeModules.add(dep);
+  for (const spec of homeModules) assert.ok(preloads.has(importMap[spec] || `${spec}?${[...versions][0]}`), `index.html must modulepreload ${spec}`);
+  for (const spec of ['./runner.js', './scene.js']) {
+    assert.ok(!homeModules.has(spec), `${spec} must not be a static import of the home page`);
+    assert.ok(!preloads.has(importMap[spec]), `index.html must not modulepreload ${spec}`);
+  }
+  assert.ok(![...preloads].some((url) => url.includes('vendor/three')), 'index.html must not modulepreload Three.js');
 });
 
 

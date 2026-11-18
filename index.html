@@ -55,7 +55,10 @@
     ]
   }
   </script>
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath fill='%23edc17c' d='M16 2l3.2 10.8L30 16l-10.8 3.2L16 30l-3.2-10.8L2 16l10.8-3.2z'/%3E%3C/svg%3E">
+  <link rel="icon" href="favicon.ico" sizes="48x48">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="manifest" href="site.webmanifest">
   <!-- Apply the saved day/night theme before anything paints. -->
   <script>try{if(localStorage.getItem('lamplighter-theme')==='light')document.documentElement.setAttribute('data-theme','light')}catch(e){}</script>
   <link rel="stylesheet" href="style.css?v0.7">
@@ -87,9 +90,9 @@
     }
   }
   </script>
-  <!-- Fetch every module at once instead of discovering them one import at a time. -->
+  <!-- Fetch the home page modules at once instead of discovering them one import at a time.
+       The game screen (runner.js, Three.js) loads later, see loadRunner() in app.js. -->
   <link rel="modulepreload" href="app.js?v0.7">
-  <link rel="modulepreload" href="game-hints.js?v0.7">
   <link rel="modulepreload" href="hint-data.mjs?v0.7">
   <link rel="modulepreload" href="cloud.mjs?v0.7">
   <link rel="modulepreload" href="home.js?v0.7">
@@ -99,16 +102,7 @@
   <link rel="modulepreload" href="logic-world.mjs?v0.7">
   <link rel="modulepreload" href="logic.mjs?v0.7">
   <link rel="modulepreload" href="music.js?v0.7">
-  <link rel="modulepreload" href="program-blocks.js?v0.7">
-  <link rel="modulepreload" href="program-dnd.js?v0.7">
-  <link rel="modulepreload" href="program-icons.js?v0.7">
-  <link rel="modulepreload" href="program-python.mjs?v0.7">
-  <link rel="modulepreload" href="program.js?v0.7">
-  <link rel="modulepreload" href="runner.js?v0.7">
-  <link rel="modulepreload" href="scene.js?v0.7">
   <link rel="modulepreload" href="student.js?v0.7">
-  <link rel="modulepreload" href="vendor/three.module.js">
-  <link rel="modulepreload" href="vendor/three.core.js">
 </head>
 <body>
   <header>

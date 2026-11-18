@@ -3,7 +3,7 @@ const fs=require('node:fs/promises');
 const path=require('node:path');
 const root=__dirname,levelDir=path.join(root,'levels');
 const port=Number(process.env.PORT)||5173;
-const types={'.html':'text/html; charset=utf-8','.css':'text/css; charset=utf-8','.js':'text/javascript; charset=utf-8','.mjs':'text/javascript; charset=utf-8','.json':'application/json; charset=utf-8','.txt':'text/plain; charset=utf-8'};
+const types={'.html':'text/html; charset=utf-8','.css':'text/css; charset=utf-8','.js':'text/javascript; charset=utf-8','.mjs':'text/javascript; charset=utf-8','.json':'application/json; charset=utf-8','.txt':'text/plain; charset=utf-8','.xml':'application/xml; charset=utf-8','.png':'image/png','.svg':'image/svg+xml','.ico':'image/x-icon','.webmanifest':'application/manifest+json; charset=utf-8'};
 let writes=Promise.resolve();
 const json=(res,status,data)=>{res.writeHead(status,{'Content-Type':types['.json'],'Cache-Control':'no-store'});res.end(JSON.stringify(data))};
 async function atomic(file,data){const temp=file+'.tmp';await fs.writeFile(temp,data,'utf8');await fs.rename(temp,file)}
@@ -140,7 +140,7 @@ http.createServer(async(req,res)=>{
    if(pathname==='/admin/levels'){res.writeHead(302,{Location:'/admin/levels.html'}).end();return}
   if(pathname.endsWith('/'))pathname+='index.html';
   const file=path.resolve(root,'.'+pathname);const relative=path.relative(root,file);
-    const allowed=/^[a-zA-Z0-9][a-zA-Z0-9._-]*\.(html|js|mjs|css|json)$/.test(relative)||/^(levels|vendor|admin)[\\/][a-zA-Z0-9._-]+$/.test(relative);
+    const allowed=/^[a-zA-Z0-9][a-zA-Z0-9._-]*\.(html|js|mjs|css|json|txt|xml|png|svg|ico|webmanifest)$/.test(relative)||/^(levels|vendor|admin)[\\/][a-zA-Z0-9._-]+$/.test(relative);
   if(!file.startsWith(root+path.sep)||!allowed||!types[path.extname(file)]){res.writeHead(404).end('Not found');return}
   let data;try{data=await fs.readFile(file)}catch{res.writeHead(404).end('Not found');return}
   res.writeHead(200,{'Content-Type':types[path.extname(file)],'Cache-Control':'no-cache','X-Content-Type-Options':'nosniff'});res.end(req.method==='HEAD'?undefined:data);

@@ -1,4 +1,4 @@
-import * as THREE from './vendor/three.module.js';
+import * as THREE from './vendor/three.module.min.js';
 import {key} from './logic.mjs';
 export class World {
   constructor(host, level, state, theme = (state?.theme || 'dark')) {

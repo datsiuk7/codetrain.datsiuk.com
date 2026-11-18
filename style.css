@@ -287,6 +287,11 @@ footer {
   z-index: 1;
 }
 
+/* Until the game renders, keep the footer below the screen so it does not jump down (layout shift). */
+#app:has(> noscript) {
+  min-height: 100vh;
+}
+
 .level-card,
 .card-art,
 .hero,

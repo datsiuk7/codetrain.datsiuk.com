@@ -32,8 +32,27 @@ jobs:
       - name: Collect site files
         run: |
           mkdir _site
-          cp index.html *.js *.mjs *.css CNAME robots.txt sitemap.xml og-image.png _site/
+          cp index.html *.js *.mjs *.css *.png *.svg favicon.ico site.webmanifest CNAME robots.txt sitemap.xml _site/
           cp -r admin levels vendor _site/
+
+      # One render-blocking stylesheet instead of four: same files, same order, same cascade.
+      # Locally index.html keeps the separate files; the admin pages still use them on the site too.
+      - name: Bundle styles
+        run: |
+          node -e "
+            const fs = require('fs');
+            const files = ['style.css', 'home.css', 'blocks.css', 'game.css'];
+            let html = fs.readFileSync('_site/index.html', 'utf8');
+            const version = html.match(/href=.style.css.(v[0-9.]+)/)[1];
+            const tag = (f) => '  <link rel=\"stylesheet\" href=\"' + f + '?' + version + '\">\n';
+            const missing = files.filter((f) => !html.includes(tag(f)));
+            if (missing.length) throw new Error('index.html stylesheet links changed (' + missing + '): update the Bundle styles step');
+            fs.writeFileSync('_site/site.css', files.map((f) => '/* ' + f + ' */\n' + fs.readFileSync(f, 'utf8')).join('\n'));
+            html = html.replace(tag(files[0]), tag('site.css'));
+            for (const f of files.slice(1)) html = html.replace(tag(f), '');
+            fs.writeFileSync('_site/index.html', html);
+            console.log('Bundled ' + files.length + ' stylesheets into site.css ' + version);
+          "
 
       # One request for all levels instead of one per level (the game falls back to index.json locally).
       - name: Bundle levels

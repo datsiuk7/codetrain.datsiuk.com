@@ -158,7 +158,11 @@ export function setupStudent({ cloud, getLang, onLogin = () => {} }) {
     if (overlay || typeof document === 'undefined') return;
     overlay = document.createElement('div');
     overlay.className = 'student-overlay';
-    overlay.innerHTML = '<form class="student-card" role="dialog" aria-modal="true" aria-labelledby="student-title"></form>';
+    // The dialog role sits on the backdrop: a <form> may not take role="dialog".
+    overlay.setAttribute('role', 'dialog');
+    overlay.setAttribute('aria-modal', 'true');
+    overlay.setAttribute('aria-labelledby', 'student-title');
+    overlay.innerHTML = '<form class="student-card"></form>';
     overlay.onclick = (e) => { if (e.target === overlay) later(); };
     overlay.querySelector('.student-card').onsubmit = submit;
     document.body.append(overlay);

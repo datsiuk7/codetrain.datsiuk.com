@@ -4,7 +4,6 @@ import {
 } from './logic.mjs';
 import { setupMusic, setupEffects } from './music.js';
 import { renderHome, isCatUnlocked, getLevelSections, getLevelNumber, findNextLevel, findNewlyUnlockedSection } from './home.js';
-import { startGame } from './runner.js';
 import { getLang, setLang, t, getCategoryTitle, getLevelName, setIconLabel } from './i18n.mjs';
 import { createCloud } from './cloud.mjs';
 import { setupStudent } from './student.js';
@@ -140,6 +139,39 @@ export function isLocalHost(loc = typeof location !== 'undefined' ? location : n
 }
 
 let cleanup = () => {};
+// The game screen pulls in Three.js; the home page does not need it, so it loads on demand.
+let runner = null;
+let runnerLoading = null;
+function loadRunner() {
+  runnerLoading ||= import('./runner.js').then((m) => (runner = m));
+  return runnerLoading;
+}
+function startGame(...args) {
+  if (runner) return runner.startGame(...args);
+  let stopped = false;
+  let stop = () => {};
+  app.innerHTML = `<div class="panel" style="text-align:center;padding:40px">${esc(t('levelLoading', currentLang))}</div>`;
+  loadRunner().then(
+    (m) => {
+      if (!stopped) stop = m.startGame(...args);
+    },
+    () => {
+      runnerLoading = null;
+      if (!stopped) app.innerHTML = `<div class="panel"><h2>${esc(t('levelLoadFailed', currentLang))}</h2></div>`;
+    }
+  );
+  return () => {
+    stopped = true;
+    stop();
+  };
+}
+// Fetch the game screen in the background once the home page is idle, so opening a level feels instant.
+function prefetchRunner() {
+  const go = () => loadRunner().catch(() => {});
+  const idle = () => (typeof requestIdleCallback === 'function' ? requestIdleCallback(go, { timeout: 5000 }) : setTimeout(go, 2000));
+  if (typeof document === 'undefined' || document.readyState === 'complete') idle();
+  else window.addEventListener?.('load', idle, { once: true });
+}
 let levels = [];
 let currentTheme = localStorage.getItem('lamplighter-theme') || 'dark';
 let currentLang = getLang();
@@ -544,7 +576,10 @@ async function load() {
     setupCloud(gameSettings.cloudUrl);
     if (cats) currentCategories = cats;
     levels = loaded;
+    // Opening a level straight from a link: wait for the game screen before the loading screen goes away.
+    if (new URLSearchParams(location.hash.slice(1)).get('level')) await loadRunner().catch(() => {});
     route();
+    prefetchRunner();
     // Nobody signed in yet: ask to sign in or register (not while the admin previews a level).
     if (!String(location.hash || '').includes('level=preview')) student?.prompt?.();
   } catch (e) {

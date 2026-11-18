@@ -178,7 +178,6 @@ button.completed-badge.local-complete-toggle.is-done:hover {
   border-radius: 12px;
   padding: 14px 20px;
   box-shadow: none;
-  opacity: 0.75;
 }
 
 .category-locked-simple {
@@ -186,7 +185,8 @@ button.completed-badge.local-complete-toggle.is-done:hover {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  color: #6d8091;
+  /* Quiet but readable: at least 4.5:1 against the locked card (WCAG AA). */
+  color: #8191a0;
   font-size: 13px;
   font-weight: 500;
   letter-spacing: 0.2px;
@@ -205,7 +205,7 @@ button.completed-badge.local-complete-toggle.is-done:hover {
 }
 
 .category-locked-simple .locked-hint {
-  color: #5d7080;
+  color: #7d8f9e;
   font-size: 12.5px;
 }
 
@@ -697,15 +697,14 @@ summary.category-header:focus-visible {
   border-radius: 12px;
   padding: 14px 20px;
   box-shadow: none;
-  opacity: 0.9;
 }
 
 [data-theme="light"] .category-locked-simple {
-  color: #7b6d54;
+  color: #6b5d44;
 }
 
 [data-theme="light"] .category-locked-simple .locked-hint {
-  color: #8c7d62;
+  color: #74664c;
 }
 
 [data-theme="light"] .category-locked-simple .locked-icon {
