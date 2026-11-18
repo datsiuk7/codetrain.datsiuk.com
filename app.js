@@ -185,7 +185,15 @@ let cloud = null;
 let student = null;
 
 function setupCloud(url) {
-  cloud = createCloud({ url, onChange: () => student?.render() });
+  cloud = createCloud({
+    url,
+    onChange: () => student?.render(),
+    // Levels passed in this browser, also before signing in, go to the sheet's «Пройдено».
+    getDone: () => {
+      const sections = getLevelSections(levels, currentCategories);
+      return completed().map((id) => ({ id, level: getLevelNumber(sections, id) }));
+    }
+  });
   student = setupStudent({
     cloud,
     getLang: () => currentLang,
@@ -198,6 +206,17 @@ function setupCloud(url) {
   if (!cloud.status().enabled) return;
   window.addEventListener('online', () => cloud.flush());
   cloud.flush();
+}
+
+// A student already signed in: swap passed levels with the sheet in the background.
+async function syncCompleted() {
+  const ids = await cloud?.sync?.();
+  if (!ids) return;
+  const before = new Set(completed());
+  if (ids.every((id) => before.has(id))) return;
+  setLevelsCompleted(ids, true);
+  // Redraw the map only; a level being played is left alone.
+  if (!new URLSearchParams(location.hash.slice(1)).get('level')) route();
 }
 
 function getProgramStorageKey(levelId, isPreview) {
@@ -580,6 +599,7 @@ async function load() {
     if (new URLSearchParams(location.hash.slice(1)).get('level')) await loadRunner().catch(() => {});
     route();
     prefetchRunner();
+    syncCompleted();
     // Nobody signed in yet: ask to sign in or register (not while the admin previews a level).
     if (!String(location.hash || '').includes('level=preview')) student?.prompt?.();
   } catch (e) {

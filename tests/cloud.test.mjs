@@ -52,7 +52,7 @@ test('runs are recorded only for a signed-in student and sent as text/plain', as
   const login = await cloud.login('  марко ', '0123');
   assert.deepEqual(login, { ok: true, name: 'Марко', completed: ['a', 'b'] });
   assert.equal(server.requests[0].init.headers['Content-Type'], 'text/plain;charset=utf-8');
-  assert.deepEqual(server.requests[0].body, { action: 'login', name: 'марко', pin: '0123' });
+  assert.deepEqual(server.requests[0].body, { action: 'login', name: 'марко', pin: '0123', done: [] });
   assert.deepEqual(cloud.status().student, { name: 'Марко', pin: '0123' });
 
   server.reply = { ok: true };
@@ -129,6 +129,31 @@ test('when the sheet script breaks, the student sees its message instead of a ba
   await cloud.flush();
   assert.equal(cloud.status().state, 'ok');
   assert.equal(cloud.status().error, '');
+});
+
+test('levels passed in this browser, even before signing in, go to the sheet on sign-in and on each visit', async () => {
+  const server = fakeServer();
+  let local = [{ id: 'a', level: '1.1' }];
+  const cloud = createCloud({ url: URL_OK, storage: memoryStorage(), fetchFn: server.fetch, getDone: () => local });
+  assert.equal(await cloud.sync(), null, 'nobody signed in: nothing to sync');
+  assert.equal(server.requests.length, 0);
+
+  server.reply = { ok: true, name: 'Іра', completed: ['a', 'z'] };
+  assert.deepEqual((await cloud.register('Іра', '4444')).completed, ['a', 'z']);
+  assert.deepEqual(server.requests.at(-1).body.done, [{ id: 'a', level: '1.1' }]);
+
+  // Next visit: whatever was passed meanwhile is sent, and progress from other computers comes back.
+  local = [{ id: 'a', level: '1.1' }, { id: 'b', level: '1.2' }];
+  server.reply = { ok: true, name: 'Іра', completed: ['a', 'b', 'z'] };
+  assert.deepEqual(await cloud.sync(), ['a', 'b', 'z']);
+  assert.deepEqual(server.requests.at(-1).body, { action: 'login', name: 'Іра', pin: '4444', done: local });
+
+  server.fail = true;
+  assert.equal(await cloud.sync(), null, 'offline: the game just carries on');
+  server.fail = false;
+  server.reply = { ok: false, error: 'auth' };
+  assert.equal(await cloud.sync(), null);
+  assert.equal(cloud.status().state, 'auth', 'a PIN changed in the sheet shows up right away');
 });
 
 test('a name or PIN changed in the sheet stops sending until the next sign-in', async () => {

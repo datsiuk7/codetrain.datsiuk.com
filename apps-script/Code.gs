@@ -1,7 +1,9 @@
 /**
  * «Ліхтарник» → Google Таблиця репетитора.
  *
- * «Учні» — твої учні: Учень | PIN | Мій ☑ | 14.11.2026 | 17.11.2026 | …
+ * «Учні» — твої учні: Учень | PIN | Мій ☑ | Пройдено | 14.11.2026 | 17.11.2026 | …
+ *   «Пройдено» — усі рівні, які учень колись пройшов («1.1, 1.2, 1.4»). Звідси гра бере прогрес,
+ *   коли учень входить з іншого комп'ютера. Поруч прихований стовпець «ID пройдених» — те саме для гри.
  *   У клітинці дня кожен рівень, який учень запускав того дня, окремим рядком:
  *   «1.4 — 3 спроби ✓» або «1.5 — 5 спроб ✗ впав».
  * «Журнал» — один рядок на кожне натискання «Запустити» твоїх учнів (з кодом програми).
@@ -33,7 +35,10 @@ LOG_OF[MINE] = MINE_LOG;
 LOG_OF[OTHERS] = OTHERS_LOG;
 
 const CHECK_COL = 3;     // «Мій» ☑
-const FIRST_DAY_COL = 4; // перша дата
+const DONE_COL = 4;      // «Пройдено»: номери рівнів для тебе
+const IDS_COL = 5;       // «ID пройдених» (прихований): ті самі рівні для гри
+const FIRST_DAY_COL = 6; // перша дата
+const DONE_HEADERS = ['Пройдено', 'ID пройдених'];
 const LOG_HEADERS = ['Час', 'Учень', 'Рівень', 'ID рівня', 'Результат', 'Повідомлення', 'Команд', 'Програма', 'ID запуску'];
 const WIN = '✓';
 const RESULTS = {
@@ -46,6 +51,7 @@ const RESULTS = {
   stopped: 'зупинив'
 };
 const DAY = 'dd.MM.yyyy';
+const RECENT_RUNS = 3000; // скільки останніх рядків журналу перечитувати для клітинки дня
 
 function setup() {
   const ss = SpreadsheetApp.getActive();
@@ -65,13 +71,46 @@ function setupStudents(ss, name, index, mine) {
     const rows = lastRow(sheet) - 1;
     if (rows > 0) sheet.getRange(2, CHECK_COL, rows, 1).insertCheckboxes().setValue(mine);
   }
-  sheet.getRange(1, 1, 1, CHECK_COL).setFontWeight('bold');
+  ensureDoneColumns(ss, sheet);
+  sheet.getRange(1, 1, 1, DONE_COL).setFontWeight('bold');
   sheet.getRange('B:B').setNumberFormat('@'); // PIN як текст: нулі на початку не зникають
   sheet.setFrozenRows(1);
-  sheet.setFrozenColumns(CHECK_COL);
+  sheet.setFrozenColumns(DONE_COL);
   sheet.setColumnWidth(1, 160);
   sheet.setColumnWidth(2, 70);
   sheet.setColumnWidth(CHECK_COL, 50);
+  sheet.setColumnWidth(DONE_COL, 160);
+  sheet.hideColumns(IDS_COL);
+}
+
+// Таблиця з попередньої версії: «Пройдено» ще немає — вставляємо перед датами і заповнюємо з журналу
+// (один раз; далі стовпець оновлюється з кожною перемогою, і журнал для цього більше не читається).
+function ensureDoneColumns(ss, sheet) {
+  if (sheet.getRange(1, DONE_COL).getDisplayValue() === DONE_HEADERS[0]) return;
+  if (sheet.getLastColumn() >= DONE_COL) {
+    sheet.insertColumnBefore(DONE_COL);
+    sheet.insertColumnBefore(DONE_COL);
+    // Нові стовпці беруть оформлення сусіднього стовпця дня (заливку, перенесення) — прибираємо.
+    sheet.getRange(1, DONE_COL, sheet.getMaxRows(), 2).clearFormat().clearDataValidations();
+  }
+  sheet.getRange(1, DONE_COL, 1, 2).setValues([DONE_HEADERS]).setFontWeight('bold');
+  sheet.hideColumns(IDS_COL);
+  const logName = LOG_OF[sheet.getName()];
+  const runs = ss.getSheetByName(logName) ? logRows(ss, logName, 5) : [];
+  studentRows(ss, sheet.getName()).forEach(function (r, i) {
+    const name = norm(r[0]);
+    if (!name) return;
+    const wins = runs.filter(function (run) { return norm(run[1]) === name && run[4] === WIN && run[3]; })
+      .map(function (run) { return { id: String(run[3]), level: String(run[2]) }; });
+    markCompleted(sheet, i + 2, wins);
+  });
+}
+
+// Код оновили, а setup ще не запускали: переробляємо таблицю тут, перш ніж щось читати чи писати.
+function ensureLayout(ss, sheetName) {
+  const sheet = ss.getSheetByName(sheetName);
+  if (sheet.getRange(1, DONE_COL).getDisplayValue() === DONE_HEADERS[0]) return;
+  withLock(function () { ensureDoneColumns(ss, sheet); });
 }
 
 function setupLog(ss, name) {
@@ -150,12 +189,27 @@ function handle(e) {
     return out({ ok: false, error: 'bad-request' });
   }
   const ss = SpreadsheetApp.getActive();
-  if (req.action === 'register') return out(withLock(function () { return register(ss, req.name, req.pin); }));
+  if (req.action === 'register') {
+    return out(withLock(function () { return register(ss, req.name, req.pin, cleanDone(req.done)); }));
+  }
 
   const student = findStudent(ss, req.name, req.pin);
   if (!student) return out({ ok: false, error: 'auth' });
 
+  ensureLayout(ss, student.sheet);
   if (req.action === 'login') {
+    // Гра надсилає рівні, пройдені в цьому браузері (зокрема ще до реєстрації): додаємо до «Пройдено».
+    const done = cleanDone(req.done);
+    if (done.length) {
+      const saved = withLock(function () {
+        const current = findStudent(ss, req.name, req.pin);
+        if (!current) return { ok: false, error: 'auth' };
+        markCompleted(ss.getSheetByName(current.sheet), current.row, done);
+        return { ok: true, student: current };
+      });
+      if (!saved.ok) return out(saved);
+      return out({ ok: true, name: saved.student.name, completed: completedLevels(ss, saved.student) });
+    }
     return out({ ok: true, name: student.name, completed: completedLevels(ss, student) });
   }
   if (req.action === 'log') {
@@ -232,7 +286,7 @@ function findStudent(ss, name, pin) {
 }
 
 // Будь-хто може зареєструватися: новий учень потрапляє в «Інші учні».
-function register(ss, name, pin) {
+function register(ss, name, pin, done) {
   const cleanName = String(name == null ? '' : name).trim().replace(/\s+/g, ' ');
   const cleanPin = String(pin == null ? '' : pin).trim();
   if (!cleanName || cleanName.length > 60) return { ok: false, error: 'name' };
@@ -247,21 +301,70 @@ function register(ss, name, pin) {
   if (row > sheet.getMaxRows()) sheet.insertRowsAfter(sheet.getMaxRows(), 50);
   sheet.getRange(row, 1, 1, 2).setNumberFormat('@').setValues([[cleanName, cleanPin]]);
   sheet.getRange(row, CHECK_COL).insertCheckboxes().setValue(false);
-  return { ok: true, name: cleanName, completed: [] };
+  ensureDoneColumns(ss, sheet);
+  markCompleted(sheet, row, done || []);
+  return { ok: true, name: cleanName, completed: (done || []).map(function (d) { return d.id; }) };
 }
 
-function logRows(ss, logName) {
+// [{id, level}] з гри: лише рядки розумної довжини, без повторів.
+function cleanDone(list) {
+  if (!Array.isArray(list)) return [];
+  const seen = {};
+  const result = [];
+  list.slice(0, 1000).forEach(function (d) {
+    const id = String(d && d.id || '').trim().slice(0, 100);
+    if (!id || id.indexOf(',') >= 0 || seen[id]) return;
+    seen[id] = true;
+    result.push({ id: id, level: String(d.level || '').trim().replace(/,/g, '').slice(0, 20) });
+  });
+  return result;
+}
+
+// Рядки журналу без заголовка. cols — скільки стовпців читати (5 = до «Результат», без коду);
+// tail — лише стільки останніх рядків.
+function logRows(ss, logName, cols, tail) {
   const log = ss.getSheetByName(logName);
   const last = lastRow(log);
-  return last > 1 ? read(log.getRange(2, 1, last - 1, LOG_HEADERS.length), false) : [];
+  if (last < 2) return [];
+  const count = tail ? Math.min(tail, last - 1) : last - 1;
+  return read(log.getRange(last - count + 1, 1, count, cols || LOG_HEADERS.length), false);
 }
 
+function splitList(s) {
+  return String(s == null ? '' : s).split(',').map(function (x) { return x.trim(); }).filter(Boolean);
+}
+
+// Прогрес для гри — одна клітинка учня; журнал не читається.
 function completedLevels(ss, student) {
-  const ids = {};
-  logRows(ss, LOG_OF[student.sheet]).forEach(function (r) {
-    if (norm(r[1]) === norm(student.name) && r[4] === WIN && r[3]) ids[r[3]] = true;
+  return splitList(ss.getSheetByName(student.sheet).getRange(student.row, IDS_COL).getDisplayValue());
+}
+
+// Додає учневі пройдені рівні: номери в «Пройдено» (по порядку), ID — у прихований стовпець.
+function markCompleted(sheet, row, wins) {
+  if (!wins.length) return;
+  const cells = read(sheet.getRange(row, DONE_COL, 1, 2), true)[0];
+  const levels = splitList(cells[0]);
+  const ids = splitList(cells[1]);
+  let changed = false;
+  wins.forEach(function (w) {
+    if (w.id && ids.indexOf(w.id) < 0) { ids.push(w.id); changed = true; }
+    if (w.level && levels.indexOf(w.level) < 0) { levels.push(w.level); changed = true; }
   });
-  return Object.keys(ids);
+  if (!changed) return;
+  levels.sort(byLevelNumber);
+  sheet.getRange(row, DONE_COL, 1, 2).setNumberFormat('@').setValues([[levels.join(', '), ids.join(', ')]])
+    .setWrapStrategy(SpreadsheetApp.WrapStrategy.CLIP);
+}
+
+// «1.2» перед «1.10».
+function byLevelNumber(a, b) {
+  const x = a.split('.').map(Number), y = b.split('.').map(Number);
+  for (let i = 0; i < Math.max(x.length, y.length); i++) {
+    const d = (x[i] || 0) - (y[i] || 0);
+    if (isNaN(d)) return a < b ? -1 : 1;
+    if (d) return d;
+  }
+  return 0;
 }
 
 function saveEvents(ss, student, events) {
@@ -277,6 +380,7 @@ function saveEvents(ss, student, events) {
 
   const rows = [];
   const days = {};
+  const wins = [];
   events.forEach(function (ev) {
     if (!ev || !ev.id || known[ev.id]) return;
     known[ev.id] = true;
@@ -294,15 +398,24 @@ function saveEvents(ss, student, events) {
       String(ev.id)
     ]);
     days[Utilities.formatDate(at, tz, DAY)] = true;
+    if (ev.result === 'win') wins.push({ id: String(ev.levelId || ''), level: String(ev.level || '') });
   });
 
   if (rows.length) appendLog(log, last, rows);
-  // Запуски вже в журналі. Якщо клітинку дня оновити не вдалося, гра не повторюватиме відправку,
-  // а текст помилки повернеться в «warning», щоб було видно причину.
+  // Запуски вже в журналі. Якщо «Пройдено» чи клітинку дня оновити не вдалося, гра не повторюватиме
+  // відправку, а текст помилки повернеться в «warning», щоб було видно причину.
   const warnings = [];
+  try {
+    markCompleted(ss.getSheetByName(student.sheet), student.row, wins);
+  } catch (err) {
+    console.error(err && err.stack || err);
+    warnings.push('Пройдено: ' + String(err && err.stack || err).slice(0, 400));
+  }
+  // Для клітинки дня досить кінця журналу: запуски дописуються в кінець.
+  const recentRuns = rows.length ? logRows(ss, LOG_OF[student.sheet], 5, RECENT_RUNS) : [];
   Object.keys(days).forEach(function (day) {
     try {
-      updateDayCell(ss, student, day, tz);
+      updateDayCell(ss, student, day, tz, recentRuns);
     } catch (err) {
       console.error(err && err.stack || err);
       warnings.push(day + ': ' + String(err && err.stack || err).slice(0, 400));
@@ -337,10 +450,11 @@ function attempts(n) {
   return 'спроб';
 }
 
-function updateDayCell(ss, student, day, tz) {
+// runs — рядки журналу (принаймні 5 стовпців); без них читається весь журнал.
+function updateDayCell(ss, student, day, tz, runs) {
   const order = [];
   const byLevel = {};
-  logRows(ss, LOG_OF[student.sheet]).forEach(function (r) {
+  (runs || logRows(ss, LOG_OF[student.sheet], 5)).forEach(function (r) {
     if (!(r[0] instanceof Date) || norm(r[1]) !== norm(student.name)) return;
     if (Utilities.formatDate(r[0], tz, DAY) !== day) return;
     const level = String(r[2]);
@@ -409,15 +523,18 @@ function onEdit(e) {
 function moveStudent(ss, from, row, to) {
   const source = ss.getSheetByName(from);
   const target = ss.getSheetByName(to);
-  const values = read(source.getRange(row, 1, 1, 2), true)[0];
+  ensureDoneColumns(ss, source);
+  ensureDoneColumns(ss, target);
+  const values = read(source.getRange(row, 1, 1, IDS_COL), true)[0];
   const name = String(values[0]).trim();
   if (!name) return;
 
-  // Рядок учня в новому аркуші.
+  // Рядок учня в новому аркуші — разом із пройденими рівнями.
   const newRow = lastRow(target) + 1;
   if (newRow > target.getMaxRows()) target.insertRowsAfter(target.getMaxRows(), 50);
   target.getRange(newRow, 1, 1, 2).setNumberFormat('@').setValues([[name, values[1]]]);
   target.getRange(newRow, CHECK_COL).insertCheckboxes().setValue(to === MINE);
+  target.getRange(newRow, DONE_COL, 1, 2).setNumberFormat('@').setValues([[values[DONE_COL - 1], values[IDS_COL - 1]]]);
   source.deleteRow(row);
 
   // Історія запусків переїжджає з ним.
@@ -448,7 +565,7 @@ function moveStudent(ss, from, row, to) {
   });
   Object.keys(days).sort(function (a, b) {
     return a.split('.').reverse().join('') < b.split('.').reverse().join('') ? -1 : 1;
-  }).forEach(function (day) { updateDayCell(ss, student, day, tz); });
+  }).forEach(function (day) { updateDayCell(ss, student, day, tz, moving); });
 }
 
 // Перебудувати всі клітинки днів з журналів. Запусти вручну (вибери rebuildDays → «Запустити»),
@@ -461,7 +578,7 @@ function rebuildDays() {
   };
   withLock(function () {
     [MINE, OTHERS].forEach(function (sheetName) {
-      const log = logRows(ss, LOG_OF[sheetName]);
+      const log = logRows(ss, LOG_OF[sheetName], 5);
       studentRows(ss, sheetName).forEach(function (r, i) {
         const name = String(r[0]).trim();
         if (!name) return;

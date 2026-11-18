@@ -19,7 +19,9 @@ export function createCloud({
   now = () => new Date(),
   setTimer = (fn, ms) => setTimeout(fn, ms),
   clearTimer = (id) => clearTimeout(id),
-  onChange = () => {}
+  onChange = () => {},
+  // Levels passed in this browser, [{ id, level }]: sent on sign-in so progress made before it is kept.
+  getDone = () => []
 } = {}) {
   const endpoint = isCloudUrl(url) ? url.trim() : '';
   let sending = false;
@@ -156,7 +158,7 @@ export function createCloud({
     if (action === 'register' && (cleanPin.length < 4 || cleanPin.length > 12)) return { ok: false, error: 'pin' };
     let data;
     try {
-      data = await post({ action, name: cleanName, pin: cleanPin });
+      data = await post({ action, name: cleanName, pin: cleanPin, done: done() });
     } catch {
       return { ok: false, error: 'offline' };
     }
@@ -174,6 +176,31 @@ export function createCloud({
     return { ok: true, name: data.name || cleanName, completed: Array.isArray(data.completed) ? data.completed : [] };
   }
 
+  function done() {
+    try {
+      const list = getDone();
+      return Array.isArray(list) ? list.filter((d) => d && d.id) : [];
+    } catch {
+      return [];
+    }
+  }
+
+  // On page load for a student already signed in: send what was passed here, get back everything
+  // passed on any computer. Resolves to the level IDs, or null when the sheet can't be reached.
+  async function sync() {
+    const student = getStudent();
+    if (!endpoint || !student) return null;
+    let data;
+    try {
+      data = await post({ action: 'login', name: student.name, pin: student.pin, done: done() });
+    } catch {
+      return null;
+    }
+    if (data?.ok) return Array.isArray(data.completed) ? data.completed : [];
+    if (data?.error === 'auth') setState('auth');
+    return null;
+  }
+
   function logout() {
     clearTimer(retryTimer);
     retryTimer = null;
@@ -187,6 +214,7 @@ export function createCloud({
     status,
     record,
     flush,
+    sync,
     login: (name, pin) => signIn('login', name, pin),
     register: (name, pin) => signIn('register', name, pin),
     logout

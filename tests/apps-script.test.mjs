@@ -36,6 +36,8 @@ function fakeSpreadsheet() {
         setValues: (vals) => { vals.forEach((row, i) => row.forEach((v, j) => set(r + i, c + j, v))); return self; },
         clearContent: () => { each((a, b) => set(a, b, '')); return self; },
         clearNote: () => { each((a, b) => { delete meta.notes[`${a},${b}`]; }); return self; },
+        clearFormat: () => { each((a, b) => { delete meta.backgrounds[`${a},${b}`]; }); return self; },
+        clearDataValidations: () => { each((a, b) => { delete meta.checkboxes[`${a},${b}`]; }); return self; },
         getNotes: () => each((a, b) => meta.notes[`${a},${b}`] || ''),
         setNotes: (vals) => { vals.forEach((row, i) => row.forEach((v, j) => { if (v) meta.notes[`${r + i},${c + j}`] = v; else delete meta.notes[`${r + i},${c + j}`]; })); return self; },
         setWrapStrategy: () => self,
@@ -68,6 +70,11 @@ function fakeSpreadsheet() {
         cells.forEach((row) => row && row.splice(col, 0, ''));
         meta.backgrounds = shiftKeys(meta.backgrounds, (r, c) => [r, c >= col ? c + 1 : c]);
         meta.checkboxes = shiftKeys(meta.checkboxes, (r, c) => [r, c >= col ? c + 1 : c]);
+        // Like Google: the new column takes the look of its neighbour on the right.
+        for (const [key, value] of Object.entries(meta.backgrounds)) {
+          const [r, c] = key.split(',').map(Number);
+          if (c === col + 1) meta.backgrounds[`${r},${col}`] = value;
+        }
         meta.maxCols++;
       },
       deleteRow: (row) => {
@@ -154,10 +161,12 @@ test('each sheet has one column per day and one short line per level in each cel
   // An older day sent late (the student was offline) still lands left of the newer one.
   post({ action: 'log', name: 'Марко', pin: '0123', events: [ev('e6', DAY1, '1.1', 'win')] });
 
-  assert.deepEqual(mine.getRange(1, 1, 1, 5).getDisplayValues()[0], ['Учень', 'PIN', 'Мій', '14.11.2026', '17.11.2026']);
-  assert.equal(mine.getRange(2, 4).getValue(), '1.1 — 1 спроба ✓');
-  assert.equal(mine.getRange(2, 5).getValue(), '1.4 — 3 спроби ✓\n1.5 — 2 спроби ✗ впав');
-  assert.equal(mine.meta.backgrounds['2,5'], '#d9ead3');
+  assert.deepEqual(mine.getRange(1, 1, 1, 7).getDisplayValues()[0], ['Учень', 'PIN', 'Мій', 'Пройдено', 'ID пройдених', '14.11.2026', '17.11.2026']);
+  assert.equal(mine.meta.hidden, 5, 'level IDs are for the game only');
+  assert.equal(mine.getRange(2, 6).getValue(), '1.1 — 1 спроба ✓');
+  assert.equal(mine.getRange(2, 7).getValue(), '1.4 — 3 спроби ✓\n1.5 — 2 спроби ✗ впав');
+  assert.equal(mine.meta.backgrounds['2,7'], '#d9ead3');
+  assert.deepEqual(mine.getRange(2, 4, 1, 2).getValues()[0], ['1.1, 1.4', 'id-1.4, id-1.1']);
   assert.equal(sheets.get('Журнал').getLastRow(), 7);
   assert.equal(sheets.get('Інші — журнал').getLastRow(), 1, 'other students\' log stays empty');
 
@@ -172,8 +181,8 @@ test('ticking «Мій» moves a student with all their history; unticking moves
   post({ action: 'register', name: 'Софія', pin: '1907' });
   post({ action: 'log', name: 'Іра', pin: '4444', events: [ev('i1', DAY2, '1.1', 'stopped')] });
   post({ action: 'log', name: 'Софія', pin: '1907', events: [ev('s1', DAY1, '1.1', 'win'), ev('s2', DAY2, '1.2', 'fell'), ev('s3', DAY2, '1.2', 'fell')] });
-  assert.equal(others.getRange(3, 5).getValue(), '1.2 — 2 спроби ✗ впав');
-  assert.equal(others.meta.backgrounds['3,5'], '#fff2cc');
+  assert.equal(others.getRange(3, 7).getValue(), '1.2 — 2 спроби ✗ впав');
+  assert.equal(others.meta.backgrounds['3,7'], '#fff2cc');
 
   tick('Інші учні', 3, true); // Софія is the tutor's student
 
@@ -181,25 +190,28 @@ test('ticking «Мій» moves a student with all their history; unticking moves
   assert.deepEqual(names(mine), ['Софія']);
   assert.equal(mine.getRange(2, 3).isChecked(), true);
   assert.equal(mine.getRange(2, 2).getValue(), '1907');
-  assert.deepEqual(mine.getRange(1, 4, 1, 2).getDisplayValues()[0], ['14.11.2026', '17.11.2026']);
-  assert.equal(mine.getRange(2, 4).getValue(), '1.1 — 1 спроба ✓');
-  assert.equal(mine.getRange(2, 5).getValue(), '1.2 — 2 спроби ✗ впав');
+  assert.deepEqual(mine.getRange(1, 6, 1, 2).getDisplayValues()[0], ['14.11.2026', '17.11.2026']);
+  assert.equal(mine.getRange(2, 4).getValue(), '1.1', 'passed levels move with her');
+  assert.equal(mine.getRange(2, 6).getValue(), '1.1 — 1 спроба ✓');
+  assert.equal(mine.getRange(2, 7).getValue(), '1.2 — 2 спроби ✗ впав');
   const mineLog = sheets.get('Журнал');
   const othersLog = sheets.get('Інші — журнал');
   assert.deepEqual(mineLog.getRange(2, 2, 3, 1).getValues().map((r) => r[0]), ['Софія', 'Софія', 'Софія']);
   assert.deepEqual(othersLog.getRange(2, 2, othersLog.getLastRow() - 1, 1).getValues().map((r) => r[0]), ['Іра']);
-  assert.equal(others.getRange(2, 5).getValue(), '1.1 — 1 спроба ✗ зупинив', 'Іра keeps her row and day');
+  assert.equal(others.getRange(2, 7).getValue(), '1.1 — 1 спроба ✗ зупинив', 'Іра keeps her row and day');
 
   // She keeps playing: the new runs go to the tutor's log and sheet.
   post({ action: 'log', name: 'Софія', pin: '1907', events: [ev('s4', DAY2, '1.2', 'win')] });
-  assert.equal(mine.getRange(2, 5).getValue(), '1.2 — 3 спроби ✓');
+  assert.equal(mine.getRange(2, 7).getValue(), '1.2 — 3 спроби ✓');
+  assert.equal(mine.getRange(2, 4).getValue(), '1.1, 1.2');
   assert.deepEqual(post({ action: 'login', name: 'Софія', pin: '1907' }).completed.sort(), ['id-1.1', 'id-1.2']);
 
   tick('Учні', 2, false); // a mistake: back to the others
   assert.deepEqual(names(mine), []);
   assert.deepEqual(names(others), ['Іра', 'Софія']);
   assert.equal(others.getRange(3, 3).isChecked(), false);
-  assert.equal(others.getRange(3, 5).getValue(), '1.2 — 3 спроби ✓');
+  assert.equal(others.getRange(3, 7).getValue(), '1.2 — 3 спроби ✓');
+  assert.deepEqual(post({ action: 'login', name: 'Софія', pin: '1907' }).completed.sort(), ['id-1.1', 'id-1.2']);
   assert.equal(mineLog.getLastRow(), 1);
 
   // Editing the header row is not a move.
@@ -208,15 +220,75 @@ test('ticking «Мій» moves a student with all their history; unticking moves
   assert.deepEqual(names(mine), []);
 });
 
-test('setup upgrades the first version of the sheet: «Мій» goes in before the dates', async () => {
+test('setup upgrades the first version of the sheet: «Мій» and «Пройдено» go in before the dates', async () => {
   const { mine } = await loadScript((ss) => {
     const old = ss.insertSheet('Учні');
     old.getRange(1, 1, 1, 3).setValues([['Учень', 'PIN', '14.11.2026']]);
     old.getRange(2, 1, 1, 3).setValues([['Марко', '0123', '1.1 — 1 спроба ✓']]);
   });
-  assert.deepEqual(mine.getRange(1, 1, 1, 4).getDisplayValues()[0], ['Учень', 'PIN', 'Мій', '14.11.2026']);
+  assert.deepEqual(mine.getRange(1, 1, 1, 6).getDisplayValues()[0], ['Учень', 'PIN', 'Мій', 'Пройдено', 'ID пройдених', '14.11.2026']);
   assert.equal(mine.getRange(2, 3).isChecked(), true, 'students added by hand are the tutor\'s');
-  assert.equal(mine.getRange(2, 4).getValue(), '1.1 — 1 спроба ✓');
+  assert.equal(mine.getRange(2, 6).getValue(), '1.1 — 1 спроба ✓');
+});
+
+test('«Пройдено» is filled once from the log, then sign-in reads only that cell', async () => {
+  const { post, mine, sheets } = await loadScript((ss) => {
+    // The previous version: «Мій» already there, days from column 4, wins only in the log.
+    const old = ss.insertSheet('Учні');
+    old.getRange(1, 1, 1, 4).setValues([['Учень', 'PIN', 'Мій', '17.11.2026']]);
+    old.getRange(2, 1, 1, 4).setValues([['Марко', '0123', true, '1.10 — 1 спроба ✓']]);
+    old.getRange(2, 4).setBackground('#d9ead3');
+    const log = ss.insertSheet('Журнал');
+    log.getRange(1, 1, 4, 9).setValues([
+      ['Час', 'Учень', 'Рівень', 'ID рівня', 'Результат', 'Повідомлення', 'Команд', 'Програма', 'ID запуску'],
+      [new Date(DAY2), 'Марко', '1.10', 'id-1.10', '✓', '', 3, 'forward()', 'm1'],
+      [new Date(DAY2), 'Марко', '1.2', 'id-1.2', 'впав', '', 3, 'forward()', 'm2'],
+      [new Date(DAY2), 'Марко', '1.2', 'id-1.2', '✓', '', 3, 'forward()', 'm3']
+    ]);
+  });
+  assert.deepEqual(mine.getRange(1, 4, 1, 3).getDisplayValues()[0], ['Пройдено', 'ID пройдених', '17.11.2026']);
+  assert.equal(mine.getRange(2, 4).getValue(), '1.2, 1.10', 'in level order');
+  assert.equal(mine.getRange(2, 6).getValue(), '1.10 — 1 спроба ✓');
+  assert.equal(mine.meta.backgrounds['2,6'], '#d9ead3', 'the day keeps its colour');
+  assert.equal(mine.meta.backgrounds['2,4'], undefined, 'the new column does not copy it');
+
+  // Deleting runs from the log no longer takes passed levels away.
+  sheets.get('Журнал').getRange(2, 1, 3, 9).clearContent();
+  assert.deepEqual(post({ action: 'login', name: 'Марко', pin: '0123' }).completed.sort(), ['id-1.10', 'id-1.2']);
+
+  // A level passed again is not listed twice.
+  post({ action: 'log', name: 'Марко', pin: '0123', events: [ev('m4', DAY2, '1.2', 'win'), ev('m5', DAY2, '1.3', 'win')] });
+  assert.equal(mine.getRange(2, 4).getValue(), '1.2, 1.3, 1.10');
+});
+
+test('levels passed in the browser before signing in are added to «Пройдено»', async () => {
+  const { post, others } = await loadScript();
+  const answer = post({ action: 'register', name: 'Іра', pin: '4444', done: [
+    { id: 'id-1.2', level: '1.2' }, { id: 'id-1.1', level: '1.1' }, { id: 'id-1.1', level: '1.1' }, { id: '' }, 'junk'
+  ] });
+  assert.deepEqual(answer, { ok: true, name: 'Іра', completed: ['id-1.2', 'id-1.1'] });
+  assert.deepEqual(others.getRange(2, 4, 1, 2).getValues()[0], ['1.1, 1.2', 'id-1.2, id-1.1']);
+
+  // Later, on another computer where she also played without signing in.
+  const login = post({ action: 'login', name: 'Іра', pin: '4444', done: [{ id: 'id-2.1', level: '2.1' }, { id: 'id-1.1', level: '1.1' }] });
+  assert.deepEqual(login.completed, ['id-1.2', 'id-1.1', 'id-2.1']);
+  assert.equal(others.getRange(2, 4).getValue(), '1.1, 1.2, 2.1');
+
+  // A wrong PIN adds nothing.
+  assert.deepEqual(post({ action: 'login', name: 'Іра', pin: '0000', done: [{ id: 'x', level: '9.9' }] }), { ok: false, error: 'auth' });
+  assert.equal(others.getRange(2, 4).getValue(), '1.1, 1.2, 2.1');
+});
+
+test('code updated without running setup: the first request upgrades the sheet itself', async () => {
+  const { post, others } = await loadScript();
+  post({ action: 'register', name: 'Богдан', pin: '1234' });
+  // Roll the sheet back to the previous layout (no «Пройдено» columns).
+  others.cells.forEach((row) => row && row.splice(4, 2));
+  assert.equal(others.getRange(1, 4).getValue(), '');
+  const answer = post({ action: 'log', name: 'Богдан', pin: '1234', events: [ev('b1', DAY2, '1.4', 'win')] });
+  assert.deepEqual(answer, { ok: true, saved: 1 });
+  assert.deepEqual(others.getRange(1, 4, 1, 3).getDisplayValues()[0], ['Пройдено', 'ID пройдених', '17.11.2026']);
+  assert.equal(others.getRange(2, 4).getValue(), '1.4');
 });
 
 test('if a day cell cannot be updated, the runs still land in the log and the error comes back', async () => {
@@ -240,13 +312,13 @@ test('sheets turned into Google tables are read column by column, and rebuildDay
 
   const answer = post({ action: 'log', name: 'Богдан', pin: '1234', events: [ev('b1', DAY2, '1.4', 'incomplete'), ev('b2', DAY2, '1.4', 'win')] });
   assert.deepEqual(answer, { ok: true, saved: 2 });
-  assert.equal(others.getRange(2, 4).getValue(), '1.4 — 2 спроби ✓');
+  assert.equal(others.getRange(2, 6).getValue(), '1.4 — 2 спроби ✓');
   assert.deepEqual(post({ action: 'login', name: 'Богдан', pin: '1234' }).completed, ['id-1.4']);
 
   // Runs that reached the log while the day cell failed: rebuildDays fills the cell from the log.
-  others.getRange(2, 4).setValue('');
+  others.getRange(2, 6).setValue('');
   context.rebuildDays();
-  assert.equal(others.getRange(2, 4).getValue(), '1.4 — 2 спроби ✓');
+  assert.equal(others.getRange(2, 6).getValue(), '1.4 — 2 спроби ✓');
 });
 
 test('runs are appended after the last one even when Google reports an empty sheet', async () => {
