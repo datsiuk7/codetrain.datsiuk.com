@@ -217,6 +217,28 @@ button.completed-badge.local-complete-toggle.is-done:hover {
   margin-bottom: 50px;
 }
 
+/* Plain description of the game for new visitors and search engines. */
+.home-about {
+  max-width: 760px;
+  margin: 0 auto 50px;
+  padding-top: 28px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.home-about h2 {
+  margin: 0 0 12px;
+  font-size: 18px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+.home-about p {
+  margin: 0 0 10px;
+}
+
 .category-section {
   background: transparent;
   border: none;

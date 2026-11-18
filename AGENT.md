@@ -34,7 +34,7 @@
   ```
   *(Обов'язково запускати після будь-яких змін! Усі тести мають проходити на 100%). Потрібен Node.js 22.3+.*
 
-- **Публікація сайту (GitHub Pages)**: workflow [`.github/workflows/pages.yml`](.github/workflows/pages.yml) після push у `main` запускає тести й публікує лише кореневі `index.html`, `*.js`, `*.mjs`, `*.css`, `CNAME` та папки `admin/`, `levels/`, `vendor/`. `tests/`, `scratch/`, `server.cjs`, `*.md` на сайт не потрапляють. Нові файли чи папки, потрібні грі в браузері, додавай у крок «Collect site files».
+- **Публікація сайту (GitHub Pages)**: workflow [`.github/workflows/pages.yml`](.github/workflows/pages.yml) після push у `main` запускає тести й публікує лише кореневі `index.html`, `*.js`, `*.mjs`, `*.css`, `CNAME`, `robots.txt`, `sitemap.xml`, `og-image.png` та папки `admin/`, `levels/`, `vendor/`. `tests/`, `scratch/`, `server.cjs`, `*.md` на сайт не потрапляють. Нові файли чи папки, потрібні грі в браузері, додавай у крок «Collect site files».
 
 ---
 

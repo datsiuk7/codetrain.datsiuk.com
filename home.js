@@ -197,7 +197,8 @@ export function renderHome(
       ? t('heroDescDay', lang)
       : t('heroDescNight', lang);
 
-  container.innerHTML = `<section class="hero"><div class="hero-copy"><span class="eyebrow">${heroEyebrow}</span><h1>${heroH1}</h1><p>${heroDesc}</p></div></section><div class="categories-container">${sectionsHtml}</div>`;
+  const about = `<section class="home-about" aria-labelledby="home-about-title"><h2 id="home-about-title">${esc(t('aboutTitle', lang))}</h2><p>${esc(t('aboutLead', lang))}</p><p>${esc(t('aboutAudience', lang))}</p><p>${esc(t('aboutPlay', lang))}</p></section>`;
+  container.innerHTML = `<section class="hero"><div class="hero-copy"><span class="eyebrow">${heroEyebrow}</span><h1>${heroH1}</h1><p>${heroDesc}</p></div></section><div class="categories-container">${sectionsHtml}</div>${about}`;
 
   if (isLocal) {
     container.querySelectorAll?.('[data-toggle-level]').forEach((btn) => {

@@ -87,7 +87,7 @@ const categoryTitleByUk = {
 
 export const strings = {
   uk: {
-    pageTitle: 'Ліхтарник — запали ніч',
+    pageTitle: 'Ліхтарник — гра з програмування та алгоритмів для школярів',
     brandName: 'ліхтарник',
     headerNote: 'МАЛЕНЬКІ КРОКИ. ТЕПЛЕ СВІТЛО.',
     resetProgress: '↺ Скинути прогрес',
@@ -148,7 +148,11 @@ export const strings = {
     heroEyebrowDay: 'ЕНЕРГООЩАДНІ АЛГОРИТМИ ДНЯ',
     heroH1Night: 'Місто заснуло.<br>Твій хід — світити.',
     heroH1Day: 'Ясний день над містом.<br>Твій хід — вимкни зайве.',
-    heroDescNight: 'Складай команди, долай сходинки й запалюй ліхтарі. Проходь навчальні теми від базового руху до циклів і розгалужень.',
+    heroDescNight: 'Гра, у якій вчишся програмувати: складай алгоритми з блоків або пиши на Python, долай сходинки й запалюй ліхтарі. Теми — від базового руху до циклів, умов і функцій.',
+    aboutTitle: 'Про гру',
+    aboutLead: '«Ліхтарник» — безкоштовна онлайн-гра для навчання програмування. 120 рівнів-головоломок поступово знайомлять з алгоритмами: послідовність команд, цикли, умови та розгалуження (if / elif / else), логічні операції AND, OR, NOT, цикл while і функції.',
+    aboutAudience: 'Підходить школярам для уроків інформатики (5–9 клас), студентам і всім, хто хоче навчитися програмувати з нуля. Програму можна складати з блоків, як у Scratch, або писати текстом на Python — і бачити, як персонаж виконує кожен рядок у 3D.',
+    aboutPlay: 'Гра працює просто в браузері на комп’ютері чи планшеті, нічого встановлювати не треба. Є українська й англійська мови, нічна та денна тема.',
     heroDescDay: 'Складай команди, знаходь непотрібні ліхтарі, що палають удень, та викручуй їх для збереження енергії.',
     sectionLocked: 'Розділ під замком',
     sectionLockedHint: 'Щоб розблокувати, пройдіть усі попередні рівні на 1–3 зірки',
@@ -247,7 +251,7 @@ export const strings = {
     functionDefaultName: 'Назва функції '
   },
   en: {
-    pageTitle: 'Lamplighter — Light Up the Night',
+    pageTitle: 'Lamplighter — a coding and algorithms game for students',
     brandName: 'lamplighter',
     headerNote: 'SMALL STEPS. WARM LIGHT.',
     resetProgress: '↺ Reset Progress',
@@ -308,7 +312,11 @@ export const strings = {
     heroEyebrowDay: 'DAYTIME ENERGY-SAVING ALGORITHMS',
     heroH1Night: 'The city is asleep.<br>Your move — bring the light.',
     heroH1Day: 'Bright day over the city.<br>Your move — turn off the extra lights.',
-    heroDescNight: 'Build command sequences, climb steps, and light up the lanterns. Progress from basic movement to loops and conditions.',
+    heroDescNight: 'A game where you learn to code: build algorithms from blocks or write Python, climb steps and light up the lanterns. Topics go from basic movement to loops, conditions and functions.',
+    aboutTitle: 'About the game',
+    aboutLead: 'Lamplighter is a free online game for learning to code. 120 puzzle levels introduce algorithms step by step: command sequences, loops, conditions and branching (if / elif / else), the logical operators AND, OR, NOT, while loops and functions.',
+    aboutAudience: 'It suits school computer science lessons, university students and anyone learning to program from scratch. Build the program from blocks, like in Scratch, or type it in Python — and watch the character run every line in 3D.',
+    aboutPlay: 'It runs right in the browser on a computer or tablet, with nothing to install. Available in Ukrainian and English, with night and day themes.',
     heroDescDay: 'Build command sequences, find lanterns left burning during the day, and turn them off to save energy.',
     sectionLocked: 'Section Locked',
     sectionLockedHint: 'Complete all previous 1–3 star levels to unlock',

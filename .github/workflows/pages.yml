@@ -32,7 +32,7 @@ jobs:
       - name: Collect site files
         run: |
           mkdir _site
-          cp index.html *.js *.mjs *.css CNAME _site/
+          cp index.html *.js *.mjs *.css CNAME robots.txt sitemap.xml og-image.png _site/
           cp -r admin levels vendor _site/
 
       # One request for all levels instead of one per level (the game falls back to index.json locally).
