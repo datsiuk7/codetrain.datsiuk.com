@@ -3,7 +3,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import vm from 'node:vm';
-import { createCloud, isCloudUrl } from '../cloud.mjs';
+import { createCloud, isCloudUrl, visitSource, countryFromTimeZone } from '../cloud.mjs';
 
 const URL_OK = 'https://script.google.com/macros/s/abc/exec';
 
@@ -188,5 +188,76 @@ test('a name or PIN changed in the sheet stops sending until the next sign-in', 
   cloud.logout();
   assert.equal(cloud.status().student, null);
   assert.equal(cloud.status().pending, 0);
+});
+
+test('without signing in, only the first win on each level is sent, with the number of tries', async () => {
+  const storage = memoryStorage();
+  const server = fakeServer();
+  const cloud = createCloud({
+    url: URL_OK, storage, fetchFn: server.fetch,
+    now: () => new Date('2026-11-19T10:00:00Z'),
+    random: () => 0.5,
+    getContext: () => ({ from: 'Telegram', country: 'Україна' })
+  });
+
+  assert.equal(cloud.attempt({ levelId: 'a', level: '1.1', result: 'fell', mode: 'blocks' }), false);
+  assert.equal(cloud.attempt({ levelId: 'a', level: '1.1', result: 'incomplete', mode: 'blocks' }), false);
+  assert.equal(server.requests.length, 0, 'failed runs of anonymous players stay in the browser');
+  assert.equal(cloud.attempt({ levelId: 'a', level: '1.1', result: 'win', mode: 'python' }), true);
+  await tick();
+  const sent = server.requests.at(-1).body;
+  assert.equal(sent.action, 'anon');
+  assert.equal(sent.visitor, '88888888');
+  assert.equal(sent.name, undefined, 'no name, no PIN');
+  assert.deepEqual(
+    { ...sent.events[0], id: undefined },
+    { id: undefined, at: '2026-11-19T10:00:00.000Z', level: '1.1', levelId: 'a', tries: 3, mode: 'python', from: 'Telegram', country: 'Україна' }
+  );
+  assert.equal(JSON.parse(storage.getItem('lamplighter-anon-queue')).length, 0);
+
+  // Passing the same level again is not sent twice.
+  cloud.attempt({ levelId: 'a', level: '1.1', result: 'win', mode: 'blocks' });
+  await tick();
+  assert.equal(server.requests.length, 1);
+
+  // Offline: the win waits in the browser and goes with the next visit.
+  server.fail = true;
+  cloud.attempt({ levelId: 'b', level: '1.2', result: 'win', mode: 'blocks' });
+  await tick();
+  assert.equal(JSON.parse(storage.getItem('lamplighter-anon-queue')).length, 1);
+  server.fail = false;
+  server.reply = { ok: true };
+  assert.equal(await cloud.visit(), true);
+  await tick();
+  assert.deepEqual(server.requests.map((r) => r.body.action), ['anon', 'anon', 'visit', 'anon']);
+  assert.equal(JSON.parse(storage.getItem('lamplighter-anon-queue')).length, 0);
+
+  // One visit a day from a browser.
+  assert.equal(await cloud.visit(), false);
+  assert.equal(server.requests.filter((r) => r.body.action === 'visit').length, 1);
+
+  // A signed-in student's runs go to their journal instead.
+  server.reply = { ok: true, name: 'Іра', completed: [] };
+  await cloud.login('Іра', '4444');
+  server.reply = { ok: true };
+  cloud.attempt({ levelId: 'c', level: '1.3', result: 'win', mode: 'blocks' });
+  await tick();
+  assert.equal(server.requests.at(-1).body.action, 'log');
+});
+
+test('where visitors come from and roughly which country, without IP', () => {
+  const origin = 'https://codetrain.datsiuk.com';
+  assert.equal(visitSource('', origin), 'напряму');
+  assert.equal(visitSource(`${origin}/#level=x`, origin), 'напряму');
+  assert.equal(visitSource('https://www.google.com.ua/', origin), 'Google');
+  assert.equal(visitSource('https://t.me/', origin), 'Telegram');
+  assert.equal(visitSource('https://l.facebook.com/l.php', origin), 'Facebook');
+  assert.equal(visitSource('https://school.example.org/lesson', origin), 'school.example.org');
+  assert.equal(visitSource('https://t.me/', origin, '?utm_source=viber-group'), 'viber-group');
+
+  assert.equal(countryFromTimeZone('Europe/Kyiv', 'en-US'), 'Україна');
+  assert.equal(countryFromTimeZone('Europe/Warsaw', 'uk'), 'Польща');
+  assert.equal(countryFromTimeZone('Asia/Tokyo', 'ja-JP'), 'Asia/Tokyo', 'unknown zones are shown as they are');
+  assert.equal(countryFromTimeZone('', 'uk-UA'), 'Україна');
 });
 

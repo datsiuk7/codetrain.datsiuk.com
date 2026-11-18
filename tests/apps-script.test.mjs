@@ -99,15 +99,18 @@ async function loadScript(prepare = () => {}) {
   const { ss, sheets } = fakeSpreadsheet();
   prepare(ss);
   const pad = (n) => String(n).padStart(2, '0');
+  const cache = new Map();
   const context = {
     SpreadsheetApp: { getActive: () => ss, WrapStrategy: { CLIP: 'CLIP' } },
     LockService: { getScriptLock: () => ({ tryLock: () => true, releaseLock() {} }) },
+    CacheService: { getScriptCache: () => ({ get: (k) => cache.get(k) ?? null, put: (k, v) => cache.set(k, v) }) },
     ContentService: {
       MimeType: { JSON: 'json' },
       createTextOutput: (text) => ({ setMimeType: () => JSON.parse(text) })
     },
     Utilities: {
-      formatDate: (d) => `${pad(d.getUTCDate())}.${pad(d.getUTCMonth() + 1)}.${d.getUTCFullYear()}`
+      formatDate: (d, tz, pattern) => `${pad(d.getUTCDate())}.${pad(d.getUTCMonth() + 1)}.${d.getUTCFullYear()}` +
+        (String(pattern).includes('HH:mm') ? ` ${pad(d.getUTCHours())}:${pad(d.getUTCMinutes())}` : '')
     },
     Date, JSON, String, Number, Math, Object, Array, isNaN,
     console: { error() {} }
@@ -121,7 +124,7 @@ async function loadScript(prepare = () => {}) {
     range.setValue(value);
     context.onEdit({ range, source: ss });
   };
-  return { context, sheets, post, tick, mine: sheets.get('Учні'), others: sheets.get('Інші учні') };
+  return { context, sheets, cache, post, tick, mine: sheets.get('Учні'), others: sheets.get('Інші учні') };
 }
 
 const ev = (id, at, level, result) => ({ id, at, level, levelId: `id-${level}`, result, note: '', cmds: 3, code: 'forward()' });
@@ -358,6 +361,52 @@ test('setup puts the header back above runs written over it and compacts old mul
   assert.deepEqual([log.getRange(2, 9).getValue(), log.getRange(3, 9).getValue()], ['x1', 'x2']);
   assert.equal(log.getRange(2, 8).getValue(), 'forward() · forward() · turn_right()');
   assert.deepEqual(log.getRange(2, 8, 2, 1).getNotes(), [['forward()\nforward()\nturn_right()'], ['']]);
+});
+
+test('levels passed without signing in go to «Анонімні», one line per level', async () => {
+  const { post, sheets, cache } = await loadScript();
+  const anon = sheets.get('Анонімні');
+  assert.deepEqual(anon.getRange(1, 1, 1, 8).getValues()[0], ['Час', 'Відвідувач', 'Рівень', 'Спроб', 'Режим', 'Звідки прийшов', 'Країна', 'ID запуску']);
+  assert.equal(anon.meta.hidden, 8);
+
+  const win = (id, level, extra = {}) => ({ id, at: DAY2, level, levelId: `id-${level}`, tries: 3, mode: 'python', from: 'Telegram', country: 'Україна', ...extra });
+  assert.deepEqual(post({ action: 'anon', visitor: 'A3F9C2', events: [win('w1', '1.10'), win('w2', '1.2', { mode: 'blocks', tries: 1 })] }), { ok: true, saved: 2 });
+  assert.deepEqual(anon.getRange(2, 2, 1, 7).getValues()[0], ['#a3f9c2', '1.10', 3, 'Python', 'Telegram', 'Україна', 'w1']);
+  assert.deepEqual(anon.getRange(3, 3, 1, 3).getValues()[0], ['1.2', 1, 'блоки']);
+  // A retry is not written twice; no name or PIN is needed, but the visitor must look like one.
+  assert.deepEqual(post({ action: 'anon', visitor: 'a3f9c2', events: [win('w1', '1.10')] }), { ok: true, saved: 0 });
+  assert.equal(post({ action: 'anon', visitor: '<b>', events: [win('w3', '1.3')] }).error, 'bad-request');
+
+  // Too many from one browser: dropped quietly instead of filling the sheet.
+  cache.set('aa3f9c2', '199');
+  assert.deepEqual(post({ action: 'anon', visitor: 'a3f9c2', events: [win('w4', '1.4'), win('w5', '1.5')] }), { ok: true, saved: 0, limited: true });
+  assert.equal(anon.getRange(4, 1).getValue(), '');
+});
+
+test('«Відвідування» counts each browser once a day', async () => {
+  const { post, sheets, cache } = await loadScript();
+  const visits = sheets.get('Відвідування');
+  assert.deepEqual(post({ action: 'visit', visitor: 'aaaa1111' }), { ok: true, counted: true });
+  assert.deepEqual(post({ action: 'visit', visitor: 'bbbb2222' }), { ok: true, counted: true });
+  assert.deepEqual(post({ action: 'visit', visitor: 'aaaa1111' }), { ok: true, counted: false });
+  const stamp = visits.getRange(2, 1).getValue();
+  assert.match(stamp, /^\d\d\.\d\d\.\d{4} \d\d:\d\d$/, 'date and time of the latest visit');
+  assert.deepEqual(visits.getRange(1, 1, 2, 2).getValues(), [['Дата і час', 'Унікальних відвідувачів'], [stamp, 2]]);
+
+  // A row from the previous version (date only) still counts as that day.
+  const today = stamp.slice(0, 10);
+  visits.getRange(2, 1).setValue(today);
+  post({ action: 'visit', visitor: 'cccc3333' });
+  assert.deepEqual(visits.getRange(2, 1, 2, 2).getValues(), [[visits.getRange(2, 1).getValue(), 3], ['', '']]);
+  assert.match(visits.getRange(2, 1).getValue(), / \d\d:\d\d$/);
+
+  // The next day starts a new row.
+  visits.getRange(2, 1).setValue('01.01.2000 23:59');
+  cache.clear();
+  post({ action: 'visit', visitor: 'aaaa1111' });
+  assert.equal(visits.getRange(2, 1).getValue(), '01.01.2000 23:59');
+  assert.equal(visits.getRange(3, 1).getValue().slice(0, 10), today);
+  assert.equal(visits.getRange(3, 2).getValue(), 1);
 });
 
 test('attempt counts read naturally in Ukrainian', async () => {

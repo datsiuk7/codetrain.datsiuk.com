@@ -8,6 +8,10 @@
  *   «1.4 — 3 спроби ✓» або «1.5 — 5 спроб ✗ впав».
  * «Журнал» — один рядок на кожне натискання «Запустити» твоїх учнів (з кодом програми).
  * «Інші учні» та «Інші — журнал» — те саме для всіх, хто зареєструвався сам.
+ * «Анонімні» — кожен рівень, пройдений без входу: Час | Відвідувач | Рівень | Спроб | Режим |
+ *   Звідки прийшов | Країна. Відвідувач — випадковий номер браузера (#a3f9c2), не ім'я і не IP.
+ * «Відвідування» — скільки різних відвідувачів (учнів і анонімів) відкривали гру кожного дня;
+ *   поруч із датою — час, коли прийшов останній з них.
  *
  * Хто реєструється в грі, потрапляє в «Інші учні». Постав галочку «Мій» — учень разом
  * з усією історією переїде в «Учні». Зняв галочку в «Учні» — переїде назад в «Інші учні».
@@ -53,12 +57,40 @@ const RESULTS = {
 const DAY = 'dd.MM.yyyy';
 const RECENT_RUNS = 3000; // скільки останніх рядків журналу перечитувати для клітинки дня
 
+const ANON = 'Анонімні';
+const ANON_HEADERS = ['Час', 'Відвідувач', 'Рівень', 'Спроб', 'Режим', 'Звідки прийшов', 'Країна', 'ID запуску'];
+const VISITS = 'Відвідування';
+const VISIT_HEADERS = ['Дата і час', 'Унікальних відвідувачів'];
+const MODES = { blocks: 'блоки', python: 'Python' };
+// Адреса скрипту відкрита: один браузер не може записати більше стількох перемог за 6 годин.
+const ANON_LIMIT = 200;
+
 function setup() {
   const ss = SpreadsheetApp.getActive();
   setupStudents(ss, MINE, 0, true);
   setupStudents(ss, OTHERS, 1, false);
   setupLog(ss, MINE_LOG);
   setupLog(ss, OTHERS_LOG);
+  setupAnon(ss);
+  setupVisits(ss);
+}
+
+function setupAnon(ss) {
+  const sheet = ss.getSheetByName(ANON) || ss.insertSheet(ANON);
+  sheet.getRange(1, 1, 1, ANON_HEADERS.length).setValues([ANON_HEADERS]).setFontWeight('bold');
+  sheet.setFrozenRows(1);
+  [140, 90, 55, 55, 70, 140, 110].forEach(function (width, i) { sheet.setColumnWidth(i + 1, width); });
+  sheet.hideColumns(ANON_HEADERS.length); // ID запуску потрібен лише скрипту
+  return sheet;
+}
+
+function setupVisits(ss) {
+  const sheet = ss.getSheetByName(VISITS) || ss.insertSheet(VISITS);
+  sheet.getRange(1, 1, 1, VISIT_HEADERS.length).setValues([VISIT_HEADERS]).setFontWeight('bold');
+  sheet.setFrozenRows(1);
+  sheet.setColumnWidth(1, 140);
+  sheet.setColumnWidth(2, 170);
+  return sheet;
 }
 
 function setupStudents(ss, name, index, mine) {
@@ -189,6 +221,10 @@ function handle(e) {
     return out({ ok: false, error: 'bad-request' });
   }
   const ss = SpreadsheetApp.getActive();
+  if (req && req.action === 'visit') return out(withLock(function () { return countVisit(ss, req.visitor); }));
+  if (req && req.action === 'anon') {
+    return out(withLock(function () { return saveAnon(ss, req.visitor, Array.isArray(req.events) ? req.events : []); }));
+  }
   if (req.action === 'register') {
     return out(withLock(function () { return register(ss, req.name, req.pin, cleanDone(req.done)); }));
   }
@@ -591,4 +627,88 @@ function rebuildDays() {
       });
     });
   });
+}
+
+// Номер браузера з гри: лише латинські літери й цифри.
+function cleanVisitor(v) {
+  const s = String(v == null ? '' : v).trim().toLowerCase();
+  return /^[a-z0-9]{4,16}$/.test(s) ? s : '';
+}
+
+// Гра надсилає «я тут» раз на день з кожного браузера; тут лічильник дня збільшується на 1.
+function countVisit(ss, visitor) {
+  const id = cleanVisitor(visitor);
+  if (!id) return { ok: false, error: 'bad-request' };
+  const tz = ss.getSpreadsheetTimeZone();
+  const when = new Date();
+  const day = Utilities.formatDate(when, tz, DAY);
+  // У першому стовпці — дата і час, коли лічильник дня збільшився востаннє.
+  const stamp = Utilities.formatDate(when, tz, DAY + ' HH:mm');
+  // Той самий браузер того самого дня вдруге не рахується (гра і так не надсилає двічі).
+  const cache = CacheService.getScriptCache();
+  const key = 'v' + day + id;
+  if (cache.get(key)) return { ok: true, counted: false };
+  cache.put(key, '1', 21600);
+
+  const sheet = ss.getSheetByName(VISITS) || setupVisits(ss);
+  const last = Math.max(lastRow(sheet), 1);
+  // Сьогоднішній день — зазвичай останній рядок, тож решту аркуша не читаємо.
+  if (last > 1 && sheet.getRange(last, 1).getDisplayValue().slice(0, day.length) === day) {
+    const count = Number(sheet.getRange(last, 2).getValue()) || 0;
+    sheet.getRange(last, 1).setNumberFormat('@').setValue(stamp);
+    sheet.getRange(last, 2).setValue(count + 1);
+  } else {
+    if (last + 1 > sheet.getMaxRows()) sheet.insertRowsAfter(sheet.getMaxRows(), 100);
+    sheet.getRange(last + 1, 1).setNumberFormat('@');
+    sheet.getRange(last + 1, 1, 1, 2).setValues([[stamp, 1]]);
+  }
+  return { ok: true, counted: true };
+}
+
+// Перемоги без входу: один рядок на кожен рівень, пройдений у цьому браузері вперше.
+function saveAnon(ss, visitor, events) {
+  const id = cleanVisitor(visitor);
+  if (!id) return { ok: false, error: 'bad-request' };
+  const cache = CacheService.getScriptCache();
+  const used = Number(cache.get('a' + id)) || 0;
+  const list = events.slice(0, 20);
+  // Забагато з одного браузера — не записуємо, але й не просимо гру повторювати.
+  if (used + list.length > ANON_LIMIT) return { ok: true, saved: 0, limited: true };
+
+  const sheet = ss.getSheetByName(ANON) || setupAnon(ss);
+  const idCol = ANON_HEADERS.length;
+  const last = Math.max(lastRow(sheet), 1);
+  // Гра повторює відправку, якщо не дочекалась відповіді: такі перемоги вже можуть бути записані.
+  const recent = Math.min(2000, last - 1);
+  const known = {};
+  if (recent > 0) sheet.getRange(last - recent + 1, idCol, recent, 1).getValues().forEach(function (r) { known[r[0]] = true; });
+
+  const rows = [];
+  list.forEach(function (ev) {
+    if (!ev || !ev.id || known[ev.id]) return;
+    known[ev.id] = true;
+    let at = new Date(ev.at);
+    if (isNaN(at.getTime())) at = new Date();
+    rows.push([
+      at,
+      '#' + id,
+      String(ev.level || ev.levelId || '').slice(0, 20),
+      Math.max(1, Math.min(9999, Math.round(Number(ev.tries) || 1))),
+      MODES[ev.mode] || '',
+      String(ev.from || '').slice(0, 60),
+      String(ev.country || '').slice(0, 60),
+      String(ev.id).slice(0, 40)
+    ]);
+  });
+  if (rows.length) {
+    const need = last + rows.length - sheet.getMaxRows();
+    if (need > 0) sheet.insertRowsAfter(sheet.getMaxRows(), need + 100);
+    // Текстовий формат, інакше «1.10» стане числом 1.1, а «=…» — формулою.
+    sheet.getRange(last + 1, 2, rows.length, idCol - 1).setNumberFormat('@');
+    sheet.getRange(last + 1, 4, rows.length, 1).setNumberFormat('0');
+    sheet.getRange(last + 1, 1, rows.length, 1).setNumberFormat('dd.MM.yyyy HH:mm:ss');
+    sheet.getRange(last + 1, 1, rows.length, idCol).setValues(rows);
+    cache.put('a' + id, String(used + rows.length), 21600);
+  }
+  return { ok: true, saved: rows.length };
 }

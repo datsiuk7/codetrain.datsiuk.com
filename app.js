@@ -5,7 +5,7 @@ import {
 import { setupMusic, setupEffects } from './music.js';
 import { renderHome, isCatUnlocked, getLevelSections, getLevelNumber, findNextLevel, findNewlyUnlockedSection } from './home.js';
 import { getLang, setLang, t, getCategoryTitle, getLevelName, setIconLabel } from './i18n.mjs';
-import { createCloud } from './cloud.mjs';
+import { createCloud, visitSource, countryFromTimeZone } from './cloud.mjs';
 import { setupStudent } from './student.js';
 
 const app = document.querySelector('#app');
@@ -192,7 +192,12 @@ function setupCloud(url) {
     getDone: () => {
       const sections = getLevelSections(levels, currentCategories);
       return completed().map((id) => ({ id, level: getLevelNumber(sections, id) }));
-    }
+    },
+    // For levels passed without signing in: where the visitor came from and roughly which country.
+    getContext: () => ({
+      from: landingSource(),
+      country: countryFromTimeZone(Intl.DateTimeFormat().resolvedOptions().timeZone, navigator.language)
+    })
   });
   student = setupStudent({
     cloud,
@@ -206,6 +211,18 @@ function setupCloud(url) {
   if (!cloud.status().enabled) return;
   window.addEventListener('online', () => cloud.flush());
   cloud.flush();
+}
+
+// Where this visit started: kept for the tab, so moving between levels doesn't change it.
+function landingSource() {
+  const key = 'lamplighter-from';
+  try {
+    const saved = sessionStorage.getItem(key);
+    if (saved) return saved;
+  } catch {}
+  const source = visitSource(document.referrer, location.origin, location.search);
+  try { sessionStorage.setItem(key, source); } catch {}
+  return source;
 }
 
 // A student already signed in: swap passed levels with the sheet in the background.
@@ -600,6 +617,11 @@ async function load() {
     route();
     prefetchRunner();
     syncCompleted();
+    // Remember where the visit came from before any navigation, and count today's visit.
+    if (cloud?.status().enabled) {
+      landingSource();
+      cloud.visit();
+    }
     // Nobody signed in yet: ask to sign in or register (not while the admin previews a level).
     if (!String(location.hash || '').includes('level=preview')) student?.prompt?.();
   } catch (e) {
@@ -705,7 +727,7 @@ function route() {
       isCompleted: (levelId) => completed().includes(levelId),
       toggleComplete,
       getNextLevel: (levelId) => findNextLevel(levels, currentCategories, completed(), levelId),
-      onAttempt: (attempt) => cloud?.record(attempt),
+      onAttempt: (attempt) => cloud?.attempt(attempt),
       effects
     });
   } else {

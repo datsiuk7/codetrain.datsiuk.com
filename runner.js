@@ -818,7 +818,8 @@ export function startGame(container, l, preview, options) {
         result,
         note: String(note || ''),
         cmds: blockCount(editor.blocks) + functions.reduce((n, f) => n + blockCount(f.body || []), 0),
-        code
+        code,
+        mode: codeMode ? 'python' : 'blocks'
       });
     } catch {}
   }
